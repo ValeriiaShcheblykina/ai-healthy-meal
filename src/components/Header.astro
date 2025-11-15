@@ -1,0 +1,62 @@
+---
+import { ThemeToggle } from './ThemeToggle';
+
+const { user } = Astro.locals;
+---
+
+<header class="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+  <div class="flex h-16 items-center justify-between px-4 md:px-6">
+    <div class="flex items-center gap-6">
+      <a href="/" class="flex items-center space-x-2">
+        <span class="font-bold text-xl text-foreground">AI Healthy Meal</span>
+      </a>
+      
+      <nav class="hidden md:flex items-center gap-6">
+        {user && (
+          <a 
+            href="/recipes" 
+            class="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Recipes
+          </a>
+        )}
+      </nav>
+    </div>
+
+    <div class="flex items-center gap-2">
+      <ThemeToggle client:load />
+      
+      {user ? (
+        <div class="flex items-center gap-2">
+          <span class="hidden sm:inline text-sm text-muted-foreground">
+            {user.email}
+          </span>
+          <form action="/api/auth/sign-out" method="POST">
+            <button
+              type="submit"
+              class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4"
+            >
+              Sign Out
+            </button>
+          </form>
+        </div>
+      ) : (
+        <div class="flex items-center gap-2">
+          <a
+            href="/sign-in"
+            class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4"
+          >
+            Sign In
+          </a>
+          <a
+            href="/sign-up"
+            class="inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-4"
+          >
+            Sign Up
+          </a>
+        </div>
+      )}
+    </div>
+  </div>
+</header>
+

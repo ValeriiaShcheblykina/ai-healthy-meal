@@ -1,0 +1,155 @@
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { FormField } from './FormField'
+import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/lib/validation/auth.validation'
+import type { ZodError } from 'zod'
+
+export function ForgotPasswordForm() {
+  const [formData, setFormData] = useState<Partial<ForgotPasswordFormData>>({
+    email: '',
+  })
+  const [errors, setErrors] = useState<Partial<Record<keyof ForgotPasswordFormData, string>>>({})
+  const [globalError, setGlobalError] = useState<string>('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [isSuccess, setIsSuccess] = useState(false)
+
+  const handleChange = (field: keyof ForgotPasswordFormData, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    // Clear field error on change
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }))
+    }
+    if (globalError) {
+      setGlobalError('')
+    }
+  }
+
+  const handleBlur = (field: keyof ForgotPasswordFormData) => {
+    // Validate single field on blur
+    const result = forgotPasswordSchema.shape[field].safeParse(formData[field])
+    
+    if (result.success) {
+      setErrors((prev) => ({ ...prev, [field]: undefined }))
+    } else {
+      const fieldError = result.error.issues[0]?.message
+      if (fieldError) {
+        setErrors((prev) => ({ ...prev, [field]: fieldError }))
+      }
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setGlobalError('')
+    setErrors({})
+
+    // Validate form
+    try {
+      const validatedData = forgotPasswordSchema.parse(formData)
+      setIsLoading(true)
+
+      // Call forgot password API
+      const response = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(validatedData),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        setGlobalError(data.error?.message || 'Request failed. Please try again.')
+        setIsLoading(false)
+        return
+      }
+
+      setIsLoading(false)
+      setIsSuccess(true)
+    } catch (error) {
+      setIsLoading(false)
+      if (error instanceof Error && 'issues' in error) {
+        const zodError = error as ZodError
+        const fieldErrors: Partial<Record<keyof ForgotPasswordFormData, string>> = {}
+        zodError.issues.forEach((issue) => {
+          const field = issue.path[0] as keyof ForgotPasswordFormData
+          if (field) {
+            fieldErrors[field] = issue.message
+          }
+        })
+        setErrors(fieldErrors)
+      } else {
+        setGlobalError('An unexpected error occurred. Please try again.')
+      }
+    }
+  }
+
+  if (isSuccess) {
+    return (
+      <div className="space-y-6">
+        <div
+          className="bg-green-50 dark:bg-green-950 text-green-900 dark:text-green-100 px-4 py-3 rounded-md border border-green-200 dark:border-green-800"
+          role="status"
+        >
+          <h3 className="font-semibold mb-1">Check your email</h3>
+          <p className="text-sm">
+            If an account exists with this email, you will receive password reset instructions.
+          </p>
+        </div>
+
+        <Button asChild variant="outline" className="w-full">
+          <a href="/sign-in">Back to Sign In</a>
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+      {globalError && (
+        <div
+          className="bg-destructive/10 text-destructive px-4 py-3 rounded-md border border-destructive/20"
+          role="alert"
+        >
+          {globalError}
+        </div>
+      )}
+
+      <div className="space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Enter your email address and we'll send you instructions to reset your password.
+        </p>
+      </div>
+
+      <FormField label="Email" htmlFor="email" required error={errors.email}>
+        <Input
+          id="email"
+          type="email"
+          value={formData.email}
+          onChange={(e) => handleChange('email', e.target.value)}
+          onBlur={() => handleBlur('email')}
+          placeholder="you@example.com"
+          autoComplete="email"
+          disabled={isLoading}
+          aria-required="true"
+        />
+      </FormField>
+
+      <div className="space-y-4">
+        <Button type="submit" className="w-full" disabled={isLoading}>
+          {isLoading ? 'Sending...' : 'Send Reset Instructions'}
+        </Button>
+
+        <p className="text-sm text-center text-muted-foreground">
+          Remember your password?{' '}
+          <a href="/sign-in" className="text-primary hover:underline font-medium">
+            Sign in
+          </a>
+        </p>
+      </div>
+    </form>
+  )
+}
+

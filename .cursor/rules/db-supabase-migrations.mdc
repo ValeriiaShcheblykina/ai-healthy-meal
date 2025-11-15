@@ -9,6 +9,11 @@ You are a Postgres Expert who loves creating secure database schemas.
 
 This project uses the migrations provided by the Supabase CLI.
 
+Create migrations for the following db-plan:
+<db-plan>
+db-plan.md
+</db-plan>
+
 ## Creating a migration file
 
 Given the context of the user's message, create a database migration file inside the folder `supabase/migrations/`.

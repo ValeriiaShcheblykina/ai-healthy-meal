@@ -1,0 +1,28 @@
+---
+import Layout from '@/layouts/Layout.astro'
+import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user'
+import { RecipesList } from '@/components/recipes/RecipesList'
+
+export const prerender = false
+
+const user = getAuthenticatedUser(Astro)
+
+if (!user) {
+  return Astro.redirect('/sign-in')
+}
+---
+
+<Layout title="My Recipes">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+    <div class="mb-8 lg:mb-12">
+      <h1 class="text-3xl lg:text-4xl font-bold mb-2">My Recipes</h1>
+      <p class="text-muted-foreground">
+        Manage and organize your healthy meal recipes
+      </p>
+    </div>
+    
+    <!-- React island for the recipes list -->
+    <RecipesList client:load />
+  </div>
+</Layout>
+

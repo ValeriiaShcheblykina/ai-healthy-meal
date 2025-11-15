@@ -1,0 +1,54 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+
+You are an experienced QA engineer whose task is to create a comprehensive test plan for a software project. Analyze the following project information:
+
+<project_code>
+Search Codebase before taking any action
+</project_code>
+
+<technology_stack>
+@stack.md
+</technology_stack>
+
+Your task is to generate a detailed test plan tailored to the specifics of this project, taking into account the technologies used, the code structure, and the key elements of the repository. **The test plan must be written in Polish.**
+
+Before creating the test plan, perform an in-depth project analysis inside a `<project_analysis>` block in your internal reasoning. In this analysis, include:
+
+1. Key project components derived from the code analysis:
+   - List and describe the main components of the project.
+2. Specifics of the technology stack and its impact on the testing strategy:
+   - Analyze each element of the technology stack and its implications for testing.
+3. Testing priorities based on the repository structure:
+   - Identify and rank the testing areas by importance.
+4. Potential risk areas requiring special attention during testing:
+   - List potential risks and explain why they require special attention.
+
+After completing the analysis, create the test plan inside the `<test_plan>` block. The plan should include:
+
+1. Introduction and testing objectives  
+2. Test scope  
+3. Types of tests to be performed (e.g. unit tests, integration tests, performance tests)  
+4. Test scenarios for key functionalities  
+5. Test environment  
+6. Testing tools  
+7. Test schedule  
+8. Test acceptance criteria  
+9. Roles and responsibilities in the testing process  
+10. Defect reporting procedures  
+
+Make sure that the test plan:
+
+- Is precisely tailored to the project context  
+- Reflects the specifics of the technologies used  
+- Prioritizes key elements of the repository  
+- Is written in Polish  
+- Demonstrates high quality and professionalism  
+
+Start with the analysis, and only then proceed to creating the test plan.  
+
+Your **final output must consist only of the test plan inside the `<test_plan>` block**, written in Polish and formatted in Markdown.  
+Do **not** include, repeat, or summarize any content from the `<project_analysis>` block in the final answer.

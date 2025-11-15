@@ -5,11 +5,11 @@ alwaysApply: false
 ---
 # Supabase Astro Initialization
 
-This document provides a reproducible guide to create the necessary file structure for integrating Supabase with your Astro project.
+This document provides a reproducible guide to create the necessary file structure for integrating Supabase with Astro project.
 
 ## Prerequisites
 
-- Your project should use Astro 5, TypeScript 5, React 19, and Tailwind 4.
+- Project should use Astro 5, TypeScript 5, React 19, and Tailwind 4.
 - Install the `@supabase/supabase-js` package.
 - Ensure that `/supabase/config.toml` exists
 - Ensure that a file `/src/db/database.types.ts` exists and contains the correct type definitions for your database.

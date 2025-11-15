@@ -1,0 +1,101 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+# Mermaid Diagram - Auth Architecture
+
+You are a security specialist tasked with creating a Mermaid diagram to visualize the authentication flow for the login and registration module. The diagram should be created in the following file: DESTINATION
+
+You will need to refer to the following files to understand existing requirements:
+
+<file_references>
+@prd.md
+</file_references>
+
+<destination>
+.ai/diagrams/auth.md
+</destination>
+
+Your task is to analyze the specifications of the login and registration module and create a comprehensive Mermaid diagram that accurately represents the authentication sequence. The diagram should be in Polish.
+
+Before creating the diagram, analyze the requirements and plan your approach. Place your analysis inside the <authentication_analysis> tags. In this analysis:
+
+1. List all authentication flows mentioned in the reference files.
+2. Identify the main actors and their interactions.
+3. Define token verification and refresh processes.
+4. Provide a brief description of each authentication step.
+
+When you are ready to create the diagram, follow these guidelines:
+
+1. Start the diagram with the following syntax:
+
+   ```mermaid
+   sequenceDiagram
+   ```
+
+2. Include the following elements in your diagram:
+
+   - The full lifecycle of the authentication process in a modern application using React, Astro, and Supabase Auth
+   - Communication between actors: 1) Browser 2) Middleware 3) Astro API 4) Supabase Auth
+   - Clear points where user redirection or token verification occurs
+   - Data flow after implementing new authentication requirements
+   - How the user session behaves after login and how the system reacts to token expiration
+   - Token refresh process and protection against unauthorized access
+
+3. Follow these Mermaid syntax rules:
+
+   - Use the `autonumber` attribute for sequence clarity
+   - Maintain consistent spacing between elements for readability
+   - Always use `participant` to declare actors before starting the sequence
+   - Maintain proper order of elements in the sequence (sender, arrow, receiver)
+   - Use correct activation and deactivation cycles
+   - Use proper arrow types:
+     - `->` for standard arrows (e.g., `Browser->API`)
+     - `-->` for dashed arrows (e.g., `API-->Browser: Token expired`)
+     - `->>` for open-headed arrows (e.g., `Browser->>Auth: Login request`)
+     - `-->>` for dashed open-headed arrows
+   - For activation blocks, correctly use `activate` and `deactivate`:
+     ```
+     activate Browser
+     Browser->>API: Request data
+     deactivate Browser
+     ```
+   - Use `alt`/`else`/`end` for conditional branches:
+     ```
+     alt Authentication successful
+       Browser->>Dashboard: Redirect to dashboard
+     else Authentication failed
+       Browser->>LoginPage: Show error message
+     end
+     ```
+   - For parallel actions, use `par`/`and`/`end`:
+     ```
+     par Send confirmation email
+       API->>EmailService: Send verification
+     and Update user status
+       API->>Database: Update status
+     end
+     ```
+   - For multi-line notes, use proper syntax:
+     ```
+     Note over Browser,API: This text will appear
+     in a note spanning both elements
+     ```
+   - DO NOT exceed 80 characters per line in Mermaid code
+   - DO NOT include URLs, endpoint addresses, parentheses, long function names, or complex expressions in diagram labels:
+     BAD: [Home Page<br/>(Rules Builder)]
+     GOOD: [Rules Builder]
+   - Use consistent naming throughout the document
+
+4. Avoid these common mistakes:
+   - Missing Mermaid section and diagram type declaration at the start
+   - Incorrect arrow syntax (e.g., -> instead of ->>)
+   - Using invalid characters in identifiers without quotes
+   - Unbalanced code blocks (missing `end` for opened blocks)
+   - Exceeding line length limits
+   - Improper nesting of conditional blocks
+
+After creating the diagram, review it carefully to ensure there are no syntax errors or rendering issues. Make necessary corrections to improve clarity and accuracy.
+
+When ready to present the final diagram, wrap it with <mermaid_diagram> tags.

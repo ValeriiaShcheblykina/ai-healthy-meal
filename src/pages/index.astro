@@ -1,8 +1,36 @@
 ---
-import Welcome from "../components/Welcome.astro";
-import Layout from "../layouts/Layout.astro";
+import Layout from "@/layouts/Layout.astro";
+import { RecipesList } from "@/components/recipes/RecipesList";
+import { getAuthenticatedUser } from "@/lib/auth/get-authenticated-user";
+
+export const prerender = false;
+
+// Check if user is authenticated
+const user = getAuthenticatedUser(Astro);
 ---
 
 <Layout>
-  <Welcome />
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+    {user ? (
+      <>
+        <div class="mb-8">
+          <h1 class="text-3xl font-bold mb-2">Healthy Meal Recipes</h1>
+          <p class="text-muted-foreground">
+            Discover and manage your collection of healthy recipes
+          </p>
+        </div>
+        
+        <RecipesList client:load />
+      </>
+    ) : (
+      <div class="flex flex-col items-center justify-center min-h-[60vh] text-center">
+        <h1 class="text-4xl lg:text-5xl font-bold mb-4">
+          Welcome to AI Healthy Meal
+        </h1>
+        <p class="text-xl text-muted-foreground">
+          Create, manage, and customize healthy meal recipes tailored to your dietary preferences
+        </p>
+      </div>
+    )}
+  </div>
 </Layout>
