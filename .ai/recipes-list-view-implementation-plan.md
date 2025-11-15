@@ -33,6 +33,7 @@ The view will be composed of an Astro page that renders a main React component a
 ## 4. Component Details
 
 ### `RecipesList.tsx`
+
 - **Component Description:** The main stateful component that orchestrates the entire view. It manages fetching data, handling user interactions from child components, and rendering the appropriate state (loading, empty, or data).
 - **Main Elements:** Renders `RecipesToolbar`, `PaginationControls`, and conditionally renders `SkeletonLoader`, `EmptyState`, or the recipe list (`RecipesGrid`/`RecipesListItems`).
 - **Handled Interactions:** Manages state changes for search queries, sorting, pagination, and view mode. Triggers API calls when filters change.
@@ -41,6 +42,7 @@ The view will be composed of an Astro page that renders a main React component a
 - **Props:** None.
 
 ### `RecipesToolbar.tsx`
+
 - **Component Description:** A container for all the control elements, allowing the user to filter, sort, and change the layout of the recipe list.
 - **Main Elements:** A `div` containing the `SearchBar`, `SortDropdown`, and `ViewToggle` components.
 - **Handled Interactions:** Forwards events from its children to the parent `RecipesList` component.
@@ -57,6 +59,7 @@ The view will be composed of an Astro page that renders a main React component a
   ```
 
 ### `SearchBar.tsx`
+
 - **Component Description:** An input field for text-based searching. It uses debouncing to avoid excessive API calls.
 - **Main Elements:** Shadcn/ui `Input` component with a search icon.
 - **Handled Interactions:** Handles `onChange` event on the input, updating a debounced value that is then propagated to the parent.
@@ -71,6 +74,7 @@ The view will be composed of an Astro page that renders a main React component a
   ```
 
 ### `RecipesGrid.tsx` / `RecipeCard.tsx`
+
 - **Component Description:** `RecipesGrid` renders recipes in a card-based grid layout. `RecipeCard` represents a single recipe, displaying its title and creation date, and links to the recipe's detail page.
 - **Main Elements:** `RecipesGrid` is a responsive CSS grid. `RecipeCard` is built using the Shadcn/ui `Card` component, containing an `<a>` tag that wraps the content to make it a clickable link.
 - **Handled Interactions:** Navigation to `/recipes/:id` on click.
@@ -83,6 +87,7 @@ The view will be composed of an Astro page that renders a main React component a
   ```
 
 ### `PaginationControls.tsx`
+
 - **Component Description:** Renders pagination buttons (Previous, Next, page numbers) to navigate through the recipe list.
 - **Main Elements:** Uses Shadcn/ui `Pagination` components.
 - **Handled Interactions:** `onClick` on page numbers or navigation buttons.
@@ -99,13 +104,17 @@ The view will be composed of an Astro page that renders a main React component a
 ## 5. Types
 
 ### `RecipesListViewMode` (ViewModel)
+
 A type to define the possible layout states.
+
 ```typescript
 export type RecipesListViewMode = 'grid' | 'list';
 ```
 
 ### `RecipesListState` (ViewModel)
+
 A consolidated type to manage all query parameters for the API request. It mirrors `RecipeListQueryParams` but with all fields being required, representing the component's complete state.
+
 ```typescript
 import type { RecipeListQueryParams } from '../../types';
 

@@ -13,9 +13,7 @@ import type {
  * Recipe service for business logic related to recipes
  */
 export class RecipeService {
-  constructor(
-    private readonly supabase: SupabaseClient<Database>,
-  ) {}
+  constructor(private readonly supabase: SupabaseClient<Database>) {}
 
   /**
    * Lists recipes for the authenticated user with pagination, search, and sorting
@@ -25,7 +23,7 @@ export class RecipeService {
    * @throws ApiError if database query fails
    */
   async listRecipes(
-    params: Required<RecipeListQueryParams>,
+    params: Required<RecipeListQueryParams>
   ): Promise<RecipeListResponseDTO> {
     const { page, limit, search, sort, order } = params;
     const offset = (page - 1) * limit;
@@ -48,7 +46,7 @@ export class RecipeService {
       // For MVP, ILIKE provides reasonable search functionality
       const searchTerm = search.trim();
       query = query.or(
-        `title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`,
+        `title.ilike.%${searchTerm}%,content.ilike.%${searchTerm}%`
       );
     }
 
@@ -63,11 +61,13 @@ export class RecipeService {
     }
 
     // Transform database entities to DTOs (exclude internal fields)
-    const recipes: RecipeListItemDTO[] = (data || []).map((recipe: RecipeEntity) => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { content_tsv, deleted_at, user_id, ...recipeDTO } = recipe;
-      return recipeDTO;
-    });
+    const recipes: RecipeListItemDTO[] = (data || []).map(
+      (recipe: RecipeEntity) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { content_tsv, deleted_at, user_id, ...recipeDTO } = recipe;
+        return recipeDTO;
+      }
+    );
 
     // Calculate pagination metadata
     const total = count ?? 0;
@@ -105,10 +105,22 @@ export class RecipeService {
   /** Create new recipe */
   async createRecipe(
     userId: string,
-    payload: Omit<RecipeEntity, 'id' | 'created_at' | 'updated_at' | 'deleted_at' | 'content_tsv' | 'user_id'>,
+    payload: Omit<
+      RecipeEntity,
+      | 'id'
+      | 'created_at'
+      | 'updated_at'
+      | 'deleted_at'
+      | 'content_tsv'
+      | 'user_id'
+    >
   ): Promise<RecipeEntity> {
     const insert = { ...payload, user_id: userId };
-    const { data, error } = await this.supabase.from('recipes').insert(insert).select('*').single();
+    const { data, error } = await this.supabase
+      .from('recipes')
+      .insert(insert)
+      .select('*')
+      .single();
     if (error) {
       console.error('Error in RecipeService.createRecipe', error);
       throw createInternalError('Failed to create recipe');
@@ -119,7 +131,7 @@ export class RecipeService {
   /** Update recipe (must be owned by user) */
   async updateRecipe(
     id: string,
-    payload: Partial<RecipeEntity>,
+    payload: Partial<RecipeEntity>
   ): Promise<RecipeEntity> {
     const { data, error } = await this.supabase
       .from('recipes')
@@ -147,4 +159,3 @@ export class RecipeService {
     }
   }
 }
-

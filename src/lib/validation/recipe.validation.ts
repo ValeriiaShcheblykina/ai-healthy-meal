@@ -30,7 +30,7 @@ export type ValidationResult<T> =
  * @returns Validation result with normalized parameters or error
  */
 export function validateRecipeListQueryParams(
-  params: Record<string, string | undefined>,
+  params: Record<string, string | undefined>
 ): ValidationResult<Required<RecipeListQueryParams>> {
   const errors: Record<string, string> = {};
   const normalized: Partial<Required<RecipeListQueryParams>> = {};
@@ -61,10 +61,14 @@ export function validateRecipeListQueryParams(
 
   // Validate and normalize sort
   if (params.sort !== undefined) {
-    if (!VALID_SORT_FIELDS.includes(params.sort as typeof VALID_SORT_FIELDS[number])) {
+    if (
+      !VALID_SORT_FIELDS.includes(
+        params.sort as (typeof VALID_SORT_FIELDS)[number]
+      )
+    ) {
       errors.sort = `must be one of: ${VALID_SORT_FIELDS.join(', ')}`;
     } else {
-      normalized.sort = params.sort as typeof VALID_SORT_FIELDS[number];
+      normalized.sort = params.sort as (typeof VALID_SORT_FIELDS)[number];
     }
   } else {
     normalized.sort = 'created_at'; // default
@@ -72,10 +76,10 @@ export function validateRecipeListQueryParams(
 
   // Validate and normalize order
   if (params.order !== undefined) {
-    if (!VALID_ORDERS.includes(params.order as typeof VALID_ORDERS[number])) {
+    if (!VALID_ORDERS.includes(params.order as (typeof VALID_ORDERS)[number])) {
       errors.order = `must be one of: ${VALID_ORDERS.join(', ')}`;
     } else {
-      normalized.order = params.order as typeof VALID_ORDERS[number];
+      normalized.order = params.order as (typeof VALID_ORDERS)[number];
     }
   } else {
     normalized.order = 'desc'; // default
@@ -107,4 +111,3 @@ export function validateRecipeListQueryParams(
     data: normalized as Required<RecipeListQueryParams>,
   };
 }
-

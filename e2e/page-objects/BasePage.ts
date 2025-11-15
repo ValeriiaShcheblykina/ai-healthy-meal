@@ -1,4 +1,4 @@
-import type { Page, Locator } from "@playwright/test";
+import type { Page, Locator } from '@playwright/test';
 
 /**
  * Base Page Object containing common functionality for all pages
@@ -21,7 +21,7 @@ export class BasePage {
    * Wait for the page to be fully loaded
    */
   async waitForPageLoad() {
-    await this.page.waitForLoadState("networkidle");
+    await this.page.waitForLoadState('networkidle');
   }
 
   /**
@@ -36,7 +36,7 @@ export class BasePage {
    */
   async isVisible(locator: Locator): Promise<boolean> {
     try {
-      await locator.waitFor({ state: "visible", timeout: 5000 });
+      await locator.waitFor({ state: 'visible', timeout: 5000 });
       return true;
     } catch {
       return false;
@@ -61,7 +61,6 @@ export class BasePage {
    * Get text content of an element
    */
   async getText(locator: Locator): Promise<string> {
-    return (await locator.textContent()) || "";
+    return (await locator.textContent()) || '';
   }
 }
-

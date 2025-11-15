@@ -1,5 +1,5 @@
-import type { Page, Locator } from "@playwright/test";
-import { BasePage } from "./BasePage";
+import type { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
 /**
  * Page Object for the Recipes page
@@ -18,21 +18,23 @@ export class RecipesPage extends BasePage {
   constructor(page: Page) {
     super(page);
     this.searchInput = page.getByPlaceholder(/search/i);
-    this.sortDropdown = page.getByRole("combobox", { name: /sort/i });
-    this.viewToggleGrid = page.getByRole("button", { name: /grid view/i });
-    this.viewToggleList = page.getByRole("button", { name: /list view/i });
+    this.sortDropdown = page.getByRole('combobox', { name: /sort/i });
+    this.viewToggleGrid = page.getByRole('button', { name: /grid view/i });
+    this.viewToggleList = page.getByRole('button', { name: /list view/i });
     this.recipeCards = page.locator('[data-testid="recipe-card"]');
     this.emptyState = page.getByText(/no recipes found/i);
-    this.paginationNext = page.getByRole("button", { name: /next/i });
-    this.paginationPrev = page.getByRole("button", { name: /previous/i });
-    this.createRecipeButton = page.getByRole("button", { name: /create recipe/i });
+    this.paginationNext = page.getByRole('button', { name: /next/i });
+    this.paginationPrev = page.getByRole('button', { name: /previous/i });
+    this.createRecipeButton = page.getByRole('button', {
+      name: /create recipe/i,
+    });
   }
 
   /**
    * Navigate to the recipes page
    */
   async goto() {
-    await super.goto("/recipes");
+    await super.goto('/recipes');
   }
 
   /**
@@ -49,7 +51,7 @@ export class RecipesPage extends BasePage {
    */
   async changeSort(option: string) {
     await this.click(this.sortDropdown);
-    await this.page.getByRole("option", { name: option }).click();
+    await this.page.getByRole('option', { name: option }).click();
   }
 
   /**
@@ -108,4 +110,3 @@ export class RecipesPage extends BasePage {
     await this.click(this.createRecipeButton);
   }
 }
-

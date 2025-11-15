@@ -15,6 +15,7 @@ The design is mobile-first, ensuring a seamless experience across all devices, a
 These views exist outside the main application layout and are accessible only to unauthenticated users.
 
 #### **Sign In**
+
 - **View Path:** `/sign-in`
 - **Main Purpose:** To allow existing users to log in to their account.
 - **Key Information:** Email and password fields, a "Sign In" button, and links to the "Sign Up" and "Reset Password" views.
@@ -25,6 +26,7 @@ These views exist outside the main application layout and are accessible only to
   - **Security:** All form submissions must use HTTPS.
 
 #### **Sign Up**
+
 - **View Path:** `/sign-up`
 - **Main Purpose:** To allow new users to create an account.
 - **Key Information:** Email, password, and confirm password fields, a "Sign Up" button, and a link to the "Sign In" view.
@@ -35,6 +37,7 @@ These views exist outside the main application layout and are accessible only to
   - **Security:** Enforce password complexity rules on the client-side as an initial check.
 
 #### **Reset Password**
+
 - **View Path:** `/reset-password`
 - **Main Purpose:** To provide a way for users to reset a forgotten password.
 - **Key Information:** An email input field and a button to send a reset link.
@@ -51,6 +54,7 @@ These views exist outside the main application layout and are accessible only to
 These views are protected by authentication and are wrapped in the main application layout with global navigation.
 
 #### **Recipes List (Dashboard)**
+
 - **View Path:** `/recipes`
 - **Main Purpose:** To display a user's collection of recipes and serve as the main entry point after login.
 - **Key Information:** A grid or list of the user's recipes, each showing a title and creation date.
@@ -61,6 +65,7 @@ These views are protected by authentication and are wrapped in the main applicat
   - **API Mapping:** This view is powered by the `GET /api/recipes` endpoint, utilizing its `search`, `sort`, `order`, `page`, and `limit` query parameters.
 
 #### **Recipe Detail**
+
 - **View Path:** `/recipes/:id`
 - **Main Purpose:** To display the full content of a selected recipe and its generated variants.
 - **Key Information:** The recipe's title and content. A list of all associated variants (showing creation date and model).
@@ -71,6 +76,7 @@ These views are protected by authentication and are wrapped in the main applicat
   - **API Mapping:** The initial data is fetched from `GET /api/recipes/:id`. Deletion uses `DELETE /api/recipes/:id`. Generating a variant triggers a call to `POST /api/recipes/:recipeId/variants/generate`.
 
 #### **Create/Edit Recipe**
+
 - **View Paths:** `/recipes/new`, `/recipes/:id/edit`
 - **Main Purpose:** To provide a form for creating a new recipe or updating an existing one.
 - **Key Information:** A form containing fields for the recipe's title and content (as rich text or raw JSON).
@@ -81,6 +87,7 @@ These views are protected by authentication and are wrapped in the main applicat
   - **API Mapping:** Creating a recipe uses `POST /api/recipes`. Updating uses `PUT /api/recipes/:id`.
 
 #### **Recipe Variant Detail**
+
 - **View Path:** `/recipes/:recipeId/variants/:variantId`
 - **Main Purpose:** To display the detailed output of a single recipe variant.
 - **Key Information:** The full generated `output_text` or `output_json`, along with metadata like the model used, the prompt, and the `preferences_snapshot`.
@@ -91,6 +98,7 @@ These views are protected by authentication and are wrapped in the main applicat
   - **API Mapping:** Powered by `GET /api/recipes/:recipeId/variants/:variantId`.
 
 #### **User Profile**
+
 - **View Path:** `/profile`
 - **Main Purpose:** To allow users to set and update their dietary preferences, which will be used by the AI for recipe generation.
 - **Key Information:** A form with fields for diet type, allergens, disliked ingredients, and calorie targets.
@@ -101,6 +109,7 @@ These views are protected by authentication and are wrapped in the main applicat
   - **API Mapping:** This view will fetch initial data from a `GET /api/profile` endpoint and save changes via a `PUT /api/profile` endpoint.
 
 #### **Activity Logs**
+
 - **View Path:** `/logs`
 - **Main Purpose:** To provide a historical view of the user's recipe generation and modification activities.
 - **Key Information:** A chronological list of log entries, grouped by day, showing the action performed (e.g., "Generated a variant for 'Pasta'").
@@ -142,12 +151,12 @@ The primary user journey involves creating a base recipe and then using AI to ta
 
 - **Main Layout:** A single, persistent layout component (`Layout.astro`) will wrap all authenticated views. This layout contains the global navigation header and a main content area.
 - **Global Navigation:** A responsive header at the top of the page will contain:
-    - **Logo:** Links back to the `/recipes` dashboard.
-    - **Primary Navigation Links:** "Recipes", "Create New Recipe", "Profile", "Activity Logs".
-    - **User Menu:** An icon/avatar on the right that opens a dropdown with a "Sign Out" link.
+  - **Logo:** Links back to the `/recipes` dashboard.
+  - **Primary Navigation Links:** "Recipes", "Create New Recipe", "Profile", "Activity Logs".
+  - **User Menu:** An icon/avatar on the right that opens a dropdown with a "Sign Out" link.
 - **Responsive Behavior:**
-    - On desktop screens (`md` breakpoint and up), the navigation links will be displayed horizontally in the header.
-    - On mobile screens (`sm`), the navigation links will collapse into a hamburger menu to save space.
+  - On desktop screens (`md` breakpoint and up), the navigation links will be displayed horizontally in the header.
+  - On mobile screens (`sm`), the navigation links will collapse into a hamburger menu to save space.
 - **Authentication Flow:** Middleware will manage routing. Unauthenticated users are restricted to `/sign-in`, `/sign-up`, and `/reset-password`. Attempting to access any other route redirects them to `/sign-in`. Authenticated users are redirected away from auth routes to `/recipes`.
 
 ## 5. Key Components

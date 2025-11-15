@@ -1,14 +1,20 @@
-import { Label } from '@/components/ui/label'
+import { Label } from '@/components/ui/label';
 
 export interface FormFieldProps {
-  label: string
-  error?: string
-  htmlFor: string
-  required?: boolean
-  children: React.ReactNode
+  label: string;
+  error?: string;
+  htmlFor: string;
+  required?: boolean;
+  children: React.ReactNode;
 }
 
-export function FormField({ label, error, htmlFor, required, children }: FormFieldProps) {
+export function FormField({
+  label,
+  error,
+  htmlFor,
+  required,
+  children,
+}: FormFieldProps) {
   return (
     <div className="space-y-2">
       <Label htmlFor={htmlFor}>
@@ -19,7 +25,7 @@ export function FormField({ label, error, htmlFor, required, children }: FormFie
       {error && (
         <p
           id={`${htmlFor}-error`}
-          className="text-sm text-destructive"
+          className="text-destructive text-sm"
           role="alert"
           aria-live="polite"
         >
@@ -27,6 +33,5 @@ export function FormField({ label, error, htmlFor, required, children }: FormFie
         </p>
       )}
     </div>
-  )
+  );
 }
-

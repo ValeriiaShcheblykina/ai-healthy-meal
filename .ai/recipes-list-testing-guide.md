@@ -1,11 +1,13 @@
 # Recipes List View - Testing Guide
 
 ## Overview
+
 This document provides guidance for testing the Recipes List (Dashboard) view implementation.
 
 ## Prerequisites
 
 ### Authentication Setup
+
 The `/recipes` page requires authentication. To test the page, you need to:
 
 1. **Set up Supabase authentication** in your local environment
@@ -13,6 +15,7 @@ The `/recipes` page requires authentication. To test the page, you need to:
 3. **Obtain a session cookie** by signing in through your authentication flow
 
 ### Development Environment
+
 ```bash
 # Start the development server
 npm run dev
@@ -23,11 +26,13 @@ npm run dev
 ## Testing Checklist
 
 ### 1. Authentication & Access Control
+
 - [ ] Unauthenticated users are redirected to home page (`/`)
 - [ ] Authenticated users can access `/recipes`
 - [ ] API returns 401 for requests without valid authentication
 
 ### 2. Page Load & Initial State
+
 - [ ] Page loads without errors
 - [ ] Loading skeletons appear while fetching data
 - [ ] URL query parameters are parsed correctly on initial load
@@ -35,6 +40,7 @@ npm run dev
 - [ ] Default filters are applied (page=1, limit=20, sort=created_at, order=desc)
 
 ### 3. Search Functionality
+
 - [ ] Search input accepts text input
 - [ ] Search is debounced (300ms delay)
 - [ ] Search updates URL query parameters
@@ -44,6 +50,7 @@ npm run dev
 - [ ] Search results show appropriate "No results found" message
 
 ### 4. Sorting & Ordering
+
 - [ ] Sort dropdown shows all options (Date Created, Date Modified, Title)
 - [ ] Changing sort option triggers new API call
 - [ ] Sort updates URL query parameters
@@ -52,6 +59,7 @@ npm run dev
 - [ ] Sorting resets pagination to page 1
 
 ### 5. View Mode Toggle
+
 - [ ] Grid view displays recipes in responsive grid (1-4 columns)
 - [ ] List view displays recipes in vertical list
 - [ ] View mode toggle persists to localStorage
@@ -60,6 +68,7 @@ npm run dev
 - [ ] Both views display the same data
 
 ### 6. Pagination
+
 - [ ] Pagination controls appear when total_pages > 1
 - [ ] Previous button is disabled on first page
 - [ ] Next button is disabled on last page
@@ -70,6 +79,7 @@ npm run dev
 - [ ] First and last page always visible when needed
 
 ### 7. Recipe Cards/Items
+
 - [ ] Recipe title displays correctly
 - [ ] Created date is formatted properly
 - [ ] Cards are clickable and link to `/recipes/:id`
@@ -78,12 +88,14 @@ npm run dev
 - [ ] Cards have proper ARIA labels
 
 ### 8. Empty States
+
 - [ ] "No recipes yet" appears when user has no recipes
 - [ ] "Create New Recipe" button is shown in empty state
 - [ ] "No results found" appears when search returns no results
 - [ ] Empty state messaging changes based on active filters
 
 ### 9. Error Handling
+
 - [ ] Network errors display error message
 - [ ] "Try Again" button allows retry
 - [ ] API errors are handled gracefully
@@ -91,6 +103,7 @@ npm run dev
 - [ ] Validation errors are displayed clearly
 
 ### 10. Accessibility
+
 - [ ] All interactive elements are keyboard accessible
 - [ ] Tab order is logical and intuitive
 - [ ] Focus indicators are clearly visible
@@ -104,6 +117,7 @@ npm run dev
 - [ ] Color contrast meets WCAG standards
 
 ### 11. Responsive Design
+
 - [ ] Layout adapts to mobile screens (< 640px)
 - [ ] Layout adapts to tablet screens (640px - 1024px)
 - [ ] Layout adapts to desktop screens (> 1024px)
@@ -112,6 +126,7 @@ npm run dev
 - [ ] Touch targets are adequate size on mobile
 
 ### 12. URL Synchronization
+
 - [ ] URL updates when filters change
 - [ ] URL is bookmarkable (loading page with URL params works)
 - [ ] Browser back/forward navigation works correctly
@@ -119,6 +134,7 @@ npm run dev
 - [ ] Invalid URL params are handled with defaults
 
 ### 13. Performance
+
 - [ ] TanStack Query caching works (no unnecessary refetches)
 - [ ] Debouncing prevents excessive API calls
 - [ ] Loading states prevent layout shift
@@ -128,12 +144,14 @@ npm run dev
 ## Manual Testing Scenarios
 
 ### Scenario 1: First-time User
+
 1. Sign in as a new user with no recipes
 2. Verify empty state displays with "Create New Recipe" button
 3. Create a recipe (requires recipe detail page)
 4. Return to recipes list and verify recipe appears
 
 ### Scenario 2: Search and Filter
+
 1. Load recipes list with multiple recipes
 2. Enter search term
 3. Verify debouncing (API only called after typing stops)
@@ -141,6 +159,7 @@ npm run dev
 5. Clear search and verify all recipes return
 
 ### Scenario 3: Pagination Flow
+
 1. Create 25+ recipes for testing
 2. Navigate through pages using Next/Previous
 3. Click specific page numbers
@@ -148,6 +167,7 @@ npm run dev
 5. Refresh page and verify correct page loads
 
 ### Scenario 4: Keyboard Navigation
+
 1. Tab through all interactive elements
 2. Verify focus indicators are visible
 3. Use Enter/Space to activate buttons
@@ -155,6 +175,7 @@ npm run dev
 5. Verify screen reader announcements
 
 ### Scenario 5: Mobile Experience
+
 1. Open page on mobile device or resize browser to mobile width
 2. Verify toolbar stacks properly
 3. Test touch interactions
@@ -182,6 +203,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ### Expected Responses
 
 **Success (200):**
+
 ```json
 {
   "data": [
@@ -205,6 +227,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ```
 
 **Unauthorized (401):**
+
 ```json
 {
   "error": {
@@ -215,6 +238,7 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 ```
 
 **Validation Error (400):**
+
 ```json
 {
   "error": {
@@ -241,4 +265,3 @@ curl -H "Authorization: Bearer YOUR_TOKEN" \
 4. Add integration tests
 5. Add unit tests for components
 6. Set up E2E testing with Playwright or Cypress
-

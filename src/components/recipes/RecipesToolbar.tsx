@@ -1,18 +1,18 @@
-import { SearchBar } from './SearchBar'
-import { SortDropdown } from './SortDropdown'
-import { ViewToggle } from './ViewToggle'
-import type { RecipesListViewMode } from './ViewToggle'
-import type { RecipeListQueryParams } from '@/types'
-import { Button } from '@/components/ui/button'
-import { Plus } from 'lucide-react'
+import { SearchBar } from './SearchBar';
+import { SortDropdown } from './SortDropdown';
+import { ViewToggle } from './ViewToggle';
+import type { RecipesListViewMode } from './ViewToggle';
+import type { RecipeListQueryParams } from '@/types';
+import { Button } from '@/components/ui/button';
+import { Plus } from 'lucide-react';
 
-export type RecipesListState = Required<RecipeListQueryParams>
+export type RecipesListState = Required<RecipeListQueryParams>;
 
 export interface RecipesToolbarProps {
-  filters: RecipesListState
-  viewMode: RecipesListViewMode
-  onFiltersChange: (newFilters: Partial<RecipesListState>) => void
-  onViewModeChange: (newViewMode: RecipesListViewMode) => void
+  filters: RecipesListState;
+  viewMode: RecipesListViewMode;
+  onFiltersChange: (newFilters: Partial<RecipesListState>) => void;
+  onViewModeChange: (newViewMode: RecipesListViewMode) => void;
 }
 
 export function RecipesToolbar({
@@ -22,8 +22,8 @@ export function RecipesToolbar({
   onViewModeChange,
 }: RecipesToolbarProps) {
   return (
-    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
-      <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center flex-1 w-full sm:w-auto">
+    <div className="mb-6 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      <div className="flex w-full flex-1 flex-col items-start gap-3 sm:w-auto sm:flex-row sm:items-center">
         <SearchBar
           initialQuery={filters.search}
           onSearch={(search) => onFiltersChange({ search, page: 1 })}
@@ -31,19 +31,20 @@ export function RecipesToolbar({
         <SortDropdown
           sort={filters.sort}
           order={filters.order}
-          onSortChange={(sort, order) => onFiltersChange({ sort, order, page: 1 })}
+          onSortChange={(sort, order) =>
+            onFiltersChange({ sort, order, page: 1 })
+          }
         />
       </div>
-      <div className="flex gap-2 w-full sm:w-auto justify-between sm:justify-end">
+      <div className="flex w-full justify-between gap-2 sm:w-auto sm:justify-end">
         <ViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
         <Button asChild>
           <a href="/recipes/new">
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             New Recipe
           </a>
         </Button>
       </div>
     </div>
-  )
+  );
 }
-

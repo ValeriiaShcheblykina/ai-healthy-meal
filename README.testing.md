@@ -95,17 +95,17 @@ Unit tests are configured in `vitest.config.ts`:
 ### Example Unit Test
 
 ```typescript
-import { describe, it, expect } from "vitest";
-import { validateEmail } from "./auth.validation";
+import { describe, it, expect } from 'vitest';
+import { validateEmail } from './auth.validation';
 
-describe("validateEmail", () => {
-  it("should validate a correct email format", () => {
-    const result = validateEmail("test@example.com");
+describe('validateEmail', () => {
+  it('should validate a correct email format', () => {
+    const result = validateEmail('test@example.com');
     expect(result.success).toBe(true);
   });
 
-  it("should reject invalid email format", () => {
-    const result = validateEmail("notanemail");
+  it('should reject invalid email format', () => {
+    const result = validateEmail('notanemail');
     expect(result.success).toBe(false);
   });
 });
@@ -132,16 +132,16 @@ describe("MyComponent", () => {
 #### Mock Functions
 
 ```typescript
-import { vi } from "vitest";
+import { vi } from 'vitest';
 
 const mockFn = vi.fn();
-mockFn.mockReturnValue("mocked value");
+mockFn.mockReturnValue('mocked value');
 ```
 
 #### Mock Modules
 
 ```typescript
-vi.mock("@/lib/supabase", () => ({
+vi.mock('@/lib/supabase', () => ({
   supabase: mockSupabaseClient,
 }));
 ```
@@ -151,7 +151,7 @@ vi.mock("@/lib/supabase", () => ({
 Use the mock from `test/mocks/supabase.mock.ts`:
 
 ```typescript
-import { createMockSupabaseClient } from "@/test/mocks/supabase.mock";
+import { createMockSupabaseClient } from '@/test/mocks/supabase.mock';
 
 const mockClient = createMockSupabaseClient();
 ```
@@ -176,13 +176,13 @@ E2E tests are configured in `playwright.config.ts`:
 Use Page Object Model (POM) for maintainable tests. Page objects are in `e2e/page-objects/`:
 
 ```typescript
-import { test, expect } from "@playwright/test";
-import { SignInPage } from "./page-objects/SignInPage";
+import { test, expect } from '@playwright/test';
+import { SignInPage } from './page-objects/SignInPage';
 
-test("should sign in successfully", async ({ page }) => {
+test('should sign in successfully', async ({ page }) => {
   const signInPage = new SignInPage(page);
   await signInPage.goto();
-  await signInPage.signIn("test@example.com", "Test123!@#");
+  await signInPage.signIn('test@example.com', 'Test123!@#');
   await expect(page).toHaveURL(/\/recipes/);
 });
 ```
@@ -192,19 +192,19 @@ test("should sign in successfully", async ({ page }) => {
 Extend `BasePage` for common functionality:
 
 ```typescript
-import { Page, Locator } from "@playwright/test";
-import { BasePage } from "./BasePage";
+import { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
 export class MyPage extends BasePage {
   readonly myButton: Locator;
 
   constructor(page: Page) {
     super(page);
-    this.myButton = page.getByRole("button", { name: /my button/i });
+    this.myButton = page.getByRole('button', { name: /my button/i });
   }
 
   async goto() {
-    await super.goto("/my-page");
+    await super.goto('/my-page');
   }
 
   async clickMyButton() {
@@ -324,4 +324,3 @@ For questions or issues with testing:
 2. Review the test plan in `.ai/test-plan.md`
 3. Check existing tests for examples
 4. Consult Vitest/Playwright documentation
-

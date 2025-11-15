@@ -1,16 +1,16 @@
-import { Button } from '@/components/ui/button'
-import { Grid3x3, List } from 'lucide-react'
+import { Button } from '@/components/ui/button';
+import { Grid3x3, List } from 'lucide-react';
 
-export type RecipesListViewMode = 'grid' | 'list'
+export type RecipesListViewMode = 'grid' | 'list';
 
 export interface ViewToggleProps {
-  viewMode: RecipesListViewMode
-  onViewModeChange: (mode: RecipesListViewMode) => void
+  viewMode: RecipesListViewMode;
+  onViewModeChange: (mode: RecipesListViewMode) => void;
 }
 
 export function ViewToggle({ viewMode, onViewModeChange }: ViewToggleProps) {
   return (
-    <div className="flex items-center gap-1 border rounded-md p-1">
+    <div className="flex items-center gap-1 rounded-md border p-1">
       <Button
         variant={viewMode === 'grid' ? 'default' : 'ghost'}
         size="icon"
@@ -32,6 +32,5 @@ export function ViewToggle({ viewMode, onViewModeChange }: ViewToggleProps) {
         <List className="h-4 w-4" />
       </Button>
     </div>
-  )
+  );
 }
-

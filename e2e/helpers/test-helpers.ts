@@ -1,4 +1,4 @@
-import type { Page } from "@playwright/test";
+import type { Page } from '@playwright/test';
 
 /**
  * Helper function to wait for API response
@@ -11,8 +11,8 @@ export async function waitForApiResponse(
   return await page.waitForResponse(
     (response) => {
       const url = response.url();
-      const pattern = typeof urlPattern === "string" ? urlPattern : urlPattern;
-      return typeof pattern === "string"
+      const pattern = typeof urlPattern === 'string' ? urlPattern : urlPattern;
+      return typeof pattern === 'string'
         ? url.includes(pattern)
         : pattern.test(url);
     },
@@ -51,10 +51,10 @@ export async function setLocalStorageItem(
   key: string,
   value: string
 ) {
-  await page.evaluate(
-    ({ key, value }) => localStorage.setItem(key, value),
-    { key, value }
-  );
+  await page.evaluate(({ key, value }) => localStorage.setItem(key, value), {
+    key,
+    value,
+  });
 }
 
 /**
@@ -66,4 +66,3 @@ export async function getLocalStorageItem(
 ): Promise<string | null> {
   return await page.evaluate((key) => localStorage.getItem(key), key);
 }
-

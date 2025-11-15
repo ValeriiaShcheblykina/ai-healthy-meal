@@ -1,44 +1,47 @@
-import { Button } from '@/components/ui/button'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import type { PaginationDTO } from '@/types'
+import { Button } from '@/components/ui/button';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
+import type { PaginationDTO } from '@/types';
 
 export interface PaginationControlsProps {
-  pagination: PaginationDTO
-  onPageChange: (page: number) => void
+  pagination: PaginationDTO;
+  onPageChange: (page: number) => void;
 }
 
-export function PaginationControls({ pagination, onPageChange }: PaginationControlsProps) {
-  const { page, total_pages } = pagination
+export function PaginationControls({
+  pagination,
+  onPageChange,
+}: PaginationControlsProps) {
+  const { page, total_pages } = pagination;
 
   // Don't show pagination if there's only one page
   if (total_pages <= 1) {
-    return null
+    return null;
   }
 
   // Calculate visible page numbers (show max 5 pages)
   const getVisiblePages = () => {
-    const pages: number[] = []
-    const maxVisible = 5
-    let start = Math.max(1, page - Math.floor(maxVisible / 2))
-    const end = Math.min(total_pages, start + maxVisible - 1)
+    const pages: number[] = [];
+    const maxVisible = 5;
+    let start = Math.max(1, page - Math.floor(maxVisible / 2));
+    const end = Math.min(total_pages, start + maxVisible - 1);
 
     // Adjust start if we're near the end
     if (end - start + 1 < maxVisible) {
-      start = Math.max(1, end - maxVisible + 1)
+      start = Math.max(1, end - maxVisible + 1);
     }
 
     for (let i = start; i <= end; i++) {
-      pages.push(i)
+      pages.push(i);
     }
 
-    return pages
-  }
+    return pages;
+  };
 
-  const visiblePages = getVisiblePages()
+  const visiblePages = getVisiblePages();
 
   return (
     <nav
-      className="flex items-center justify-center gap-1 mt-8"
+      className="mt-8 flex items-center justify-center gap-1"
       role="navigation"
       aria-label="Pagination"
     >
@@ -58,7 +61,7 @@ export function PaginationControls({ pagination, onPageChange }: PaginationContr
             1
           </Button>
           {visiblePages[0] > 2 && (
-            <span className="px-2 text-muted-foreground">...</span>
+            <span className="text-muted-foreground px-2">...</span>
           )}
         </>
       )}
@@ -78,7 +81,7 @@ export function PaginationControls({ pagination, onPageChange }: PaginationContr
       {visiblePages[visiblePages.length - 1] < total_pages && (
         <>
           {visiblePages[visiblePages.length - 1] < total_pages - 1 && (
-            <span className="px-2 text-muted-foreground">...</span>
+            <span className="text-muted-foreground px-2">...</span>
           )}
           <Button variant="outline" onClick={() => onPageChange(total_pages)}>
             {total_pages}
@@ -96,6 +99,5 @@ export function PaginationControls({ pagination, onPageChange }: PaginationContr
         <ChevronRight className="h-4 w-4" />
       </Button>
     </nav>
-  )
+  );
 }
-

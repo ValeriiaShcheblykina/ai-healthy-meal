@@ -1,54 +1,62 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { FormField } from './FormField'
-import { PasswordInput } from './PasswordInput'
-import { signInSchema, type SignInFormData } from '@/lib/validation/auth.validation'
-import type { ZodError } from 'zod'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { FormField } from './FormField';
+import { PasswordInput } from './PasswordInput';
+import {
+  signInSchema,
+  type SignInFormData,
+} from '@/lib/validation/auth.validation';
+import type { ZodError } from 'zod';
 
 export function SignInForm() {
   const [formData, setFormData] = useState<Partial<SignInFormData>>({
     email: '',
     password: '',
-  })
-  const [errors, setErrors] = useState<Partial<Record<keyof SignInFormData, string>>>({})
-  const [globalError, setGlobalError] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(false)
+  });
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof SignInFormData, string>>
+  >({});
+  const [globalError, setGlobalError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleChange = (field: keyof SignInFormData, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+  const handleChange = (
+    field: keyof SignInFormData,
+    value: string | boolean
+  ) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear field error on change
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
     if (globalError) {
-      setGlobalError('')
+      setGlobalError('');
     }
-  }
+  };
 
   const handleBlur = (field: keyof SignInFormData) => {
     // Validate single field on blur
-    const result = signInSchema.shape[field].safeParse(formData[field])
-    
+    const result = signInSchema.shape[field].safeParse(formData[field]);
+
     if (result.success) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     } else {
-      const fieldError = result.error.issues[0]?.message
+      const fieldError = result.error.issues[0]?.message;
       if (fieldError) {
-        setErrors((prev) => ({ ...prev, [field]: fieldError }))
+        setErrors((prev) => ({ ...prev, [field]: fieldError }));
       }
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setGlobalError('')
-    setErrors({})
+    e.preventDefault();
+    setGlobalError('');
+    setErrors({});
 
     // Validate form
     try {
-      const validatedData = signInSchema.parse(formData)
-      setIsLoading(true)
+      const validatedData = signInSchema.parse(formData);
+      setIsLoading(true);
 
       // Call sign-in API
       const response = await fetch('/api/auth/sign-in', {
@@ -58,41 +66,43 @@ export function SignInForm() {
         },
         body: JSON.stringify(validatedData),
         credentials: 'include', // Include cookies in request and response
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        setGlobalError(data.error?.message || 'Sign in failed. Please try again.')
-        setIsLoading(false)
-        return
+        setGlobalError(
+          data.error?.message || 'Sign in failed. Please try again.'
+        );
+        setIsLoading(false);
+        return;
       }
 
       // Redirect to recipes page
-      window.location.href = '/recipes'
+      window.location.href = '/recipes';
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       if (error instanceof Error && 'issues' in error) {
-        const zodError = error as ZodError
-        const fieldErrors: Partial<Record<keyof SignInFormData, string>> = {}
+        const zodError = error as ZodError;
+        const fieldErrors: Partial<Record<keyof SignInFormData, string>> = {};
         zodError.issues.forEach((issue) => {
-          const field = issue.path[0] as keyof SignInFormData
+          const field = issue.path[0] as keyof SignInFormData;
           if (field) {
-            fieldErrors[field] = issue.message
+            fieldErrors[field] = issue.message;
           }
-        })
-        setErrors(fieldErrors)
+        });
+        setErrors(fieldErrors);
       } else {
-        setGlobalError('An unexpected error occurred. Please try again.')
+        setGlobalError('An unexpected error occurred. Please try again.');
       }
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {globalError && (
         <div
-          className="bg-destructive/10 text-destructive px-4 py-3 rounded-md border border-destructive/20"
+          className="bg-destructive/10 text-destructive border-destructive/20 rounded-md border px-4 py-3"
           role="alert"
         >
           {globalError}
@@ -113,7 +123,12 @@ export function SignInForm() {
         />
       </FormField>
 
-      <FormField label="Password" htmlFor="password" required error={errors.password}>
+      <FormField
+        label="Password"
+        htmlFor="password"
+        required
+        error={errors.password}
+      >
         <PasswordInput
           id="password"
           value={formData.password}
@@ -129,7 +144,7 @@ export function SignInForm() {
       <div className="flex justify-end">
         <a
           href="/forgot-password"
-          className="text-sm text-primary hover:underline font-medium"
+          className="text-primary text-sm font-medium hover:underline"
         >
           Forgot password?
         </a>
@@ -140,14 +155,16 @@ export function SignInForm() {
           {isLoading ? 'Signing in...' : 'Sign In'}
         </Button>
 
-        <p className="text-sm text-center text-muted-foreground">
+        <p className="text-muted-foreground text-center text-sm">
           Don't have an account?{' '}
-          <a href="/sign-up" className="text-primary hover:underline font-medium">
+          <a
+            href="/sign-up"
+            className="text-primary font-medium hover:underline"
+          >
             Sign up
           </a>
         </p>
       </div>
     </form>
-  )
+  );
 }
-

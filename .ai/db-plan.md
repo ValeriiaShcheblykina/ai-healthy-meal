@@ -116,6 +116,7 @@ for each row execute function public.set_updated_at();
   - `generation_logs.variant_id` references `recipe_variants(id)`; set null on delete.
 
 Cardinalities:
+
 - A user has 0..1 profile.
 - A user has 0..N recipes.
 - A recipe has 0..N variants.

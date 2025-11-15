@@ -15,6 +15,7 @@
 </decisions>
 
 <matched_recommendations>
+
 1. Isolated auth pages outside the standard `Layout.astro`.
 2. Responsive top bar + hamburger for main navigation.
 3. Dedicated recipe creation screen with validation for text/JSON content.
@@ -30,51 +31,52 @@
 
 <ui_architecture_planning_summary>
 a. Main UI Architecture Requirements  
-   • Astro 5 shell with React 19 islands for interactive views.  
-   • Global `Layout.astro` wraps all authenticated routes; auth screens are standalone.  
-   • State layer: React Context + TanStack Query; localStorage for user preferences (view mode, sort).  
-   • Central error boundary & notification system.
+ • Astro 5 shell with React 19 islands for interactive views.  
+ • Global `Layout.astro` wraps all authenticated routes; auth screens are standalone.  
+ • State layer: React Context + TanStack Query; localStorage for user preferences (view mode, sort).  
+ • Central error boundary & notification system.
 
 b. Key Views, Screens, and User Flows  
-   • Recipes List (grid/list toggle, search/filter, pagination).  
-   • Recipe Detail (read view) with sticky actions: Edit, Delete, Generate AI Variant.  
-   • Create/Edit Recipe screen (tabbed Rich-Text / JSON editor).  
-   • AI Variant Generation drawer (options → progress → result).  
-   • Variants List (per recipe) and Variant Detail.  
-   • Profile Preferences form (diet, allergens, calorie target).  
-   • Activity Logs list grouped by day, with filters.  
-   • Auth screens: Sign-In, Sign-Up, Reset Password.  
-   • Error/empty states for 401/403/404.
+ • Recipes List (grid/list toggle, search/filter, pagination).  
+ • Recipe Detail (read view) with sticky actions: Edit, Delete, Generate AI Variant.  
+ • Create/Edit Recipe screen (tabbed Rich-Text / JSON editor).  
+ • AI Variant Generation drawer (options → progress → result).  
+ • Variants List (per recipe) and Variant Detail.  
+ • Profile Preferences form (diet, allergens, calorie target).  
+ • Activity Logs list grouped by day, with filters.  
+ • Auth screens: Sign-In, Sign-Up, Reset Password.  
+ • Error/empty states for 401/403/404.
 
 c. API Integration & State Management  
-   • Supabase Auth handled in middleware; JWT placed in `Authorization` header for all fetches.  
-   • Query hooks map 1-to-1 to REST endpoints; TanStack Query caches & prefetches.  
-   • Mutations perform optimistic updates; on failure, rollback via query invalidation.  
-   • Background revalidation on window focus; stale times tuned per resource.  
-   • Soft-delete actions call DELETE endpoints and refresh corresponding lists.
+ • Supabase Auth handled in middleware; JWT placed in `Authorization` header for all fetches.  
+ • Query hooks map 1-to-1 to REST endpoints; TanStack Query caches & prefetches.  
+ • Mutations perform optimistic updates; on failure, rollback via query invalidation.  
+ • Background revalidation on window focus; stale times tuned per resource.  
+ • Soft-delete actions call DELETE endpoints and refresh corresponding lists.
 
 d. Responsiveness, Accessibility, Security  
-   • Tailwind mobile-first grid; breakpoints `sm–xl`.  
-   • Keyboard-navigable menus, ARIA labels, semantic headings.  
-   • Color tokens guarantee WCAG AA contrast.  
-   • Protected routes redirect unauth’d users; CSRF mitigated via JWT/HTTPS.  
-   • All forms include client + server validation messages.
+ • Tailwind mobile-first grid; breakpoints `sm–xl`.  
+ • Keyboard-navigable menus, ARIA labels, semantic headings.  
+ • Color tokens guarantee WCAG AA contrast.  
+ • Protected routes redirect unauth’d users; CSRF mitigated via JWT/HTTPS.  
+ • All forms include client + server validation messages.
 
 e. Unresolved Issues / Further Clarification Needed  
-   • Default layout preference (grid vs. list) not confirmed.  
-   • Final design of the tabbed Rich-Text/JSON editor (tooling and validation UX).  
-   • Details of soft-deleted item “Trash / Restore” flow.  
-   • Rate-limiting feedback UI for AI generation endpoint.  
-   • Choice between Zustand vs. pure React Context for small non-query UI state.
+ • Default layout preference (grid vs. list) not confirmed.  
+ • Final design of the tabbed Rich-Text/JSON editor (tooling and validation UX).  
+ • Details of soft-deleted item “Trash / Restore” flow.  
+ • Rate-limiting feedback UI for AI generation endpoint.  
+ • Choice between Zustand vs. pure React Context for small non-query UI state.
 
 </ui_architecture_planning_summary>
 
 <unresolved_issues>
-1. Confirm grid vs. list default and user preference persistence.  
-2. Decide on editor implementation for JSON vs. Rich-Text (e.g., Monaco, Markdown).  
-3. Define UX for restoring soft-deleted recipes/variants.  
-4. Establish visible rate-limit warnings for AI generation errors (429 or cost limits).  
+
+1. Confirm grid vs. list default and user preference persistence.
+2. Decide on editor implementation for JSON vs. Rich-Text (e.g., Monaco, Markdown).
+3. Define UX for restoring soft-deleted recipes/variants.
+4. Establish visible rate-limit warnings for AI generation errors (429 or cost limits).
 5. Clarify whether additional theming (dark mode) is required in MVP.
-</unresolved_issues>
+   </unresolved_issues>
 
 </conversation_summary>

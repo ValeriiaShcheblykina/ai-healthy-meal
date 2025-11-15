@@ -1,53 +1,58 @@
-import { useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { FormField } from './FormField'
-import { forgotPasswordSchema, type ForgotPasswordFormData } from '@/lib/validation/auth.validation'
-import type { ZodError } from 'zod'
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { FormField } from './FormField';
+import {
+  forgotPasswordSchema,
+  type ForgotPasswordFormData,
+} from '@/lib/validation/auth.validation';
+import type { ZodError } from 'zod';
 
 export function ForgotPasswordForm() {
   const [formData, setFormData] = useState<Partial<ForgotPasswordFormData>>({
     email: '',
-  })
-  const [errors, setErrors] = useState<Partial<Record<keyof ForgotPasswordFormData, string>>>({})
-  const [globalError, setGlobalError] = useState<string>('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [isSuccess, setIsSuccess] = useState(false)
+  });
+  const [errors, setErrors] = useState<
+    Partial<Record<keyof ForgotPasswordFormData, string>>
+  >({});
+  const [globalError, setGlobalError] = useState<string>('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleChange = (field: keyof ForgotPasswordFormData, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear field error on change
     if (errors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
     if (globalError) {
-      setGlobalError('')
+      setGlobalError('');
     }
-  }
+  };
 
   const handleBlur = (field: keyof ForgotPasswordFormData) => {
     // Validate single field on blur
-    const result = forgotPasswordSchema.shape[field].safeParse(formData[field])
-    
+    const result = forgotPasswordSchema.shape[field].safeParse(formData[field]);
+
     if (result.success) {
-      setErrors((prev) => ({ ...prev, [field]: undefined }))
+      setErrors((prev) => ({ ...prev, [field]: undefined }));
     } else {
-      const fieldError = result.error.issues[0]?.message
+      const fieldError = result.error.issues[0]?.message;
       if (fieldError) {
-        setErrors((prev) => ({ ...prev, [field]: fieldError }))
+        setErrors((prev) => ({ ...prev, [field]: fieldError }));
       }
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setGlobalError('')
-    setErrors({})
+    e.preventDefault();
+    setGlobalError('');
+    setErrors({});
 
     // Validate form
     try {
-      const validatedData = forgotPasswordSchema.parse(formData)
-      setIsLoading(true)
+      const validatedData = forgotPasswordSchema.parse(formData);
+      setIsLoading(true);
 
       // Call forgot password API
       const response = await fetch('/api/auth/forgot-password', {
@@ -56,46 +61,51 @@ export function ForgotPasswordForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(validatedData),
-      })
+      });
 
-      const data = await response.json()
+      const data = await response.json();
 
       if (!response.ok) {
-        setGlobalError(data.error?.message || 'Request failed. Please try again.')
-        setIsLoading(false)
-        return
+        setGlobalError(
+          data.error?.message || 'Request failed. Please try again.'
+        );
+        setIsLoading(false);
+        return;
       }
 
-      setIsLoading(false)
-      setIsSuccess(true)
+      setIsLoading(false);
+      setIsSuccess(true);
     } catch (error) {
-      setIsLoading(false)
+      setIsLoading(false);
       if (error instanceof Error && 'issues' in error) {
-        const zodError = error as ZodError
-        const fieldErrors: Partial<Record<keyof ForgotPasswordFormData, string>> = {}
+        const zodError = error as ZodError;
+        const fieldErrors: Partial<
+          Record<keyof ForgotPasswordFormData, string>
+        > = {};
         zodError.issues.forEach((issue) => {
-          const field = issue.path[0] as keyof ForgotPasswordFormData
+          const field = issue.path[0] as keyof ForgotPasswordFormData;
           if (field) {
-            fieldErrors[field] = issue.message
+            fieldErrors[field] = issue.message;
           }
-        })
-        setErrors(fieldErrors)
+        });
+        setErrors(fieldErrors);
       } else {
-        setGlobalError('An unexpected error occurred. Please try again.')
+        setGlobalError('An unexpected error occurred. Please try again.');
       }
     }
-  }
+  };
 
   if (isSuccess) {
     return (
       <div className="space-y-6">
         <div
-          className="bg-green-50 dark:bg-green-950 text-green-900 dark:text-green-100 px-4 py-3 rounded-md border border-green-200 dark:border-green-800"
+          className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-900 dark:border-green-800 dark:bg-green-950 dark:text-green-100"
           role="status"
         >
-          <h3 className="font-semibold mb-1">Check your email</h3>
+          <h3 className="mb-1 font-semibold">Check your email</h3>
           <p className="text-sm">
-            If an account exists with this email, you will receive password reset instructions.
+            If an account exists with this email, you will receive password
+            reset instructions.
           </p>
         </div>
 
@@ -103,14 +113,14 @@ export function ForgotPasswordForm() {
           <a href="/sign-in">Back to Sign In</a>
         </Button>
       </div>
-    )
+    );
   }
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {globalError && (
         <div
-          className="bg-destructive/10 text-destructive px-4 py-3 rounded-md border border-destructive/20"
+          className="bg-destructive/10 text-destructive border-destructive/20 rounded-md border px-4 py-3"
           role="alert"
         >
           {globalError}
@@ -118,8 +128,9 @@ export function ForgotPasswordForm() {
       )}
 
       <div className="space-y-2">
-        <p className="text-sm text-muted-foreground">
-          Enter your email address and we'll send you instructions to reset your password.
+        <p className="text-muted-foreground text-sm">
+          Enter your email address and we'll send you instructions to reset your
+          password.
         </p>
       </div>
 
@@ -142,14 +153,16 @@ export function ForgotPasswordForm() {
           {isLoading ? 'Sending...' : 'Send Reset Instructions'}
         </Button>
 
-        <p className="text-sm text-center text-muted-foreground">
+        <p className="text-muted-foreground text-center text-sm">
           Remember your password?{' '}
-          <a href="/sign-in" className="text-primary hover:underline font-medium">
+          <a
+            href="/sign-in"
+            className="text-primary font-medium hover:underline"
+          >
             Sign in
           </a>
         </p>
       </div>
     </form>
-  )
+  );
 }
-

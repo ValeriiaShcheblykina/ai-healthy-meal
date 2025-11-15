@@ -1,13 +1,13 @@
 ---
-import "../styles/global.css";
-import Header from "../components/Header.astro";
+import '../styles/global.css';
+import Header from '../components/Header.astro';
 
 interface Props {
   title?: string;
   showHeader?: boolean;
 }
 
-const { title = "AI Healthy Meal", showHeader = true } = Astro.props;
+const { title = 'AI Healthy Meal', showHeader = true } = Astro.props;
 ---
 
 <!doctype html>
@@ -18,7 +18,7 @@ const { title = "AI Healthy Meal", showHeader = true } = Astro.props;
     <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
-    
+
     <!-- Prevent flash of wrong theme -->
     <script is:inline>
       const getThemePreference = () => {
@@ -26,7 +26,9 @@ const { title = "AI Healthy Meal", showHeader = true } = Astro.props;
         if (stored) {
           return stored;
         }
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches
+          ? 'dark'
+          : 'light';
       };
 
       const theme = getThemePreference();

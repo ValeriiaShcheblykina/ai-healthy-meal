@@ -1,20 +1,25 @@
-import type { Database, Tables, TablesInsert, TablesUpdate, Json } from './db/database.types'
+import type {
+  Tables,
+  TablesInsert,
+  TablesUpdate,
+  Json,
+} from './db/database.types';
 
 // ============================================================================
 // Entity Types (convenience aliases from database)
 // ============================================================================
 
 /** Recipe entity from database */
-export type RecipeEntity = Tables<'recipes'>
+export type RecipeEntity = Tables<'recipes'>;
 
 /** Recipe variant entity from database */
-export type RecipeVariantEntity = Tables<'recipe_variants'>
+export type RecipeVariantEntity = Tables<'recipe_variants'>;
 
 /** Generation log entity from database */
-export type GenerationLogEntity = Tables<'generation_logs'>
+export type GenerationLogEntity = Tables<'generation_logs'>;
 
 /** User profile entity from database */
-export type UserProfileEntity = Tables<'user_profiles'>
+export type UserProfileEntity = Tables<'user_profiles'>;
 
 // ============================================================================
 // Common DTOs
@@ -22,20 +27,20 @@ export type UserProfileEntity = Tables<'user_profiles'>
 
 /** Pagination metadata for list responses */
 export type PaginationDTO = {
-  page: number
-  limit: number
-  total: number
-  total_pages: number
-}
+  page: number;
+  limit: number;
+  total: number;
+  total_pages: number;
+};
 
 /** Standard error response format */
 export type ErrorResponseDTO = {
   error: {
-    code: string
-    message: string
-    details?: Record<string, unknown>
-  }
-}
+    code: string;
+    message: string;
+    details?: Record<string, unknown>;
+  };
+};
 
 // ============================================================================
 // Recipe DTOs
@@ -45,27 +50,24 @@ export type ErrorResponseDTO = {
 export type RecipeListItemDTO = Omit<
   RecipeEntity,
   'content_tsv' | 'deleted_at' | 'user_id'
->
+>;
 
 /** Recipe list response with pagination */
 export type RecipeListResponseDTO = {
-  data: RecipeListItemDTO[]
-  pagination: PaginationDTO
-}
+  data: RecipeListItemDTO[];
+  pagination: PaginationDTO;
+};
 
 /** Recipe variant summary (minimal fields for nested display) */
 export type RecipeVariantSummaryDTO = Pick<
   RecipeVariantEntity,
   'id' | 'created_at' | 'model'
->
+>;
 
 /** Full recipe DTO with nested variants for GET /api/recipes/:id */
-export type RecipeDTO = Omit<
-  RecipeEntity,
-  'content_tsv' | 'deleted_at'
-> & {
-  variants: RecipeVariantSummaryDTO[]
-}
+export type RecipeDTO = Omit<RecipeEntity, 'content_tsv' | 'deleted_at'> & {
+  variants: RecipeVariantSummaryDTO[];
+};
 
 /** Command to create a new recipe (excludes server-managed fields) */
 export type CreateRecipeCommand = Pick<
@@ -73,9 +75,9 @@ export type CreateRecipeCommand = Pick<
   'title' | 'content' | 'content_json' | 'is_public'
 > & {
   // Ensure at least one content field is present (validated at runtime)
-  content?: string | null
-  content_json?: Json | null
-}
+  content?: string | null;
+  content_json?: Json | null;
+};
 
 /** Command to update an existing recipe (all fields optional except validation) */
 export type UpdateRecipeCommand = Partial<
@@ -85,28 +87,25 @@ export type UpdateRecipeCommand = Partial<
   >
 > & {
   // Ensure at least one content field is present if updating content (validated at runtime)
-  content?: string | null
-  content_json?: Json | null
-}
+  content?: string | null;
+  content_json?: Json | null;
+};
 
 // ============================================================================
 // Recipe Variant DTOs
 // ============================================================================
 
 /** Full recipe variant DTO (excludes soft-delete field) */
-export type RecipeVariantDTO = Omit<
-  RecipeVariantEntity,
-  'deleted_at'
->
+export type RecipeVariantDTO = Omit<RecipeVariantEntity, 'deleted_at'>;
 
 /** Recipe variant list item DTO (same as full DTO for now) */
-export type RecipeVariantListItemDTO = RecipeVariantDTO
+export type RecipeVariantListItemDTO = RecipeVariantDTO;
 
 /** Recipe variant list response with pagination */
 export type RecipeVariantListResponseDTO = {
-  data: RecipeVariantListItemDTO[]
-  pagination: PaginationDTO
-}
+  data: RecipeVariantListItemDTO[];
+  pagination: PaginationDTO;
+};
 
 /** Command to create a new recipe variant manually */
 export type CreateRecipeVariantCommand = Omit<
@@ -115,54 +114,54 @@ export type CreateRecipeVariantCommand = Omit<
 > & {
   // recipe_id comes from URL parameter
   // Ensure at least one output field is present (validated at runtime)
-  output_text?: string | null
-  output_json?: Json | null
-}
+  output_text?: string | null;
+  output_json?: Json | null;
+};
 
 /** Command to generate a new recipe variant using AI */
 export type GenerateRecipeVariantCommand = {
-  parent_variant_id?: string | null
-  model?: string | null
-  custom_prompt?: string | null
-  use_profile_preferences: boolean
+  parent_variant_id?: string | null;
+  model?: string | null;
+  custom_prompt?: string | null;
+  use_profile_preferences: boolean;
   // recipe_id comes from URL parameter
-}
+};
 
 /** Generated recipe variant response (includes all fields after AI generation) */
 export type GeneratedRecipeVariantDTO = RecipeVariantDTO & {
   // All fields are guaranteed to be present after successful generation
-  model: string
-  prompt: string
-  preferences_snapshot: Json
-}
+  model: string;
+  prompt: string;
+  preferences_snapshot: Json;
+};
 
 // ============================================================================
 // Generation Log DTOs
 // ============================================================================
 
 /** Generation log DTO (matches database entity exactly) */
-export type GenerationLogDTO = GenerationLogEntity
+export type GenerationLogDTO = GenerationLogEntity;
 
 /** Generation log list response with pagination */
 export type GenerationLogListResponseDTO = {
-  data: GenerationLogDTO[]
-  pagination: PaginationDTO
-}
+  data: GenerationLogDTO[];
+  pagination: PaginationDTO;
+};
 
 /** Weekly generation count for statistics */
 export type WeeklyGenerationCountDTO = {
-  week: string // Format: "YYYY-W##"
-  count: number
-}
+  week: string; // Format: "YYYY-W##"
+  count: number;
+};
 
 /** Generation statistics response */
 export type GenerationStatsDTO = {
-  total_generations: number
-  total_edits: number
-  total_deletes: number
-  period: 'week' | 'month' | 'year' | 'all'
-  generations_by_week: WeeklyGenerationCountDTO[]
-}
+  total_generations: number;
+  total_edits: number;
+  total_deletes: number;
+  period: 'week' | 'month' | 'year' | 'all';
+  generations_by_week: WeeklyGenerationCountDTO[];
+};
 
 // ============================================================================
 // User Profile DTOs
@@ -172,7 +171,7 @@ export type GenerationStatsDTO = {
 export type UpdateUserProfileCommand = Omit<
   TablesInsert<'user_profiles'>,
   'user_id' | 'created_at' | 'updated_at'
->
+>;
 
 /** Valid diet enum values from database constraints */
 export type DietType =
@@ -183,14 +182,14 @@ export type DietType =
   | 'keto'
   | 'paleo'
   | 'halal'
-  | 'kosher'
+  | 'kosher';
 
 // ============================================================================
 // Action Types (for generation logs)
 // ============================================================================
 
 /** Valid action types for generation logs */
-export type GenerationLogAction = 'generate' | 'edit' | 'delete'
+export type GenerationLogAction = 'generate' | 'edit' | 'delete';
 
 // ============================================================================
 // Query Parameter Types (for API endpoints)
@@ -198,37 +197,37 @@ export type GenerationLogAction = 'generate' | 'edit' | 'delete'
 
 /** Query parameters for recipe list endpoint */
 export type RecipeListQueryParams = {
-  page?: number
-  limit?: number
-  search?: string
-  sort?: 'created_at' | 'updated_at' | 'title'
-  order?: 'asc' | 'desc'
-}
+  page?: number;
+  limit?: number;
+  search?: string;
+  sort?: 'created_at' | 'updated_at' | 'title';
+  order?: 'asc' | 'desc';
+};
 
 /** Query parameters for recipe variant list endpoint */
 export type RecipeVariantListQueryParams = {
-  page?: number
-  limit?: number
-  sort?: 'created_at'
-  order?: 'asc' | 'desc'
-}
+  page?: number;
+  limit?: number;
+  sort?: 'created_at';
+  order?: 'asc' | 'desc';
+};
 
 /** Query parameters for generation log list endpoint */
 export type GenerationLogListQueryParams = {
-  page?: number
-  limit?: number
-  action?: GenerationLogAction
-  recipe_id?: string
-  variant_id?: string
-  start_date?: string // ISO 8601
-  end_date?: string // ISO 8601
-  sort?: 'created_at'
-  order?: 'asc' | 'desc'
-}
+  page?: number;
+  limit?: number;
+  action?: GenerationLogAction;
+  recipe_id?: string;
+  variant_id?: string;
+  start_date?: string; // ISO 8601
+  end_date?: string; // ISO 8601
+  sort?: 'created_at';
+  order?: 'asc' | 'desc';
+};
 
 /** Query parameters for generation statistics endpoint */
 export type GenerationStatsQueryParams = {
-  period?: 'week' | 'month' | 'year' | 'all'
-  start_date?: string // ISO 8601
-  end_date?: string // ISO 8601
-}
+  period?: 'week' | 'month' | 'year' | 'all';
+  start_date?: string; // ISO 8601
+  end_date?: string; // ISO 8601
+};

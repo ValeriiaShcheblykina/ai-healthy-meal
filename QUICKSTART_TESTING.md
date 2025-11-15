@@ -52,6 +52,7 @@ npm run test:e2e:headed
 ## What's Already Set Up? ✅
 
 ### Unit Testing (Vitest)
+
 - ✅ Configuration file (`vitest.config.ts`)
 - ✅ Test setup with jest-dom matchers
 - ✅ React Testing Library integration
@@ -60,6 +61,7 @@ npm run test:e2e:headed
 - ✅ Example test for auth validation
 
 ### E2E Testing (Playwright)
+
 - ✅ Configuration file (`playwright.config.ts`)
 - ✅ Page Object Model pattern
 - ✅ Base page with common methods
@@ -103,18 +105,19 @@ Create a test file next to the code you're testing:
 
 ```typescript
 // src/lib/utils.test.ts
-import { describe, it, expect } from "vitest";
-import { myFunction } from "./utils";
+import { describe, it, expect } from 'vitest';
+import { myFunction } from './utils';
 
-describe("myFunction", () => {
-  it("should do something", () => {
-    const result = myFunction("input");
-    expect(result).toBe("expected output");
+describe('myFunction', () => {
+  it('should do something', () => {
+    const result = myFunction('input');
+    expect(result).toBe('expected output');
   });
 });
 ```
 
 Run it:
+
 ```bash
 npm test
 ```
@@ -125,15 +128,16 @@ Create a new spec file in the `e2e/` directory:
 
 ```typescript
 // e2e/my-feature.spec.ts
-import { test, expect } from "@playwright/test";
+import { test, expect } from '@playwright/test';
 
-test("should navigate to homepage", async ({ page }) => {
-  await page.goto("/");
+test('should navigate to homepage', async ({ page }) => {
+  await page.goto('/');
   await expect(page).toHaveTitle(/AI Healthy Meal/);
 });
 ```
 
 Run it:
+
 ```bash
 npm run test:e2e
 ```
@@ -155,26 +159,26 @@ test("renders component", () => {
 ### Unit Test: With Mock
 
 ```typescript
-import { vi } from "vitest";
+import { vi } from 'vitest';
 
 const mockFn = vi.fn();
-mockFn.mockReturnValue("mocked value");
+mockFn.mockReturnValue('mocked value');
 
-test("calls mock function", () => {
+test('calls mock function', () => {
   myFunction(mockFn);
-  expect(mockFn).toHaveBeenCalledWith("expected arg");
+  expect(mockFn).toHaveBeenCalledWith('expected arg');
 });
 ```
 
 ### E2E Test: Using Page Object
 
 ```typescript
-import { SignInPage } from "./page-objects/SignInPage";
+import { SignInPage } from './page-objects/SignInPage';
 
-test("user can sign in", async ({ page }) => {
+test('user can sign in', async ({ page }) => {
   const signInPage = new SignInPage(page);
   await signInPage.goto();
-  await signInPage.signIn("test@example.com", "password");
+  await signInPage.signIn('test@example.com', 'password');
   await expect(page).toHaveURL(/\/recipes/);
 });
 ```
@@ -182,6 +186,7 @@ test("user can sign in", async ({ page }) => {
 ## Useful Commands
 
 ### Vitest
+
 ```bash
 npm test                    # Watch mode
 npm run test:unit          # Run once
@@ -190,6 +195,7 @@ npm run test:unit:coverage # Coverage report
 ```
 
 ### Playwright
+
 ```bash
 npm run test:e2e           # Run all tests
 npm run test:e2e:ui        # Visual debugger
@@ -198,6 +204,7 @@ npm run test:e2e:debug     # Debug mode
 ```
 
 ### Combined
+
 ```bash
 npm run test:all           # Run both unit and e2e
 ```
@@ -205,18 +212,23 @@ npm run test:all           # Run both unit and e2e
 ## Viewing Reports
 
 ### Unit Test Coverage
+
 After running `npm run test:unit:coverage`, open:
+
 ```
 coverage/index.html
 ```
 
 ### E2E Test Report
+
 After running `npm run test:e2e`, open:
+
 ```
 playwright-report/index.html
 ```
 
 Or view automatically:
+
 ```bash
 npx playwright show-report
 ```
@@ -241,12 +253,14 @@ npx playwright show-report
 ## Tips & Tricks
 
 ### Vitest
+
 - Press `t` in watch mode to filter tests
 - Press `p` to filter by filename
 - Press `a` to run all tests
 - Press `u` to update snapshots
 
 ### Playwright
+
 - Use `page.pause()` to pause execution
 - Use `--debug` flag for step-by-step debugging
 - Use trace viewer for failed tests: `npx playwright show-trace`
@@ -255,18 +269,21 @@ npx playwright show-report
 ## Troubleshooting
 
 ### Tests won't run
+
 - Check Node.js version: `node --version` (need 18+)
 - Reinstall dependencies: `npm install`
 
 ### Playwright browsers not found
+
 - Run: `npm run playwright:install`
 
 ### Module resolution errors
+
 - Check path aliases in `vitest.config.ts` match `tsconfig.json`
 
 ### Tests timeout
+
 - Increase timeout in test: `test("...", async () => {...}, 10000)`
 - Or in config files
 
 Happy Testing! 🎉
-

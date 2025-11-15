@@ -1,5 +1,5 @@
-import type { Page, Locator } from "@playwright/test";
-import { BasePage } from "./BasePage";
+import type { Page, Locator } from '@playwright/test';
+import { BasePage } from './BasePage';
 
 /**
  * Page Object for the Sign In page
@@ -16,19 +16,23 @@ export class SignInPage extends BasePage {
     super(page);
     this.emailInput = page.getByLabel(/email/i);
     // Use getByRole for password input to target the textbox specifically, not the button
-    this.passwordInput = page.getByRole("textbox", { name: /password/i });
-    this.signInButton = page.getByRole("button", { name: /sign in/i });
+    this.passwordInput = page.getByRole('textbox', { name: /password/i });
+    this.signInButton = page.getByRole('button', { name: /sign in/i });
     this.errorMessage = page.locator('[role="alert"]');
-    this.forgotPasswordLink = page.getByRole("link", { name: /forgot password/i });
+    this.forgotPasswordLink = page.getByRole('link', {
+      name: /forgot password/i,
+    });
     // Target the sign up link within the form, not in the header
-    this.signUpLink = page.locator("form").getByRole("link", { name: /sign up/i });
+    this.signUpLink = page
+      .locator('form')
+      .getByRole('link', { name: /sign up/i });
   }
 
   /**
    * Navigate to the sign in page
    */
   async goto() {
-    await super.goto("/sign-in");
+    await super.goto('/sign-in');
   }
 
   /**
@@ -68,4 +72,3 @@ export class SignInPage extends BasePage {
     await this.click(this.signUpLink);
   }
 }
-

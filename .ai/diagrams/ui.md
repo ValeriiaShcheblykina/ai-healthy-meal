@@ -130,7 +130,7 @@ flowchart TD
     ForgotPassword -->|showHeader: false| BaseLayout
     ResetPassword -->|showHeader: false| BaseLayout
     EmailConfirm -->|showHeader: false| BaseLayout
-    
+
     %% Routing - Strony chronione
     Recipes -->|showHeader: true<br/>requireAuth: true| BaseLayout
     Profile -->|showHeader: true<br/>requireAuth: true| BaseLayout
@@ -162,11 +162,11 @@ flowchart TD
     RecipesList --> PaginationCtrl
     RecipesList --> EmptyState
     RecipesList --> SkeletonLoader
-    
+
     RecipesToolbar --> SearchBar
     RecipesToolbar --> SortDropdown
     RecipesToolbar --> ViewToggle
-    
+
     RecipesGrid --> RecipeCard
     RecipesListItems --> RecipeListItem
 
@@ -217,7 +217,7 @@ flowchart TD
     ProfileUpdate --> AuthValidation
     PreferencesUpdate --> AuthValidation
     PasswordChange --> AuthValidation
-    
+
     RecipesAPI --> RecipeValidation
     RecipesAPI --> RecipeService
 
@@ -250,7 +250,7 @@ flowchart TD
     %% Warstwa danych
     Middleware ==>|zarządza sesjami| SupabaseAuth
     AuthGuard ==>|weryfikuje token| SupabaseAuth
-    
+
     AuthSignUp ==>|tworzy użytkownika| SupabaseAuth
     AuthSignIn ==>|loguje| SupabaseAuth
     AuthSignOut ==>|wylogowuje| SupabaseAuth
@@ -259,7 +259,7 @@ flowchart TD
     AuthVerify ==>|weryfikuje email| SupabaseAuth
     AuthMe ==>|pobiera dane| SupabaseAuth
     PasswordChange ==>|zmienia hasło| SupabaseAuth
-    
+
     ProfileUpdate ==>|aktualizuje| SupabaseDB
     PreferencesUpdate ==>|aktualizuje| SupabaseDB
     AccountDelete ==>|usuwa dane| SupabaseDB
@@ -270,7 +270,7 @@ flowchart TD
     classDef newComponent fill:#e8f5e9,stroke:#4caf50,stroke-width:3px
     classDef updatedComponent fill:#fff3e0,stroke:#ff9800,stroke-width:3px
     classDef existingComponent fill:#f5f5f5,stroke:#9e9e9e,stroke-width:1px
-    
+
     class SignUp,SignIn,ForgotPassword,ResetPassword,EmailConfirm,Profile newComponent
     class HeaderNav,UserMenu,SignOutBtn newComponent
     class SignUpForm,SignInForm,ForgotForm,ResetForm newComponent
@@ -279,10 +279,10 @@ flowchart TD
     class AuthVerify,AuthResend,AuthMe newComponent
     class ProfileUpdate,PasswordChange,AccountDelete,PreferencesUpdate newComponent
     class AuthValidation newComponent
-    
+
     class Landing,Recipes,BaseLayout updatedComponent
     class Middleware,ApiErrors updatedComponent
-    
+
     class RecipesList,RecipesToolbar,RecipesGrid,RecipesListItems existingComponent
     class RecipeCard,RecipeListItem,ViewToggle,SearchBar,SortDropdown existingComponent
     class PaginationCtrl,EmptyState,SkeletonLoader existingComponent
@@ -295,11 +295,13 @@ flowchart TD
 ## Legenda
 
 ### Kolory Komponentów
+
 - 🟢 **Zielony (NOWY)** - Nowe komponenty dodane dla funkcjonalności autentykacji
 - 🟠 **Pomarańczowy (ZAKTUALIZOWANY)** - Istniejące komponenty wymagające modyfikacji
 - ⚪ **Szary (ISTNIEJĄCY)** - Komponenty bez zmian, już zaimplementowane
 
 ### Typy Połączeń
+
 - **→** Strzałka ciągła - Hierarchia komponentów, zagnieżdżenie
 - **⇒** Gruba strzałka - Wywołania HTTP API
 - **⋯>** Przerywana strzałka - Wykorzystanie usług, zależności
@@ -323,6 +325,7 @@ flowchart TD
 ## Przepływ Danych
 
 ### Przepływ Autentykacji
+
 1. Użytkownik wypełnia formularz (SignUpForm/SignInForm)
 2. Komponent React waliduje dane po stronie klienta
 3. Wywołanie POST do odpowiedniego endpointu API
@@ -332,6 +335,7 @@ flowchart TD
 7. Strony sprawdzają stan autentykacji przez AuthGuard
 
 ### Przepływ Zarządzania Przepisami
+
 1. Użytkownik wchodzi na stronę /recipes (chronioną)
 2. AuthGuard weryfikuje autentykację
 3. RecipesList używa useRecipesQuery (TanStack Query)
@@ -342,6 +346,7 @@ flowchart TD
 8. Dane wracają przez warstwy do UI
 
 ### Zarządzanie Stanem
+
 - **Stan serwera** - TanStack Query (przepisy, dane użytkownika)
 - **Stan lokalny** - React hooks (useState, formularze)
 - **Stan persystentny** - useLocalStorage (tryb widoku)
@@ -356,6 +361,3 @@ flowchart TD
 4. **Walidacja Zod** - Walidacja po stronie klienta i serwera dla integralności danych
 5. **Row Level Security** - Bezpieczeństwo na poziomie bazy danych jako dodatkowa warstwa ochrony
 6. **TanStack Query** - Eleganckie zarządzanie stanem serwera z cache i optymistycznymi aktualizacjami
-
-
-

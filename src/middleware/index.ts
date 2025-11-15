@@ -1,50 +1,58 @@
-import { defineMiddleware } from 'astro:middleware'
-import { createSupabaseServerInstance } from '../db/supabase.client.ts'
+import { defineMiddleware } from 'astro:middleware';
+import { createSupabaseServerInstance } from '../db/supabase.client.ts';
 
 // Public paths that don't require authentication
-const PUBLIC_PATHS = ['/', '/sign-in', '/sign-up', '/forgot-password', '/reset-password', '/email-confirmation']
+const PUBLIC_PATHS = [
+  '/',
+  '/sign-in',
+  '/sign-up',
+  '/forgot-password',
+  '/reset-password',
+  '/email-confirmation',
+];
 
 function isPublicPath(pathname: string): boolean {
   // Check exact matches
   if (PUBLIC_PATHS.includes(pathname)) {
-    return true
+    return true;
   }
   // Allow all auth API endpoints
   if (pathname.startsWith('/api/auth/')) {
-    return true
+    return true;
   }
-  return false
+  return false;
 }
 
-export const onRequest = defineMiddleware(async ({ locals, cookies, url, request, redirect }, next) => {
-  // Create Supabase instance with proper cookie handling
-  const supabase = createSupabaseServerInstance({
-    cookies,
-    headers: request.headers,
-  })
-  
-  locals.supabase = supabase
+export const onRequest = defineMiddleware(
+  async ({ locals, cookies, url, request, redirect }, next) => {
+    // Create Supabase instance with proper cookie handling
+    const supabase = createSupabaseServerInstance({
+      cookies,
+      headers: request.headers,
+    });
 
-  // Skip auth check for public paths
-  if (isPublicPath(url.pathname)) {
-    return next()
-  }
+    locals.supabase = supabase;
 
-  // Get user session
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (user) {
-    locals.user = {
-      id: user.id,
-      email: user.email ?? '',
+    // Skip auth check for public paths
+    if (isPublicPath(url.pathname)) {
+      return next();
     }
-  } else {
-    // Redirect to sign-in for protected routes
-    return redirect('/sign-in')
+
+    // Get user session
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      locals.user = {
+        id: user.id,
+        email: user.email ?? '',
+      };
+    } else {
+      // Redirect to sign-in for protected routes
+      return redirect('/sign-in');
+    }
+
+    return next();
   }
-
-  return next()
-})
-
+);

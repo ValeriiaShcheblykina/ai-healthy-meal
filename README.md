@@ -16,6 +16,7 @@ HealthyMeal solves the challenge of customizing online recipes to match individu
 ## Tech Stack
 
 ### Frontend
+
 - [Astro](https://astro.build/) v5 - Fast, efficient web framework with minimal JavaScript
 - [React](https://react.dev/) v19 - Interactive UI components where needed
 - [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe development
@@ -23,19 +24,22 @@ HealthyMeal solves the challenge of customizing online recipes to match individu
 - [Shadcn/ui](https://ui.shadcn.com/) - Accessible React component library
 
 ### Backend
+
 - [Supabase](https://supabase.com/) - Complete backend solution providing:
-    - PostgreSQL database
-    - Backend-as-a-Service SDK
-    - Built-in user authentication
-    - Open-source and self-hostable
+  - PostgreSQL database
+  - Backend-as-a-Service SDK
+  - Built-in user authentication
+  - Open-source and self-hostable
 
 ### AI
+
 - [OpenRouter.ai](https://openrouter.ai/) - AI model integration providing:
-    - Access to multiple AI models (OpenAI, Anthropic, Google, and more)
-    - Cost-effective model selection
-    - API key financial limits
+  - Access to multiple AI models (OpenAI, Anthropic, Google, and more)
+  - Cost-effective model selection
+  - API key financial limits
 
 ### CI/CD & Hosting
+
 - GitHub Actions - CI/CD pipelines
 - DigitalOcean - Application hosting via Docker
 
@@ -95,16 +99,19 @@ npm run build
 ## Available Scripts
 
 ### Development
+
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 
 ### Code Quality
+
 - `npm run lint` - Run ESLint
 - `npm run lint:fix` - Fix ESLint issues
 - `npm run format` - Format code with Prettier
 
 ### Testing
+
 - `npm test` - Run unit tests in watch mode
 - `npm run test:unit` - Run all unit tests once
 - `npm run test:unit:coverage` - Run tests with coverage report
@@ -114,6 +121,7 @@ npm run build
 📖 **See [QUICKSTART_TESTING.md](./QUICKSTART_TESTING.md) for testing quick start guide**
 
 ### Database
+
 - `npm run supabase:start` - Start local Supabase instance
 - `npm run supabase:stop` - Stop local Supabase instance
 - `npm run supabase:status` - Check Supabase status
@@ -123,48 +131,50 @@ npm run build
 ```md
 .
 ├── src/
-│   ├── layouts/            # Astro layouts
-│   ├── pages/              # Astro pages
-│   │   └── api/            # API endpoints
-│   ├── middleware/         # Astro middleware
-│   ├── components/         # UI components (Astro & React)
-│   │   ├── auth/           # Authentication components
-│   │   ├── recipes/        # Recipe management components
-│   │   ├── ui/             # Shadcn/ui components
-│   │   └── hooks/          # React hooks
-│   ├── db/                 # Supabase clients and types
-│   ├── lib/                # Services and helpers
-│   │   ├── auth/           # Authentication utilities
-│   │   ├── services/       # Business logic services
-│   │   ├── validation/     # Input validation
-│   │   └── errors/         # Error handling
-│   ├── types.ts            # Shared types (Entities, DTOs)
-│   ├── assets/             # Static internal assets
-│   └── styles/             # Global styles
-├── test/                   # Unit test infrastructure
-│   ├── setup.ts            # Global test setup
-│   ├── helpers/            # Test helpers
-│   └── mocks/              # Mock implementations
-├── e2e/                    # End-to-end tests
-│   ├── page-objects/       # Page Object Model
-│   ├── fixtures/           # Test data
-│   └── helpers/            # E2E helpers
-├── public/                 # Public assets
-├── supabase/               # Supabase configuration
-│   └── migrations/         # Database migrations
-├── vitest.config.ts        # Vitest configuration
-└── playwright.config.ts    # Playwright configuration
+│ ├── layouts/ # Astro layouts
+│ ├── pages/ # Astro pages
+│ │ └── api/ # API endpoints
+│ ├── middleware/ # Astro middleware
+│ ├── components/ # UI components (Astro & React)
+│ │ ├── auth/ # Authentication components
+│ │ ├── recipes/ # Recipe management components
+│ │ ├── ui/ # Shadcn/ui components
+│ │ └── hooks/ # React hooks
+│ ├── db/ # Supabase clients and types
+│ ├── lib/ # Services and helpers
+│ │ ├── auth/ # Authentication utilities
+│ │ ├── services/ # Business logic services
+│ │ ├── validation/ # Input validation
+│ │ └── errors/ # Error handling
+│ ├── types.ts # Shared types (Entities, DTOs)
+│ ├── assets/ # Static internal assets
+│ └── styles/ # Global styles
+├── test/ # Unit test infrastructure
+│ ├── setup.ts # Global test setup
+│ ├── helpers/ # Test helpers
+│ └── mocks/ # Mock implementations
+├── e2e/ # End-to-end tests
+│ ├── page-objects/ # Page Object Model
+│ ├── fixtures/ # Test data
+│ └── helpers/ # E2E helpers
+├── public/ # Public assets
+├── supabase/ # Supabase configuration
+│ └── migrations/ # Database migrations
+├── vitest.config.ts # Vitest configuration
+└── playwright.config.ts # Playwright configuration
 ```
 
 ## MVP Scope
 
 ### Included Features ✅
+
 - Recipe CRUD operations (Create, Read, Update, Delete)
 - User authentication and account management
 - Dietary preferences profile management
 - AI-powered recipe modifications based on user preferences
 
 ### Out of Scope ❌
+
 - URL-based recipe import
 - Rich multimedia support (recipe photos)
 - Recipe sharing with other users
@@ -180,6 +190,7 @@ npm run build
 This project uses **Vitest** for unit testing and **Playwright** for end-to-end testing.
 
 ### Quick Start
+
 ```bash
 # Run unit tests
 npm test
@@ -189,11 +200,13 @@ npm run test:e2e
 ```
 
 ### Documentation
+
 - 📖 [QUICKSTART_TESTING.md](./QUICKSTART_TESTING.md) - Quick start guide
 - 📘 [README.testing.md](./README.testing.md) - Complete testing documentation
 - 📋 [.ai/test-plan.md](./.ai/test-plan.md) - Comprehensive test plan
 
 ### Test Structure
+
 - **Unit Tests**: Test individual functions and components in isolation
 - **E2E Tests**: Test complete user workflows using Page Object Model
 - **Coverage Target**: 80% for lines, functions, branches, and statements
@@ -201,6 +214,7 @@ npm run test:e2e
 ## Development Guidelines
 
 ### Coding Practices
+
 - Use feedback from linters to improve code quality
 - Prioritize error handling and edge cases at the beginning of functions
 - Use early returns for error conditions to avoid deeply nested if statements
@@ -209,6 +223,7 @@ npm run test:e2e
 - Use guard clauses to handle preconditions and invalid states early
 
 ### Testing Practices
+
 - Write tests alongside features (Test-Driven Development encouraged)
 - Use descriptive test names that explain expected behavior
 - Follow the Arrange-Act-Assert pattern in tests
@@ -218,6 +233,7 @@ npm run test:e2e
 ### AI Development Support
 
 This project is configured with AI development tools in `.cursor/rules/` directory to help with:
+
 - Project structure understanding
 - Coding best practices
 - Tech stack guidelines

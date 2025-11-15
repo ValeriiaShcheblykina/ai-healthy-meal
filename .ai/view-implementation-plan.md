@@ -3,6 +3,7 @@
 ## 1. Endpoint Overview
 
 The `GET /api/recipes` endpoint retrieves a paginated list of recipes owned by the authenticated user. It supports:
+
 - Pagination with configurable page size
 - Full-text search across recipe titles and content
 - Sorting by `created_at`, `updated_at`, or `title` in ascending or descending order
@@ -27,15 +28,18 @@ This endpoint is a read-only operation that leverages PostgreSQL's full-text sea
 ## 3. Used Types
 
 ### Request Types
+
 - `RecipeListQueryParams` - Query parameter validation (from `src/types.ts`)
 
 ### Response Types
+
 - `RecipeListResponseDTO` - Response structure with data and pagination (from `src/types.ts`)
 - `RecipeListItemDTO` - Individual recipe item in the list (from `src/types.ts`)
 - `PaginationDTO` - Pagination metadata (from `src/types.ts`)
 - `ErrorResponseDTO` - Standard error response format (from `src/types.ts`)
 
 ### Database Types
+
 - `RecipeEntity` - Full recipe entity from database (from `src/types.ts`)
 - `Tables<'recipes'>` - Database table type (from `src/db/database.types.ts`)
 
@@ -44,6 +48,7 @@ This endpoint is a read-only operation that leverages PostgreSQL's full-text sea
 ### Success Response (200 OK)
 
 **Structure:**
+
 ```json
 {
   "data": [
@@ -67,6 +72,7 @@ This endpoint is a read-only operation that leverages PostgreSQL's full-text sea
 ```
 
 **Notes:**
+
 - Response excludes internal fields: `content_tsv`, `deleted_at`, `user_id`
 - All timestamps are in ISO 8601 format
 - Empty result set returns `data: []` with `total: 0`
@@ -74,6 +80,7 @@ This endpoint is a read-only operation that leverages PostgreSQL's full-text sea
 ### Error Responses
 
 **401 Unauthorized:**
+
 ```json
 {
   "error": {
@@ -84,6 +91,7 @@ This endpoint is a read-only operation that leverages PostgreSQL's full-text sea
 ```
 
 **400 Bad Request:**
+
 ```json
 {
   "error": {
@@ -131,16 +139,19 @@ This endpoint is a read-only operation that leverages PostgreSQL's full-text sea
 ## 6. Security Considerations
 
 ### Authentication
+
 - **Mechanism:** JWT-based authentication via Supabase Auth
 - **Validation:** Token must be present in `Authorization: Bearer <token>` header
 - **Failure Handling:** Return `401 Unauthorized` if token is missing or invalid
 
 ### Authorization
+
 - **Database-Level Enforcement:** RLS policies automatically restrict access to user's own recipes
 - **Policy Applied:** `recipes_owner_all` policy ensures `user_id = auth.uid()` and `deleted_at IS NULL`
 - **Additional Safety:** API endpoint relies on RLS; no additional authorization checks needed for list operations
 
 ### Input Validation
+
 - **SQL Injection Prevention:** Use Supabase query builder (parameterized queries)
 - **Query Parameter Validation:**
   - `page`: Must be positive integer >= 1
@@ -150,10 +161,12 @@ This endpoint is a read-only operation that leverages PostgreSQL's full-text sea
   - `search`: Sanitize to prevent injection (Supabase handles this, but validate it's a string)
 
 ### Data Exposure
+
 - **Internal Fields:** Exclude `content_tsv`, `deleted_at`, `user_id` from response
 - **Soft-Deleted Records:** Automatically excluded via RLS policies and query filters
 
 ### Rate Limiting
+
 - Consider implementing rate limiting for this endpoint (not specified in MVP but recommended)
 - Potential abuse: Large `limit` values, excessive pagination requests
 
@@ -186,6 +199,7 @@ This endpoint is a read-only operation that leverages PostgreSQL's full-text sea
 ### Error Response Format
 
 All errors follow the standard `ErrorResponseDTO` format:
+
 ```json
 {
   "error": {
@@ -199,6 +213,7 @@ All errors follow the standard `ErrorResponseDTO` format:
 ```
 
 ### Error Logging Strategy
+
 - Log all errors with appropriate severity levels
 - Include request context (user ID, query parameters) but sanitize sensitive data
 - Use structured logging for easier debugging
@@ -353,4 +368,3 @@ src/
 - Soft-deleted recipes are automatically excluded via RLS and query filters
 - Full-text search uses PostgreSQL's `tsvector` with simple tokenizer for MVP (can be enhanced later)
 - Consider implementing cursor-based pagination for very large datasets in future iterations
-

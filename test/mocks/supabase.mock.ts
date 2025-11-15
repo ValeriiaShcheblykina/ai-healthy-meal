@@ -1,4 +1,4 @@
-import { vi } from "vitest";
+import { vi } from 'vitest';
 
 /**
  * Mock Supabase client for testing
@@ -55,4 +55,3 @@ export function createMockSupabaseClient() {
     })),
   };
 }
-

@@ -1,36 +1,35 @@
 ---
-import Layout from '@/layouts/Layout.astro'
-import { SignUpForm } from '@/components/auth/SignUpForm'
-import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user'
+import Layout from '@/layouts/Layout.astro';
+import { SignUpForm } from '@/components/auth/SignUpForm';
+import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user';
 
 // Force SSR for this page
-export const prerender = false
+export const prerender = false;
 
 // Redirect authenticated users to /recipes
-const user = getAuthenticatedUser(Astro)
+const user = getAuthenticatedUser(Astro);
 if (user) {
-  return Astro.redirect('/recipes')
+  return Astro.redirect('/recipes');
 }
 ---
 
 <Layout title="Sign Up - AI Healthy Meal">
-  <div class="min-h-screen flex items-center justify-center px-4 py-12">
+  <div class="flex min-h-screen items-center justify-center px-4 py-12">
     <div class="w-full max-w-sm">
-      <div class="text-center mb-8">
-        <h1 class="text-3xl font-bold mb-2">Create your account</h1>
+      <div class="mb-8 text-center">
+        <h1 class="mb-2 text-3xl font-bold">Create your account</h1>
         <p class="text-muted-foreground">
           Start building your healthy meal collection
         </p>
       </div>
 
-      <div class="bg-card border rounded-lg shadow-sm p-8">
+      <div class="bg-card rounded-lg border p-8 shadow-sm">
         <SignUpForm client:load />
       </div>
 
-      <p class="text-center text-sm text-muted-foreground mt-6">
+      <p class="text-muted-foreground mt-6 text-center text-sm">
         By signing up, you agree to our Terms of Service and Privacy Policy.
       </p>
     </div>
   </div>
 </Layout>
-

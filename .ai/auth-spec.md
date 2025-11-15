@@ -14,6 +14,7 @@
 ### 1.1 Overview
 
 The authentication UI will be implemented using a hybrid approach:
+
 - **Astro pages** (`.astro`) for server-side rendered authentication pages with forms
 - **React components** (`.tsx`) for interactive elements requiring client-side logic (validation feedback, loading states, password visibility toggles)
 - **Astro layouts** for consistent structure across authenticated and non-authenticated states
@@ -23,6 +24,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.2.1 Public Authentication Pages
 
 **Page: `/sign-up` (Sign Up)**
+
 - **File:** `src/pages/sign-up.astro`
 - **Purpose:** User registration page
 - **Layout:** Uses `Layout.astro` (public variant)
@@ -37,6 +39,7 @@ The authentication UI will be implemented using a hybrid approach:
   - Link to `/sign-in` for existing users
 
 **Page: `/sign-in` (Sign In)**
+
 - **File:** `src/pages/sign-in.astro`
 - **Purpose:** User login page
 - **Layout:** Uses `Layout.astro` (public variant)
@@ -51,6 +54,7 @@ The authentication UI will be implemented using a hybrid approach:
   - Link to `/forgot-password` for password recovery
 
 **Page: `/forgot-password` (Password Recovery Request)**
+
 - **File:** `src/pages/forgot-password.astro`
 - **Purpose:** Initiate password reset flow
 - **Layout:** Uses `Layout.astro` (public variant)
@@ -64,6 +68,7 @@ The authentication UI will be implemented using a hybrid approach:
   - Link back to `/sign-in`
 
 **Page: `/reset-password` (Password Reset Completion)**
+
 - **File:** `src/pages/reset-password.astro`
 - **Purpose:** Complete password reset with token from email
 - **Layout:** Uses `Layout.astro` (public variant)
@@ -77,6 +82,7 @@ The authentication UI will be implemented using a hybrid approach:
   - Token invalid → show error and link to `/forgot-password`
 
 **Page: `/email-confirmation` (Email Verification Status)**
+
 - **File:** `src/pages/email-confirmation.astro`
 - **Purpose:** Display email verification status and instructions
 - **Layout:** Uses `Layout.astro` (public variant)
@@ -90,6 +96,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.2.2 Protected Pages (Require Authentication)
 
 **Page: `/profile` (User Profile & Preferences)**
+
 - **File:** `src/pages/profile.astro`
 - **Purpose:** View and edit user profile, including dietary preferences
 - **Layout:** Uses `Layout.astro` (authenticated variant with header/navigation)
@@ -106,6 +113,7 @@ The authentication UI will be implemented using a hybrid approach:
   - Link back to `/recipes`
 
 **Existing Page: `/recipes` (Recipe List)**
+
 - **File:** `src/pages/recipes.astro` (already exists, needs header extension)
 - **Current State:** Already has authentication guard
 - **Changes Required:**
@@ -113,12 +121,14 @@ The authentication UI will be implemented using a hybrid approach:
   - No changes to authentication logic (already implemented)
 
 **Future Pages:**
+
 - `/recipes/[id]` - Recipe detail page (will require same authentication guard)
 - `/recipes/new` - Create new recipe (will require same authentication guard)
 
 #### 1.2.3 Public Landing Page
 
 **Page: `/` (Landing Page)**
+
 - **File:** `src/pages/index.astro` (already exists, needs updates)
 - **Current State:** Shows recipe list without authentication
 - **Changes Required:**
@@ -132,6 +142,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.3.1 Base Layout
 
 **Component: `Layout.astro`**
+
 - **File:** `src/layouts/Layout.astro` (already exists, needs extension)
 - **Current State:** Basic HTML structure with title prop
 - **Changes Required:**
@@ -142,6 +153,7 @@ The authentication UI will be implemented using a hybrid approach:
   - Pass authentication state to header component
 
 **Usage Example:**
+
 ```astro
 <Layout title="Sign In" showHeader={false}>
   <!-- Auth pages without header -->
@@ -155,6 +167,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.3.2 Header Navigation Component
 
 **Component: `Header.astro` (New)**
+
 - **File:** `src/components/Header.astro`
 - **Purpose:** Top navigation bar with authentication-aware UI
 - **Props:**
@@ -171,6 +184,7 @@ The authentication UI will be implemented using a hybrid approach:
   - `SignOutButton` (React component) - handles sign out action
 
 **Component: `UserMenu.tsx` (New)**
+
 - **File:** `src/components/auth/UserMenu.tsx`
 - **Type:** React component (client-side interactive)
 - **Purpose:** Dropdown menu for authenticated user actions
@@ -184,6 +198,7 @@ The authentication UI will be implemented using a hybrid approach:
   - Click outside to close
 
 **Component: `SignOutButton.tsx` (New)**
+
 - **File:** `src/components/auth/SignOutButton.tsx`
 - **Type:** React component (client-side interactive)
 - **Purpose:** Handle user sign out
@@ -198,6 +213,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.4.1 Sign Up Form
 
 **Component: `SignUpForm.tsx` (New)**
+
 - **File:** `src/components/auth/SignUpForm.tsx`
 - **Type:** React component (client-side interactive)
 - **Purpose:** User registration form with validation
@@ -248,6 +264,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.4.2 Sign In Form
 
 **Component: `SignInForm.tsx` (New)**
+
 - **File:** `src/components/auth/SignInForm.tsx`
 - **Type:** React component (client-side interactive)
 - **Purpose:** User login form with validation
@@ -289,6 +306,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.4.3 Forgot Password Form
 
 **Component: `ForgotPasswordForm.tsx` (New)**
+
 - **File:** `src/components/auth/ForgotPasswordForm.tsx`
 - **Type:** React component
 - **Purpose:** Request password reset email
@@ -316,6 +334,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.4.4 Reset Password Form
 
 **Component: `ResetPasswordForm.tsx` (New)**
+
 - **File:** `src/components/auth/ResetPasswordForm.tsx`
 - **Type:** React component
 - **Purpose:** Set new password with reset token
@@ -346,6 +365,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.4.5 Profile Form
 
 **Component: `ProfileForm.tsx` (New)**
+
 - **File:** `src/components/profile/ProfileForm.tsx`
 - **Type:** React component
 - **Purpose:** Edit user profile information
@@ -368,6 +388,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.4.6 Preferences Form
 
 **Component: `PreferencesForm.tsx` (New)**
+
 - **File:** `src/components/profile/PreferencesForm.tsx`
 - **Type:** React component
 - **Purpose:** Edit dietary preferences (crucial for MVP success criteria)
@@ -401,6 +422,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.4.7 Account Settings
 
 **Component: `AccountSettings.tsx` (New)**
+
 - **File:** `src/components/profile/AccountSettings.tsx`
 - **Type:** React component
 - **Purpose:** Security and account management
@@ -425,6 +447,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.5.1 Client-side Validation
 
 **Validation Library:** Zod (matches backend validation)
+
 - **Location:** `src/lib/validation/auth.validation.ts` (new file)
 - **Schemas:**
   - `signUpSchema` - email, password, displayName validation
@@ -435,6 +458,7 @@ The authentication UI will be implemented using a hybrid approach:
   - `updatePreferencesSchema` - diet, allergens, disliked_ingredients, calorie_target
 
 **Validation Timing:**
+
 - On blur (field loses focus) - for individual fields
 - On submit - for complete form validation
 - Real-time for password strength and confirmation matching
@@ -465,6 +489,7 @@ The authentication UI will be implemented using a hybrid approach:
 #### 1.5.3 Loading States
 
 **Loading Indicators:**
+
 - Form submit buttons: Change to "Processing..." or "Signing in..." with spinner
 - Disable form inputs during submission
 - Global loading overlay for page-level operations (sign out, redirect)
@@ -566,6 +591,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.1 Sign Up Endpoint
 
 **Endpoint:** `POST /api/auth/sign-up`
+
 - **File:** `src/pages/api/auth/sign-up.ts`
 - **Purpose:** Register new user account
 - **Authentication:** None required
@@ -597,11 +623,11 @@ All authentication endpoints will follow RESTful conventions and use server-side
   ```typescript
   {
     user: {
-      id: string
-      email: string
+      id: string;
+      email: string;
     }
-    emailConfirmationRequired: boolean
-    message: string
+    emailConfirmationRequired: boolean;
+    message: string;
   }
   ```
 - **Error Responses:**
@@ -622,6 +648,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.2 Sign In Endpoint
 
 **Endpoint:** `POST /api/auth/sign-in`
+
 - **File:** `src/pages/api/auth/sign-in.ts`
 - **Purpose:** Authenticate user and create session
 - **Authentication:** None required
@@ -647,11 +674,11 @@ All authentication endpoints will follow RESTful conventions and use server-side
   ```typescript
   {
     user: {
-      id: string
-      email: string
-      emailConfirmed: boolean
+      id: string;
+      email: string;
+      emailConfirmed: boolean;
     }
-    message: string
+    message: string;
   }
   ```
 - **Error Responses:**
@@ -667,6 +694,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.3 Sign Out Endpoint
 
 **Endpoint:** `POST /api/auth/sign-out`
+
 - **File:** `src/pages/api/auth/sign-out.ts`
 - **Purpose:** End user session
 - **Authentication:** Optional (can be called when session is expired)
@@ -678,7 +706,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 - **Response (Success - 200 OK):**
   ```typescript
   {
-    message: "Signed out successfully"
+    message: 'Signed out successfully';
   }
   ```
 - **Error Responses:**
@@ -687,13 +715,14 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.4 Forgot Password Endpoint
 
 **Endpoint:** `POST /api/auth/forgot-password`
+
 - **File:** `src/pages/api/auth/forgot-password.ts`
 - **Purpose:** Initiate password reset flow
 - **Authentication:** None required
 - **Request Body:**
   ```typescript
   {
-    email: string
+    email: string;
   }
   ```
 - **Validation:**
@@ -706,7 +735,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 - **Response (Success - 200 OK):**
   ```typescript
   {
-    message: "If an account exists with this email, you will receive password reset instructions"
+    message: 'If an account exists with this email, you will receive password reset instructions';
   }
   ```
 - **Error Responses:**
@@ -717,14 +746,15 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.5 Reset Password Endpoint
 
 **Endpoint:** `POST /api/auth/reset-password`
+
 - **File:** `src/pages/api/auth/reset-password.ts`
 - **Purpose:** Complete password reset with token
 - **Authentication:** None required (token-based)
 - **Request Body:**
   ```typescript
   {
-    token: string  // from email link
-    password: string
+    token: string; // from email link
+    password: string;
   }
   ```
 - **Validation:**
@@ -738,7 +768,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 - **Response (Success - 200 OK):**
   ```typescript
   {
-    message: "Password reset successfully"
+    message: 'Password reset successfully';
   }
   ```
 - **Error Responses:**
@@ -749,14 +779,15 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.6 Verify Email Endpoint
 
 **Endpoint:** `GET /api/auth/verify-email`
+
 - **File:** `src/pages/api/auth/verify-email.ts`
 - **Purpose:** Handle email verification callback
 - **Authentication:** None required (token-based)
 - **Query Parameters:**
   ```typescript
   {
-    token: string
-    type: "signup" | "email_change"
+    token: string;
+    type: 'signup' | 'email_change';
   }
   ```
 - **Business Logic:**
@@ -776,13 +807,14 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.7 Resend Verification Email Endpoint
 
 **Endpoint:** `POST /api/auth/resend-verification`
+
 - **File:** `src/pages/api/auth/resend-verification.ts`
 - **Purpose:** Resend email verification
 - **Authentication:** Optional (can be used by anonymous users who just signed up)
 - **Request Body:**
   ```typescript
   {
-    email: string
+    email: string;
   }
   ```
 - **Business Logic:**
@@ -792,7 +824,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 - **Response (Success - 200 OK):**
   ```typescript
   {
-    message: "Verification email sent"
+    message: 'Verification email sent';
   }
   ```
 - **Error Responses:**
@@ -801,6 +833,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.8 Get Current User Endpoint
 
 **Endpoint:** `GET /api/auth/me`
+
 - **File:** `src/pages/api/auth/me.ts`
 - **Purpose:** Get current authenticated user's information
 - **Authentication:** Required (session cookie or Bearer token)
@@ -837,6 +870,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.9 Update Profile Endpoint
 
 **Endpoint:** `PATCH /api/auth/profile`
+
 - **File:** `src/pages/api/auth/profile.ts`
 - **Purpose:** Update user profile information (display name)
 - **Authentication:** Required
@@ -857,10 +891,10 @@ All authentication endpoints will follow RESTful conventions and use server-side
   ```typescript
   {
     profile: {
-      displayName: string | null
-      updatedAt: string
+      displayName: string | null;
+      updatedAt: string;
     }
-    message: "Profile updated successfully"
+    message: 'Profile updated successfully';
   }
   ```
 - **Error Responses:**
@@ -871,6 +905,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.10 Update Preferences Endpoint
 
 **Endpoint:** `PATCH /api/profile/preferences`
+
 - **File:** `src/pages/api/profile/preferences.ts`
 - **Purpose:** Update dietary preferences (critical for MVP)
 - **Authentication:** Required
@@ -913,14 +948,15 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.11 Change Password Endpoint
 
 **Endpoint:** `POST /api/auth/change-password`
+
 - **File:** `src/pages/api/auth/change-password.ts`
 - **Purpose:** Change password for authenticated user
 - **Authentication:** Required
 - **Request Body:**
   ```typescript
   {
-    currentPassword: string
-    newPassword: string
+    currentPassword: string;
+    newPassword: string;
   }
   ```
 - **Validation:**
@@ -935,7 +971,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 - **Response (Success - 200 OK):**
   ```typescript
   {
-    message: "Password changed successfully"
+    message: 'Password changed successfully';
   }
   ```
 - **Error Responses:**
@@ -946,14 +982,15 @@ All authentication endpoints will follow RESTful conventions and use server-side
 #### 2.1.12 Delete Account Endpoint
 
 **Endpoint:** `DELETE /api/auth/account`
+
 - **File:** `src/pages/api/auth/account.ts`
 - **Purpose:** Delete user account and all associated data
 - **Authentication:** Required
 - **Request Body:**
   ```typescript
   {
-    password: string  // confirmation
-    confirmation: "DELETE MY ACCOUNT"
+    password: string; // confirmation
+    confirmation: 'DELETE MY ACCOUNT';
   }
   ```
 - **Business Logic:**
@@ -968,7 +1005,7 @@ All authentication endpoints will follow RESTful conventions and use server-side
 - **Response (Success - 200 OK):**
   ```typescript
   {
-    message: "Account deleted successfully"
+    message: 'Account deleted successfully';
   }
   ```
 - **Error Responses:**
@@ -989,80 +1026,77 @@ All authentication endpoints will follow RESTful conventions and use server-side
 
 /** Sign up request payload */
 export type SignUpCommand = {
-  email: string
-  password: string
-  displayName?: string
-}
+  email: string;
+  password: string;
+  displayName?: string;
+};
 
 /** Sign up response */
 export type SignUpResponseDTO = {
   user: {
-    id: string
-    email: string
-  }
-  emailConfirmationRequired: boolean
-  message: string
-}
+    id: string;
+    email: string;
+  };
+  emailConfirmationRequired: boolean;
+  message: string;
+};
 
 /** Sign in request payload */
 export type SignInCommand = {
-  email: string
-  password: string
-  rememberMe?: boolean
-}
+  email: string;
+  password: string;
+  rememberMe?: boolean;
+};
 
 /** Sign in response */
 export type SignInResponseDTO = {
   user: {
-    id: string
-    email: string
-    emailConfirmed: boolean
-  }
-  message: string
-}
+    id: string;
+    email: string;
+    emailConfirmed: boolean;
+  };
+  message: string;
+};
 
 /** Forgot password request */
 export type ForgotPasswordCommand = {
-  email: string
-}
+  email: string;
+};
 
 /** Reset password request */
 export type ResetPasswordCommand = {
-  token: string
-  password: string
-}
+  token: string;
+  password: string;
+};
 
 /** Change password request */
 export type ChangePasswordCommand = {
-  currentPassword: string
-  newPassword: string
-}
+  currentPassword: string;
+  newPassword: string;
+};
 
 /** Resend verification email request */
 export type ResendVerificationCommand = {
-  email: string
-}
+  email: string;
+};
 
 /** Current user response (extends UserProfileEntity) */
 export type CurrentUserDTO = {
-  id: string
-  email: string
-  emailConfirmed: boolean
-  profile: UserProfileDTO | null
-}
+  id: string;
+  email: string;
+  emailConfirmed: boolean;
+  profile: UserProfileDTO | null;
+};
 
 /** User profile DTO */
-export type UserProfileDTO = Omit<
-  UserProfileEntity,
-  'user_id'
-> & {
-  hasCompletedPreferences: boolean  // computed: checks if diet/allergens/etc set
-}
+export type UserProfileDTO = Omit<UserProfileEntity, 'user_id'> & {
+  hasCompletedPreferences: boolean; // computed: checks if diet/allergens/etc set
+};
 
 /** Update profile command */
 export type UpdateProfileCommand = {
-  displayName?: string | null
-}
+  displayName?: string | null;
+};
 
 /** Update preferences command (already exists as UpdateUserProfileCommand, but make it partial) */
 export type UpdatePreferencesCommand = Partial<
@@ -1070,23 +1104,24 @@ export type UpdatePreferencesCommand = Partial<
     UserProfileEntity,
     'diet' | 'allergens' | 'disliked_ingredients' | 'calorie_target'
   >
->
+>;
 
 /** Delete account command */
 export type DeleteAccountCommand = {
-  password: string
-  confirmation: string
-}
+  password: string;
+  confirmation: string;
+};
 
 /** Generic success response */
 export type SuccessResponseDTO = {
-  message: string
-}
+  message: string;
+};
 ```
 
 #### 2.2.2 Extended User Profile Model
 
 The existing `user_profiles` table schema (from migration) already supports all required fields:
+
 - `display_name` - user's chosen display name
 - `diet` - dietary preference enum
 - `allergens` - array of allergen strings
@@ -1103,7 +1138,7 @@ The existing `user_profiles` table schema (from migration) already supports all 
 **File:** `src/lib/validation/auth.validation.ts` (new file)
 
 ```typescript
-import { z } from 'zod'
+import { z } from 'zod';
 
 // Password validation: min 8 chars, at least one number, one uppercase, one lowercase
 const passwordSchema = z
@@ -1111,54 +1146,51 @@ const passwordSchema = z
   .min(8, 'Password must be at least 8 characters')
   .regex(/[0-9]/, 'Password must contain at least one number')
   .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter');
 
 // Email validation
-const emailSchema = z
-  .string()
-  .email('Please enter a valid email address')
+const emailSchema = z.string().email('Please enter a valid email address');
 
 // Sign up payload validation
 export const signUpPayloadSchema = z.object({
   email: emailSchema,
   password: passwordSchema,
   displayName: z.string().max(100).optional(),
-})
+});
 
 // Sign in payload validation
 export const signInPayloadSchema = z.object({
   email: emailSchema,
   password: z.string().min(1, 'Password is required'),
   rememberMe: z.boolean().optional(),
-})
+});
 
 // Forgot password payload validation
 export const forgotPasswordPayloadSchema = z.object({
   email: emailSchema,
-})
+});
 
 // Reset password payload validation
 export const resetPasswordPayloadSchema = z.object({
   token: z.string().min(1, 'Reset token is required'),
   password: passwordSchema,
-})
+});
 
 // Change password payload validation
-export const changePasswordPayloadSchema = z.object({
-  currentPassword: z.string().min(1, 'Current password is required'),
-  newPassword: passwordSchema,
-}).refine(
-  (data) => data.currentPassword !== data.newPassword,
-  {
+export const changePasswordPayloadSchema = z
+  .object({
+    currentPassword: z.string().min(1, 'Current password is required'),
+    newPassword: passwordSchema,
+  })
+  .refine((data) => data.currentPassword !== data.newPassword, {
     message: 'New password must be different from current password',
     path: ['newPassword'],
-  }
-)
+  });
 
 // Update profile payload validation
 export const updateProfilePayloadSchema = z.object({
   displayName: z.string().max(100).nullable().optional(),
-})
+});
 
 // Diet type enum validation
 export const dietTypeSchema = z.enum([
@@ -1170,7 +1202,7 @@ export const dietTypeSchema = z.enum([
   'paleo',
   'halal',
   'kosher',
-])
+]);
 
 // Update preferences payload validation
 export const updatePreferencesPayloadSchema = z.object({
@@ -1178,7 +1210,7 @@ export const updatePreferencesPayloadSchema = z.object({
   allergens: z.array(z.string().max(50)).optional(),
   disliked_ingredients: z.array(z.string().max(100)).optional(),
   calorie_target: z.number().int().positive().nullable().optional(),
-})
+});
 
 // Delete account payload validation
 export const deleteAccountPayloadSchema = z.object({
@@ -1186,7 +1218,7 @@ export const deleteAccountPayloadSchema = z.object({
   confirmation: z.literal('DELETE MY ACCOUNT', {
     errorMap: () => ({ message: 'Please type "DELETE MY ACCOUNT" to confirm' }),
   }),
-})
+});
 
 // Validation helper function
 export function validatePayload<T>(
@@ -1194,16 +1226,16 @@ export function validatePayload<T>(
   data: unknown
 ): { success: true; data: T } | { success: false; error: ApiError } {
   try {
-    const validated = schema.parse(data)
-    return { success: true, data: validated }
+    const validated = schema.parse(data);
+    return { success: true, data: validated };
   } catch (error) {
     if (error instanceof z.ZodError) {
       return {
         success: false,
         error: createValidationError('Validation failed', error.errors),
-      }
+      };
     }
-    throw error
+    throw error;
   }
 }
 ```
@@ -1211,17 +1243,19 @@ export function validatePayload<T>(
 #### 2.3.2 Validation Integration
 
 Each API endpoint will:
+
 1. Accept raw request body
 2. Call `validatePayload()` with appropriate schema
 3. If validation fails → return 400 Bad Request with error details
 4. If validation succeeds → proceed with business logic
 
 **Example usage:**
+
 ```typescript
 // In sign-up endpoint
-const result = validatePayload(signUpPayloadSchema, requestBody)
+const result = validatePayload(signUpPayloadSchema, requestBody);
 if (!result.success) {
-  return createApiErrorResponse(result.error)
+  return createApiErrorResponse(result.error);
 }
 // Use result.data (now type-safe and validated)
 ```
@@ -1249,7 +1283,7 @@ export type ErrorCode =
   | 'EXPIRED_TOKEN'
   | 'RATE_LIMIT_EXCEEDED'
   | 'WEAK_PASSWORD'
-  | 'ACCOUNT_LOCKED'
+  | 'ACCOUNT_LOCKED';
 
 // New error factory functions
 export function createEmailExistsError(): ApiError {
@@ -1257,15 +1291,11 @@ export function createEmailExistsError(): ApiError {
     409,
     'EMAIL_EXISTS',
     'An account with this email already exists'
-  )
+  );
 }
 
 export function createInvalidCredentialsError(): ApiError {
-  return new ApiError(
-    401,
-    'INVALID_CREDENTIALS',
-    'Invalid email or password'
-  )
+  return new ApiError(401, 'INVALID_CREDENTIALS', 'Invalid email or password');
 }
 
 export function createEmailNotConfirmedError(): ApiError {
@@ -1273,7 +1303,7 @@ export function createEmailNotConfirmedError(): ApiError {
     403,
     'EMAIL_NOT_CONFIRMED',
     'Please verify your email address before signing in'
-  )
+  );
 }
 
 export function createInvalidTokenError(): ApiError {
@@ -1281,7 +1311,7 @@ export function createInvalidTokenError(): ApiError {
     401,
     'INVALID_TOKEN',
     'The provided token is invalid or has expired'
-  )
+  );
 }
 
 export function createRateLimitError(retryAfter?: number): ApiError {
@@ -1290,7 +1320,7 @@ export function createRateLimitError(retryAfter?: number): ApiError {
     'RATE_LIMIT_EXCEEDED',
     'Too many requests. Please try again later',
     { retryAfter }
-  )
+  );
 }
 ```
 
@@ -1299,7 +1329,7 @@ export function createRateLimitError(retryAfter?: number): ApiError {
 **File:** `src/lib/errors/supabase-error-mapper.ts` (new file)
 
 ```typescript
-import { AuthError } from '@supabase/supabase-js'
+import { AuthError } from '@supabase/supabase-js';
 import {
   ApiError,
   createEmailExistsError,
@@ -1307,7 +1337,7 @@ import {
   createEmailNotConfirmedError,
   createInvalidTokenError,
   createRateLimitError,
-} from './api-errors'
+} from './api-errors';
 
 /**
  * Maps Supabase Auth errors to application ApiError instances
@@ -1316,29 +1346,29 @@ export function mapSupabaseAuthError(error: AuthError): ApiError {
   // Supabase error codes and their mappings
   switch (error.message) {
     case 'User already registered':
-      return createEmailExistsError()
-    
+      return createEmailExistsError();
+
     case 'Invalid login credentials':
-      return createInvalidCredentialsError()
-    
+      return createInvalidCredentialsError();
+
     case 'Email not confirmed':
-      return createEmailNotConfirmedError()
-    
+      return createEmailNotConfirmedError();
+
     case 'Token has expired':
     case 'Invalid token':
-      return createInvalidTokenError()
-    
+      return createInvalidTokenError();
+
     case 'Email rate limit exceeded':
-      return createRateLimitError(3600) // 1 hour in seconds
-    
+      return createRateLimitError(3600); // 1 hour in seconds
+
     default:
       // Log unexpected error for monitoring
-      console.error('Unexpected Supabase auth error:', error)
+      console.error('Unexpected Supabase auth error:', error);
       return new ApiError(
         500,
         'INTERNAL_ERROR',
         'An unexpected error occurred'
-      )
+      );
   }
 }
 
@@ -1348,17 +1378,21 @@ export function mapSupabaseAuthError(error: AuthError): ApiError {
 export async function executeSupabaseAuth<T>(
   operation: () => Promise<{ data: T | null; error: AuthError | null }>
 ): Promise<T> {
-  const { data, error } = await operation()
-  
+  const { data, error } = await operation();
+
   if (error) {
-    throw mapSupabaseAuthError(error)
+    throw mapSupabaseAuthError(error);
   }
-  
+
   if (!data) {
-    throw new ApiError(500, 'INTERNAL_ERROR', 'No data returned from authentication')
+    throw new ApiError(
+      500,
+      'INTERNAL_ERROR',
+      'No data returned from authentication'
+    );
   }
-  
-  return data
+
+  return data;
 }
 ```
 
@@ -1374,24 +1408,24 @@ export const POST: APIRoute = async (context) => {
     if (!validation.success) {
       return createApiErrorResponse(validation.error)
     }
-    
+
     // 2. Execute business logic (with Supabase error mapping)
     const result = await executeSupabaseAuth(
       () => context.locals.supabase.auth.signUp(...)
     )
-    
+
     // 3. Return success response
     return new Response(JSON.stringify(result), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     })
-    
+
   } catch (error) {
     // 4. Handle errors
     if (error instanceof ApiError) {
       return createApiErrorResponse(error)
     }
-    
+
     // Unexpected errors
     console.error('Unexpected error:', error)
     return createApiErrorResponse(
@@ -1408,6 +1442,7 @@ export const POST: APIRoute = async (context) => {
 **File:** `src/middleware/index.ts` (update existing file)
 
 Current middleware only adds Supabase client to context. Need to enhance it to:
+
 1. Check for session cookie on every request
 2. Validate session and attach user to context
 3. Handle session refresh if needed
@@ -1415,28 +1450,28 @@ Current middleware only adds Supabase client to context. Need to enhance it to:
 **Updated middleware:**
 
 ```typescript
-import { defineMiddleware } from 'astro:middleware'
-import { supabaseClient } from '../db/supabase.client'
+import { defineMiddleware } from 'astro:middleware';
+import { supabaseClient } from '../db/supabase.client';
 
 export const onRequest = defineMiddleware(async (context, next) => {
   // Add Supabase client to context
-  context.locals.supabase = supabaseClient
-  
+  context.locals.supabase = supabaseClient;
+
   // Check for session cookie
-  const accessToken = context.cookies.get('sb-access-token')?.value
-  const refreshToken = context.cookies.get('sb-refresh-token')?.value
-  
+  const accessToken = context.cookies.get('sb-access-token')?.value;
+  const refreshToken = context.cookies.get('sb-refresh-token')?.value;
+
   if (accessToken && refreshToken) {
     // Set session in Supabase client
     const { data, error } = await supabaseClient.auth.setSession({
       access_token: accessToken,
       refresh_token: refreshToken,
-    })
-    
+    });
+
     if (error) {
       // Invalid session - clear cookies
-      context.cookies.delete('sb-access-token')
-      context.cookies.delete('sb-refresh-token')
+      context.cookies.delete('sb-access-token');
+      context.cookies.delete('sb-refresh-token');
     } else if (data.session) {
       // Valid session - refresh cookies if renewed
       if (data.session.access_token !== accessToken) {
@@ -1446,9 +1481,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
           secure: import.meta.env.PROD,
           sameSite: 'lax',
           maxAge: 60 * 60 * 24 * 7, // 7 days
-        })
+        });
       }
-      
+
       if (data.session.refresh_token !== refreshToken) {
         context.cookies.set('sb-refresh-token', data.session.refresh_token, {
           path: '/',
@@ -1456,13 +1491,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
           secure: import.meta.env.PROD,
           sameSite: 'lax',
           maxAge: 60 * 60 * 24 * 30, // 30 days
-        })
+        });
       }
     }
   }
-  
-  return next()
-})
+
+  return next();
+});
 ```
 
 #### 2.5.2 Protected Page Pattern
@@ -1473,16 +1508,16 @@ Current implementation is correct. Pages using this helper should follow this pa
 
 ```astro
 ---
-import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user'
+import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user';
 
-export const prerender = false // Force SSR
+export const prerender = false; // Force SSR
 
-const user = await getAuthenticatedUser(Astro)
+const user = await getAuthenticatedUser(Astro);
 
 if (!user) {
   // Store current URL for post-login redirect
-  const redirectTo = Astro.url.pathname + Astro.url.search
-  return Astro.redirect(`/sign-in?redirect=${encodeURIComponent(redirectTo)}`)
+  const redirectTo = Astro.url.pathname + Astro.url.search;
+  return Astro.redirect(`/sign-in?redirect=${encodeURIComponent(redirectTo)}`);
 }
 
 // Continue with page rendering - user is authenticated
@@ -1499,27 +1534,27 @@ Pass authentication state to layout:
 
 ```astro
 ---
-import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user'
-import Header from '@/components/Header.astro'
+import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user';
+import Header from '@/components/Header.astro';
 
 interface Props {
-  title?: string
-  showHeader?: boolean
-  requireAuth?: boolean
+  title?: string;
+  showHeader?: boolean;
+  requireAuth?: boolean;
 }
 
 const {
-  title = "AI Healthy Meal",
+  title = 'AI Healthy Meal',
   showHeader = true,
   requireAuth = false,
-} = Astro.props
+} = Astro.props;
 
-export const prerender = false
+export const prerender = false;
 
-const user = await getAuthenticatedUser(Astro)
+const user = await getAuthenticatedUser(Astro);
 
 if (requireAuth && !user) {
-  return Astro.redirect('/sign-in')
+  return Astro.redirect('/sign-in');
 }
 ---
 
@@ -1555,7 +1590,7 @@ context.cookies.set('sb-access-token', session.access_token, {
   secure: import.meta.env.PROD, // HTTPS only in production
   sameSite: 'lax',
   maxAge: 60 * 60 * 24 * 7, // 7 days
-})
+});
 
 // Refresh token cookie
 context.cookies.set('sb-refresh-token', session.refresh_token, {
@@ -1564,14 +1599,14 @@ context.cookies.set('sb-refresh-token', session.refresh_token, {
   secure: import.meta.env.PROD,
   sameSite: 'lax',
   maxAge: 60 * 60 * 24 * 30, // 30 days
-})
+});
 ```
 
 **Cookie Clearing (Sign Out):**
 
 ```typescript
-context.cookies.delete('sb-access-token', { path: '/' })
-context.cookies.delete('sb-refresh-token', { path: '/' })
+context.cookies.delete('sb-access-token', { path: '/' });
+context.cookies.delete('sb-refresh-token', { path: '/' });
 ```
 
 #### 2.5.5 Configuration in astro.config.mjs
@@ -1579,6 +1614,7 @@ context.cookies.delete('sb-refresh-token', { path: '/' })
 **File:** `astro.config.mjs` (already configured correctly)
 
 Current configuration is correct:
+
 - `output: "server"` - enables SSR for all pages by default
 - `adapter: node({ mode: "standalone" })` - Node.js adapter for deployment
 - Pages can opt-out with `export const prerender = true`
@@ -1594,6 +1630,7 @@ Current configuration is correct:
 #### 3.1.1 Authentication Flow Overview
 
 **Supabase Auth** provides comprehensive authentication services:
+
 - User registration and login
 - Email verification
 - Password reset
@@ -1627,6 +1664,7 @@ Current configuration is correct:
 Supabase Auth provides email/password authentication out of the box:
 
 1. **User Registration:**
+
    ```typescript
    const { data, error } = await supabase.auth.signUp({
      email: 'user@example.com',
@@ -1637,27 +1675,30 @@ Supabase Auth provides email/password authentication out of the box:
        },
        emailRedirectTo: 'https://app.example.com/verify-email',
      },
-   })
+   });
    ```
 
 2. **User Login:**
+
    ```typescript
    const { data, error } = await supabase.auth.signInWithPassword({
      email: 'user@example.com',
      password: 'secure-password',
-   })
+   });
    ```
 
 3. **User Logout:**
+
    ```typescript
-   const { error } = await supabase.auth.signOut()
+   const { error } = await supabase.auth.signOut();
    ```
 
 4. **Get Current User:**
+
    ```typescript
-   const { data, error } = await supabase.auth.getUser()
+   const { data, error } = await supabase.auth.getUser();
    // or with token
-   const { data, error } = await supabase.auth.getUser(token)
+   const { data, error } = await supabase.auth.getUser(token);
    ```
 
 5. **Session Management:**
@@ -1665,7 +1706,7 @@ Supabase Auth provides email/password authentication out of the box:
    const { data, error } = await supabase.auth.setSession({
      access_token: 'token',
      refresh_token: 'refresh-token',
-   })
+   });
    ```
 
 #### 3.1.3 Email Verification Configuration
@@ -1701,12 +1742,9 @@ Supabase Auth provides email/password authentication out of the box:
 **Reset Password Request:**
 
 ```typescript
-const { data, error } = await supabase.auth.resetPasswordForEmail(
-  email,
-  {
-    redirectTo: 'https://app.example.com/reset-password',
-  }
-)
+const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+  redirectTo: 'https://app.example.com/reset-password',
+});
 ```
 
 **Reset Password Completion:**
@@ -1716,12 +1754,12 @@ const { data, error } = await supabase.auth.resetPasswordForEmail(
 const { data, error } = await supabase.auth.verifyOtp({
   token: resetToken,
   type: 'recovery',
-})
+});
 
 // Update password
 const { data, error } = await supabase.auth.updateUser({
   password: newPassword,
-})
+});
 ```
 
 **Flow Diagram:**
@@ -1746,10 +1784,12 @@ const { data, error } = await supabase.auth.updateUser({
 - Automatically sent with every request
 
 **Cookie Names:**
+
 - `sb-access-token` - JWT access token (short-lived, 1 hour)
 - `sb-refresh-token` - Refresh token (long-lived, 30 days)
 
 **Cookie Properties:**
+
 - `httpOnly: true` - prevents JavaScript access
 - `secure: true` - HTTPS only (production)
 - `sameSite: 'lax'` - CSRF protection
@@ -1800,10 +1840,10 @@ For programmatic API access (e.g., mobile apps, third-party integrations):
    ```
 3. API endpoint validates token:
    ```typescript
-   const authHeader = request.headers.get('authorization')
+   const authHeader = request.headers.get('authorization');
    if (authHeader?.startsWith('Bearer ')) {
-     const token = authHeader.substring(7)
-     const { data, error } = await supabase.auth.getUser(token)
+     const token = authHeader.substring(7);
+     const { data, error } = await supabase.auth.getUser(token);
      // Validate user
    }
    ```
@@ -1811,29 +1851,30 @@ For programmatic API access (e.g., mobile apps, third-party integrations):
 **Dual Authentication Support:**
 
 API endpoints support both:
+
 - Cookie-based authentication (for browser requests)
 - Bearer token authentication (for API clients)
 
 Example from existing code (`src/pages/api/recipes/index.ts`):
 
 ```typescript
-let userId: string | undefined
+let userId: string | undefined;
 
 if (authHeader?.startsWith('Bearer ')) {
   // API token authentication
-  const token = authHeader.substring('Bearer '.length)
-  const { data, error } = await locals.supabase.auth.getUser(token)
+  const token = authHeader.substring('Bearer '.length);
+  const { data, error } = await locals.supabase.auth.getUser(token);
   if (error || !data.user) {
-    throw createUnauthorizedError()
+    throw createUnauthorizedError();
   }
-  userId = data.user.id
+  userId = data.user.id;
 } else {
   // Session cookie authentication
-  const { data, error } = await locals.supabase.auth.getUser()
+  const { data, error } = await locals.supabase.auth.getUser();
   if (error || !data.user) {
-    throw createUnauthorizedError()
+    throw createUnauthorizedError();
   }
-  userId = data.user.id
+  userId = data.user.id;
 }
 ```
 
@@ -1842,6 +1883,7 @@ if (authHeader?.startsWith('Bearer ')) {
 #### 3.3.1 Password Security
 
 **Requirements:**
+
 - Minimum 8 characters
 - At least one uppercase letter
 - At least one lowercase letter
@@ -1849,6 +1891,7 @@ if (authHeader?.startsWith('Bearer ')) {
 - Supabase handles password hashing (bcrypt)
 
 **Storage:**
+
 - Never store passwords in plain text
 - Supabase stores hashed passwords in `auth.users` table
 - Application never has access to plain passwords
@@ -1885,27 +1928,27 @@ Implement rate limiting on authentication endpoints:
 
 ```typescript
 // src/lib/auth/rate-limiter.ts
-const attempts = new Map<string, { count: number; resetAt: number }>()
+const attempts = new Map<string, { count: number; resetAt: number }>();
 
 export function checkRateLimit(
   identifier: string,
   maxAttempts: number,
   windowMs: number
 ): boolean {
-  const now = Date.now()
-  const record = attempts.get(identifier)
-  
+  const now = Date.now();
+  const record = attempts.get(identifier);
+
   if (!record || now > record.resetAt) {
-    attempts.set(identifier, { count: 1, resetAt: now + windowMs })
-    return true
+    attempts.set(identifier, { count: 1, resetAt: now + windowMs });
+    return true;
   }
-  
+
   if (record.count >= maxAttempts) {
-    return false // Rate limit exceeded
+    return false; // Rate limit exceeded
   }
-  
-  record.count++
-  return true
+
+  record.count++;
+  return true;
 }
 ```
 
@@ -1953,6 +1996,7 @@ For highly sensitive operations (delete account, change email), add additional C
 **RLS Policies:**
 
 Already implemented in database migration:
+
 - `user_profiles`: Users can only access their own profile
 - `recipes`: Users can only access their own recipes
 - `recipe_variants`: Access tied to recipe ownership
@@ -1991,30 +2035,37 @@ Already implemented in database migration:
 ```typescript
 // src/lib/auth/auth-logger.ts
 export function logAuthEvent(
-  event: 'sign_up' | 'sign_in' | 'sign_out' | 'password_reset' | 'account_deleted',
+  event:
+    | 'sign_up'
+    | 'sign_in'
+    | 'sign_out'
+    | 'password_reset'
+    | 'account_deleted',
   details: {
-    userId?: string
-    email?: string
-    success: boolean
-    error?: string
-    ip?: string
+    userId?: string;
+    email?: string;
+    success: boolean;
+    error?: string;
+    ip?: string;
   }
 ) {
   // Hash email for privacy
   const hashedEmail = details.email
     ? crypto.createHash('sha256').update(details.email).digest('hex')
-    : undefined
-  
-  console.log(JSON.stringify({
-    timestamp: new Date().toISOString(),
-    event,
-    userId: details.userId,
-    emailHash: hashedEmail,
-    success: details.success,
-    error: details.error,
-    ip: details.ip,
-  }))
-  
+    : undefined;
+
+  console.log(
+    JSON.stringify({
+      timestamp: new Date().toISOString(),
+      event,
+      userId: details.userId,
+      emailHash: hashedEmail,
+      success: details.success,
+      error: details.error,
+      ip: details.ip,
+    })
+  );
+
   // In production, send to logging service (e.g., Sentry, LogRocket)
 }
 ```
@@ -2081,6 +2132,7 @@ Add to Authentication > URL Configuration:
 **Site URL:**
 
 Set to primary application URL:
+
 - Production: `https://yourdomain.com`
 
 #### 3.5.3 SMTP Configuration (Production)
@@ -2124,6 +2176,7 @@ Set to primary application URL:
 #### 3.6.1 Manual Testing Checklist
 
 **Sign Up Flow:**
+
 - [ ] Valid email and password → success
 - [ ] Invalid email format → validation error
 - [ ] Weak password → validation error
@@ -2132,6 +2185,7 @@ Set to primary application URL:
 - [ ] Email confirmation not required → signs in automatically
 
 **Sign In Flow:**
+
 - [ ] Valid credentials → success, redirect to /recipes
 - [ ] Invalid password → error "Invalid email or password"
 - [ ] Non-existent email → same error (don't reveal)
@@ -2140,6 +2194,7 @@ Set to primary application URL:
 - [ ] Redirect to originally requested page after sign in
 
 **Password Reset Flow:**
+
 - [ ] Valid email → success message (always)
 - [ ] Invalid email → same success message (security)
 - [ ] Receive reset email
@@ -2149,6 +2204,7 @@ Set to primary application URL:
 - [ ] Sign in with new password → success
 
 **Profile Management:**
+
 - [ ] View profile → displays current data
 - [ ] Update display name → saves successfully
 - [ ] Update preferences (diet, allergens) → saves
@@ -2157,6 +2213,7 @@ Set to primary application URL:
 - [ ] Change password (incorrect current) → error
 
 **Session Management:**
+
 - [ ] Access protected page when authenticated → success
 - [ ] Access protected page when not authenticated → redirect to sign in
 - [ ] Session expires → prompt to re-authenticate
@@ -2164,6 +2221,7 @@ Set to primary application URL:
 - [ ] Multiple tabs → session consistent across tabs
 
 **Security:**
+
 - [ ] Cannot access other users' recipes
 - [ ] Cannot modify other users' profiles
 - [ ] SQL injection attempts → rejected
@@ -2173,16 +2231,19 @@ Set to primary application URL:
 #### 3.6.2 Automated Testing Approach
 
 **Unit Tests:**
+
 - Validation schemas (Zod)
 - Error mappers
 - Helper functions
 
 **Integration Tests:**
+
 - API endpoints with mock Supabase
 - Authentication flows
 - Session management
 
 **End-to-End Tests:**
+
 - Full user journeys (sign up to recipe creation)
 - Use Playwright or Cypress
 - Test against real Supabase test project
@@ -2297,6 +2358,7 @@ Set to primary application URL:
 ### 5.1 Functional Requirements
 
 **All authentication flows must work:**
+
 - [ ] Users can sign up with email and password
 - [ ] Users can sign in with email and password
 - [ ] Users can recover forgotten passwords
@@ -2306,12 +2368,14 @@ Set to primary application URL:
 - [ ] Users can delete their account
 
 **Protected routes work correctly:**
+
 - [ ] Authenticated users can access `/recipes`
 - [ ] Authenticated users can access `/profile`
 - [ ] Unauthenticated users are redirected to `/sign-in`
 - [ ] After sign in, users are redirected to originally requested page
 
 **Session management works:**
+
 - [ ] Sessions persist across page reloads
 - [ ] Sessions refresh automatically before expiry
 - [ ] Sessions are cleared on sign out
@@ -2320,6 +2384,7 @@ Set to primary application URL:
 ### 5.2 Non-Functional Requirements
 
 **Security:**
+
 - [ ] Passwords are never stored in plain text
 - [ ] Sessions use HTTP-only cookies
 - [ ] Rate limiting prevents brute force attacks
@@ -2328,12 +2393,14 @@ Set to primary application URL:
 - [ ] RLS policies enforce data access rules
 
 **Performance:**
+
 - [ ] Pages load within 2 seconds
 - [ ] Form submissions respond within 1 second
 - [ ] No unnecessary re-renders in React components
 - [ ] Middleware adds minimal overhead (<100ms)
 
 **User Experience:**
+
 - [ ] All forms have clear validation messages
 - [ ] Loading states are visible for async operations
 - [ ] Success messages confirm completed actions
@@ -2342,6 +2409,7 @@ Set to primary application URL:
 - [ ] UI is responsive on mobile and desktop
 
 **Compatibility:**
+
 - [ ] Works in Chrome, Firefox, Safari, Edge (latest versions)
 - [ ] Works on iOS Safari and Android Chrome
 - [ ] Works with JavaScript disabled (graceful degradation)
@@ -2349,6 +2417,7 @@ Set to primary application URL:
 ### 5.3 MVP Success Criteria Alignment
 
 **From PRD:**
+
 - 90% of users have completed dietary preferences
   - ✅ Profile page prominently features preferences form
   - ✅ Success message encourages recipe generation after setting preferences
@@ -2364,26 +2433,31 @@ Set to primary application URL:
 ## 6. FUTURE ENHANCEMENTS (Out of MVP Scope)
 
 **OAuth Providers:**
+
 - Google Sign In
 - Apple Sign In
 - Facebook Sign In
 
 **Two-Factor Authentication (2FA):**
+
 - TOTP (Time-based One-Time Password)
 - SMS verification
 - Email verification codes
 
 **Advanced Security:**
+
 - Device tracking and management
 - Suspicious activity detection
 - IP-based restrictions
 
 **User Management:**
+
 - Admin panel for user management
 - User roles and permissions
 - Account suspension/banning
 
 **Social Features:**
+
 - Profile visibility settings
 - User following
 - Activity feeds
@@ -2395,11 +2469,13 @@ Set to primary application URL:
 ### 7.1 External Services
 
 **Supabase:**
+
 - Version: Latest (compatible with `@supabase/supabase-js` v2.x)
 - Required features: Auth, Database, RLS
 - Account required: Yes (free tier sufficient for MVP)
 
 **Email Service (Production):**
+
 - Options: SendGrid, AWS SES, Mailgun, Postmark
 - Required for production email delivery
 - Development can use Supabase default
@@ -2407,6 +2483,7 @@ Set to primary application URL:
 ### 7.2 NPM Packages
 
 **Already Installed:**
+
 - `@supabase/supabase-js` - Supabase client
 - `zod` - Schema validation
 - `react` - UI components
@@ -2417,10 +2494,12 @@ Set to primary application URL:
 ### 7.3 Environment Variables
 
 **Required:**
+
 - `SUPABASE_URL` - Supabase project URL
 - `SUPABASE_KEY` - Supabase anonymous key
 
 **Optional:**
+
 - `SESSION_SECRET` - For additional encryption (if needed)
 - `RATE_LIMIT_ENABLED` - Toggle rate limiting
 
@@ -2431,12 +2510,14 @@ Set to primary application URL:
 ### 8.1 Environment-Specific Settings
 
 **Development:**
+
 - Use local Supabase instance (optional) or cloud project
 - Email confirmation can be disabled for faster testing
 - Relaxed rate limits
 - Detailed error messages
 
 **Production:**
+
 - Strict email confirmation
 - SMTP configured for email delivery
 - Strict rate limits
@@ -2447,12 +2528,14 @@ Set to primary application URL:
 ### 8.2 Environment Variables Setup
 
 **Development (`.env.local`):**
+
 ```bash
 SUPABASE_URL=https://xxxx.supabase.co
 SUPABASE_KEY=your-anon-key
 ```
 
 **Production (DigitalOcean/Docker):**
+
 ```bash
 SUPABASE_URL=https://xxxx.supabase.co
 SUPABASE_KEY=your-anon-key
@@ -2462,11 +2545,13 @@ NODE_ENV=production
 ### 8.3 Database Migrations
 
 **Current Migration:**
+
 - `20251102163750_create_initial_schema.sql` already includes `user_profiles` table
 - RLS policies already configured
 - No additional migrations needed for authentication
 
 **Verification:**
+
 - Run migration on production database
 - Verify all tables exist
 - Verify RLS is enabled
@@ -2479,22 +2564,26 @@ NODE_ENV=production
 ### 9.1 Key Metrics to Track
 
 **User Acquisition:**
+
 - Sign-up rate (per day/week)
 - Sign-up completion rate (started vs completed)
 - Email verification rate
 
 **User Engagement:**
+
 - Sign-in frequency
 - Session duration
 - Profile completion rate (especially preferences)
 
 **Security:**
+
 - Failed sign-in attempts
 - Rate limit hits
 - Password reset requests
 - Account deletions
 
 **Technical:**
+
 - API response times
 - Error rates (per endpoint)
 - Session refresh success rate
@@ -2502,6 +2591,7 @@ NODE_ENV=production
 ### 9.2 Logging Strategy
 
 **Events to Log:**
+
 - User sign ups (with metadata)
 - Sign ins (success and failure)
 - Password resets
@@ -2510,6 +2600,7 @@ NODE_ENV=production
 - Security events (rate limits, suspicious activity)
 
 **Log Storage:**
+
 - Development: Console logs
 - Production: Send to logging service (Sentry, LogRocket, etc.)
 
@@ -2542,4 +2633,3 @@ The authentication system directly enables the MVP success criteria by allowing 
 ---
 
 **Document End**
-

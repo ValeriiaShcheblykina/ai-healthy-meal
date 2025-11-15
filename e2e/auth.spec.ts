@@ -1,10 +1,10 @@
-import { test, expect } from "@playwright/test";
-import { SignInPage } from "./page-objects/SignInPage";
-import { SignUpPage } from "./page-objects/SignUpPage";
-import { RecipesPage } from "./page-objects/RecipesPage";
+import { test, expect } from '@playwright/test';
+import { SignInPage } from './page-objects/SignInPage';
+import { SignUpPage } from './page-objects/SignUpPage';
+import { RecipesPage } from './page-objects/RecipesPage';
 
-test.describe("Authentication Flow", () => {
-  test("should display sign in page correctly", async ({ page }) => {
+test.describe('Authentication Flow', () => {
+  test('should display sign in page correctly', async ({ page }) => {
     const signInPage = new SignInPage(page);
     await signInPage.goto();
 
@@ -16,7 +16,7 @@ test.describe("Authentication Flow", () => {
     await expect(signInPage.signUpLink).toBeVisible();
   });
 
-  test("should display sign up page correctly", async ({ page }) => {
+  test('should display sign up page correctly', async ({ page }) => {
     const signUpPage = new SignUpPage(page);
     await signUpPage.goto();
 
@@ -29,16 +29,16 @@ test.describe("Authentication Flow", () => {
     await expect(signUpPage.signInLink).toBeVisible();
   });
 
-  test("should show validation error for invalid email on sign in", async ({
+  test('should show validation error for invalid email on sign in', async ({
     page,
   }) => {
     const signInPage = new SignInPage(page);
     await signInPage.goto();
 
     // Fill in invalid email
-    await signInPage.emailInput.fill("notanemail");
-    await signInPage.passwordInput.fill("password123");
-    
+    await signInPage.emailInput.fill('notanemail');
+    await signInPage.passwordInput.fill('password123');
+
     // Click sign in button
     await signInPage.signInButton.click();
 
@@ -50,12 +50,14 @@ test.describe("Authentication Flow", () => {
     // 2. Server returned an error message
     const currentUrl = page.url();
     const hasError = await signInPage.hasErrorMessage();
-    
+
     // Should either show error or stay on sign-in page due to validation
     expect(currentUrl.includes('/sign-in') || hasError).toBeTruthy();
   });
 
-  test("should navigate between sign in and sign up pages", async ({ page }) => {
+  test('should navigate between sign in and sign up pages', async ({
+    page,
+  }) => {
     const signInPage = new SignInPage(page);
     await signInPage.goto();
 
@@ -69,7 +71,7 @@ test.describe("Authentication Flow", () => {
     await expect(page).toHaveURL(/\/sign-in/);
   });
 
-  test("should redirect to sign in when accessing protected route unauthenticated", async ({
+  test('should redirect to sign in when accessing protected route unauthenticated', async ({
     page,
   }) => {
     const recipesPage = new RecipesPage(page);
@@ -79,4 +81,3 @@ test.describe("Authentication Flow", () => {
     await expect(page).toHaveURL(/\/sign-in/);
   });
 });
-

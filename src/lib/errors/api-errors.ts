@@ -21,7 +21,7 @@ export class ApiError extends Error {
     public readonly code: ErrorCode,
     public readonly message: string,
     public readonly statusCode: number,
-    public readonly details?: Record<string, unknown>,
+    public readonly details?: Record<string, unknown>
   ) {
     super(message);
     this.name = 'ApiError';
@@ -34,7 +34,7 @@ export class ApiError extends Error {
 export function createErrorResponse(
   code: ErrorCode,
   message: string,
-  details?: Record<string, unknown>,
+  details?: Record<string, unknown>
 ): ErrorResponseDTO {
   return {
     error: {
@@ -49,7 +49,7 @@ export function createErrorResponse(
  * Creates an UNAUTHORIZED error (401)
  */
 export function createUnauthorizedError(
-  message = 'Authentication required',
+  message = 'Authentication required'
 ): ApiError {
   return new ApiError(ERROR_CODES.UNAUTHORIZED, message, 401);
 }
@@ -59,21 +59,16 @@ export function createUnauthorizedError(
  */
 export function createValidationError(
   message = 'Invalid query parameters',
-  details?: Record<string, unknown>,
+  details?: Record<string, unknown>
 ): ApiError {
-  return new ApiError(
-    ERROR_CODES.VALIDATION_ERROR,
-    message,
-    400,
-    details,
-  );
+  return new ApiError(ERROR_CODES.VALIDATION_ERROR, message, 400, details);
 }
 
 /**
  * Creates an INTERNAL_ERROR (500)
  */
 export function createInternalError(
-  message = 'An internal server error occurred',
+  message = 'An internal server error occurred'
 ): ApiError {
   return new ApiError(ERROR_CODES.INTERNAL_ERROR, message, 500);
 }
@@ -81,18 +76,14 @@ export function createInternalError(
 /**
  * Creates a NOT_FOUND error (404)
  */
-export function createNotFoundError(
-  message = 'Resource not found',
-): ApiError {
+export function createNotFoundError(message = 'Resource not found'): ApiError {
   return new ApiError(ERROR_CODES.NOT_FOUND, message, 404);
 }
 
 /**
  * Creates a FORBIDDEN error (403)
  */
-export function createForbiddenError(
-  message = 'Access denied',
-): ApiError {
+export function createForbiddenError(message = 'Access denied'): ApiError {
   return new ApiError(ERROR_CODES.FORBIDDEN, message, 403);
 }
 
@@ -100,16 +91,32 @@ export function createForbiddenError(
  * Creates a Response object from an ApiError or error details
  */
 export function createApiErrorResponse(
-  error: ApiError | { statusCode: number; code: string; message: string; details?: Record<string, unknown> }
+  error:
+    | ApiError
+    | {
+        statusCode: number;
+        code: string;
+        message: string;
+        details?: Record<string, unknown>;
+      }
 ): Response {
-  const statusCode = error instanceof ApiError ? error.statusCode : error.statusCode
-  const body = error instanceof ApiError 
-    ? createErrorResponse(error.code as ErrorCode, error.message, error.details)
-    : createErrorResponse(error.code as ErrorCode, error.message, error.details)
+  const statusCode =
+    error instanceof ApiError ? error.statusCode : error.statusCode;
+  const body =
+    error instanceof ApiError
+      ? createErrorResponse(
+          error.code as ErrorCode,
+          error.message,
+          error.details
+        )
+      : createErrorResponse(
+          error.code as ErrorCode,
+          error.message,
+          error.details
+        );
 
   return new Response(JSON.stringify(body), {
     status: statusCode,
     headers: { 'Content-Type': 'application/json' },
-  })
+  });
 }
-
