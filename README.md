@@ -94,11 +94,29 @@ npm run build
 
 ## Available Scripts
 
+### Development
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
+
+### Code Quality
 - `npm run lint` - Run ESLint
 - `npm run lint:fix` - Fix ESLint issues
+- `npm run format` - Format code with Prettier
+
+### Testing
+- `npm test` - Run unit tests in watch mode
+- `npm run test:unit` - Run all unit tests once
+- `npm run test:unit:coverage` - Run tests with coverage report
+- `npm run test:e2e` - Run end-to-end tests
+- `npm run test:all` - Run both unit and e2e tests
+
+📖 **See [QUICKSTART_TESTING.md](./QUICKSTART_TESTING.md) for testing quick start guide**
+
+### Database
+- `npm run supabase:start` - Start local Supabase instance
+- `npm run supabase:stop` - Stop local Supabase instance
+- `npm run supabase:status` - Check Supabase status
 
 ## Project Structure
 
@@ -123,9 +141,19 @@ npm run build
 │   ├── types.ts            # Shared types (Entities, DTOs)
 │   ├── assets/             # Static internal assets
 │   └── styles/             # Global styles
+├── test/                   # Unit test infrastructure
+│   ├── setup.ts            # Global test setup
+│   ├── helpers/            # Test helpers
+│   └── mocks/              # Mock implementations
+├── e2e/                    # End-to-end tests
+│   ├── page-objects/       # Page Object Model
+│   ├── fixtures/           # Test data
+│   └── helpers/            # E2E helpers
 ├── public/                 # Public assets
 ├── supabase/               # Supabase configuration
 │   └── migrations/         # Database migrations
+├── vitest.config.ts        # Vitest configuration
+└── playwright.config.ts    # Playwright configuration
 ```
 
 ## MVP Scope
@@ -147,6 +175,29 @@ npm run build
 - **90%** of users have completed dietary preferences in their profile
 - **75%** of users generate one or more recipes per week
 
+## Testing
+
+This project uses **Vitest** for unit testing and **Playwright** for end-to-end testing.
+
+### Quick Start
+```bash
+# Run unit tests
+npm test
+
+# Run e2e tests
+npm run test:e2e
+```
+
+### Documentation
+- 📖 [QUICKSTART_TESTING.md](./QUICKSTART_TESTING.md) - Quick start guide
+- 📘 [README.testing.md](./README.testing.md) - Complete testing documentation
+- 📋 [.ai/test-plan.md](./.ai/test-plan.md) - Comprehensive test plan
+
+### Test Structure
+- **Unit Tests**: Test individual functions and components in isolation
+- **E2E Tests**: Test complete user workflows using Page Object Model
+- **Coverage Target**: 80% for lines, functions, branches, and statements
+
 ## Development Guidelines
 
 ### Coding Practices
@@ -157,6 +208,13 @@ npm run build
 - Implement proper error logging and user-friendly error messages
 - Use guard clauses to handle preconditions and invalid states early
 
+### Testing Practices
+- Write tests alongside features (Test-Driven Development encouraged)
+- Use descriptive test names that explain expected behavior
+- Follow the Arrange-Act-Assert pattern in tests
+- Use Page Object Model for E2E tests
+- Mock external dependencies in unit tests
+
 ### AI Development Support
 
 This project is configured with AI development tools in `.cursor/rules/` directory to help with:
@@ -164,6 +222,7 @@ This project is configured with AI development tools in `.cursor/rules/` directo
 - Coding best practices
 - Tech stack guidelines
 - Accessibility standards
+- Testing best practices (Vitest and Playwright)
 
 ## Contributing
 
