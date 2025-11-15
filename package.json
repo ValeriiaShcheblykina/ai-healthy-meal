@@ -16,7 +16,6 @@
     "supabase:status": "supabase status",
     "test": "vitest",
     "test:unit": "vitest run",
-    "test:unit:watch": "vitest watch",
     "test:unit:ui": "vitest --ui",
     "test:unit:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
