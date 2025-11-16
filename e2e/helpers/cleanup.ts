@@ -12,7 +12,10 @@ export async function cleanupTestUsers() {
 
   try {
     // Get all users using admin API
-    const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+    const {
+      data: { users },
+      error: listError,
+    } = await supabase.auth.admin.listUsers();
 
     if (listError) {
       console.error('Error listing users for cleanup:', listError);
@@ -20,7 +23,7 @@ export async function cleanupTestUsers() {
     }
 
     if (!users || users.length === 0) {
-      console.log('No users found to clean up');
+      console.info('No users found to clean up');
       return;
     }
 
@@ -29,23 +32,25 @@ export async function cleanupTestUsers() {
       (user) =>
         user.email?.includes('test+') ||
         user.email?.includes('@example.com') ||
-        user.email?.startsWith('e2e-'),
+        user.email?.startsWith('e2e-')
     );
 
-    console.log(`Found ${testUsers.length} test user(s) to clean up`);
+    console.info(`Found ${testUsers.length} test user(s) to clean up`);
 
     // Delete each test user
     for (const user of testUsers) {
-      const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
-      
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(
+        user.id
+      );
+
       if (deleteError) {
         console.error(`Error deleting user ${user.email}:`, deleteError);
       } else {
-        console.log(`Deleted test user: ${user.email}`);
+        console.info(`Deleted test user: ${user.email}`);
       }
     }
 
-    console.log('Test user cleanup completed');
+    console.info('Test user cleanup completed');
   } catch (error) {
     console.error('Unexpected error during cleanup:', error);
   }
@@ -70,7 +75,7 @@ export async function cleanupTestRecipes() {
       return;
     }
 
-    console.log(`Soft deleted ${count || 0} test recipe(s)`);
+    console.info(`Soft deleted ${count || 0} test recipe(s)`);
   } catch (error) {
     console.error('Unexpected error during recipe cleanup:', error);
   }
@@ -81,12 +86,12 @@ export async function cleanupTestRecipes() {
  * Call this in global teardown after all tests complete
  */
 export async function cleanupAllTestData() {
-  console.log('Starting E2E test data cleanup...');
-  
+  console.info('Starting E2E test data cleanup...');
+
   await cleanupTestRecipes();
   await cleanupTestUsers();
-  
-  console.log('E2E test data cleanup completed');
+
+  console.info('E2E test data cleanup completed');
 }
 
 /**
@@ -97,7 +102,10 @@ export async function cleanupUserByEmail(email: string) {
   const supabase = createSupabaseTestClient();
 
   try {
-    const { data: { users }, error: listError } = await supabase.auth.admin.listUsers();
+    const {
+      data: { users },
+      error: listError,
+    } = await supabase.auth.admin.listUsers();
 
     if (listError) {
       console.error('Error listing users:', listError);
@@ -107,15 +115,17 @@ export async function cleanupUserByEmail(email: string) {
     const user = users?.find((u) => u.email === email);
 
     if (user) {
-      const { error: deleteError } = await supabase.auth.admin.deleteUser(user.id);
-      
+      const { error: deleteError } = await supabase.auth.admin.deleteUser(
+        user.id
+      );
+
       if (deleteError) {
         console.error(`Error deleting user ${email}:`, deleteError);
       } else {
-        console.log(`Deleted user: ${email}`);
+        console.info(`Deleted user: ${email}`);
       }
     } else {
-      console.log(`User not found: ${email}`);
+      console.info(`User not found: ${email}`);
     }
   } catch (error) {
     console.error('Unexpected error during user cleanup:', error);
@@ -140,9 +150,8 @@ export async function cleanupRecipesForUser(userId: string) {
       return;
     }
 
-    console.log(`Soft deleted ${count || 0} recipe(s) for user ${userId}`);
+    console.info(`Soft deleted ${count || 0} recipe(s) for user ${userId}`);
   } catch (error) {
     console.error('Unexpected error during recipe cleanup:', error);
   }
 }
-

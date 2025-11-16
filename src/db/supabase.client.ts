@@ -37,10 +37,13 @@ export const createSupabaseServerInstance = (context: {
               context.cookies.set(name, value, options)
             );
           } catch (error) {
-            if (error instanceof Error && error.message.includes('already been sent')) {
+            if (
+              error instanceof Error &&
+              error.message.includes('already been sent')
+            ) {
               return;
             }
-        
+
             throw error;
           }
         },

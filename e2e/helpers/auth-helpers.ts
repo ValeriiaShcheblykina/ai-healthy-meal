@@ -31,8 +31,8 @@ export async function signInWithTestUser(page: Page) {
   const signInPage = new SignInPage(page);
   await signInPage.goto();
 
-  console.log(`Attempting sign-in with: ${email}`);
-  console.log(`Attempting sign-in with: ${password}`);
+  console.info(`Attempting sign-in with: ${email}`);
+  console.info(`Attempting sign-in with: ${password}`);
 
   try {
     // Fill in credentials
@@ -44,11 +44,8 @@ export async function signInWithTestUser(page: Page) {
       page.waitForURL(/\/recipes/, { timeout: 15000 }),
       signInPage.signInButton.click(),
     ]);
-
-    console.log('✓ Signed in and redirected to /recipes');
-  } catch (error) {
+  } catch {
     console.error('Sign-in failed');
-    console.log('Current URL:', page.url());
 
     // Check for error messages
     const errorMsg = page.getByTestId('signin-error-message');

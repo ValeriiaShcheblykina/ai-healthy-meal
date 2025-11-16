@@ -17,7 +17,9 @@ export class SignUpPage extends BasePage {
     super(page);
     this.emailInput = page.getByTestId('signup-email-input');
     this.passwordInput = page.getByTestId('signup-password-input');
-    this.confirmPasswordInput = page.getByTestId('signup-confirmpassword-input');
+    this.confirmPasswordInput = page.getByTestId(
+      'signup-confirmpassword-input'
+    );
     this.displayNameInput = page.getByTestId('signup-displayname-input');
     this.signUpButton = page.getByTestId('signup-submit-button');
     this.errorMessage = page.getByTestId('signup-error-message');

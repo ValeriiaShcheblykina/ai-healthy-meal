@@ -7,20 +7,20 @@ test.describe('Recipes Page', () => {
   // This is much faster than creating a new user each time
   test.beforeEach(async ({ page }) => {
     try {
-      console.log('Signing in with persistent test user...');
+      console.info('Signing in with persistent test user...');
       await signInWithTestUser(page);
-      console.log('✓ Signed in successfully');
+      console.info('✓ Signed in successfully');
     } catch (error) {
       console.error('Failed to sign in:', error);
-      console.log('Current URL:', page.url());
-      
+      console.info('Current URL:', page.url());
+
       // Check if there's an error message on the page
       const errorMsg = page.getByTestId('signin-error-message');
       if (await errorMsg.isVisible()) {
         const errorText = await errorMsg.textContent();
         console.error('Sign-in error:', errorText);
       }
-      
+
       throw error;
     }
   });
@@ -54,9 +54,7 @@ test.describe('Recipes Page', () => {
     await expect(emptyState).toBeVisible();
 
     // Verify create button in empty state
-    const createButton = page.getByTestId(
-      'recipes-create-first-recipe-button',
-    );
+    const createButton = page.getByTestId('recipes-create-first-recipe-button');
     await expect(createButton).toBeVisible();
 
     // Verify through page object
@@ -85,8 +83,6 @@ test.describe('Recipes Page', () => {
   });
 
   test('should interact with search functionality', async ({ page }) => {
-    const recipesPage = new RecipesPage(page);
-
     // Find search input using data-testid
     const searchInput = page.getByTestId('recipes-search-input');
     await expect(searchInput).toBeVisible();
@@ -108,8 +104,6 @@ test.describe('Recipes Page', () => {
   });
 
   test('should interact with sort controls', async ({ page }) => {
-    const recipesPage = new RecipesPage(page);
-
     // Get sort controls using data-testid
     const sortSelect = page.getByTestId('recipes-sort-select');
     const sortOrderToggle = page.getByTestId('recipes-sort-order-toggle');
@@ -129,8 +123,6 @@ test.describe('Recipes Page', () => {
   });
 
   test('should navigate to create recipe page', async ({ page }) => {
-    const recipesPage = new RecipesPage(page);
-
     // Find and click create recipe button using data-testid
     const createButton = page.getByTestId('recipes-new-recipe-button');
     await expect(createButton).toBeVisible();
@@ -197,4 +189,3 @@ test.describe('Recipes Page', () => {
     await expect(passwordInput).toHaveAttribute('type', 'password');
   });
 });
-

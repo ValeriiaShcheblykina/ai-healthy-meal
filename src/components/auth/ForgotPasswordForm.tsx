@@ -133,8 +133,8 @@ export function ForgotPasswordForm() {
 
       <div className="space-y-2">
         <p className="text-muted-foreground text-sm">
-          Enter your email address and we'll send you instructions to reset your
-          password.
+          Enter your email address and we&apos;ll send you instructions to reset
+          your password.
         </p>
       </div>
 

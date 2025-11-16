@@ -165,7 +165,7 @@ export function SignInForm() {
         </Button>
 
         <p className="text-muted-foreground text-center text-sm">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <a
             href="/sign-up"
             data-testid="signin-signup-link"

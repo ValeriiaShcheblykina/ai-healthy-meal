@@ -36,7 +36,9 @@ test.describe('Authentication Flow', () => {
     // Verify elements have correct test IDs
     await expect(page.getByTestId('signup-email-input')).toBeVisible();
     await expect(page.getByTestId('signup-password-input')).toBeVisible();
-    await expect(page.getByTestId('signup-confirmpassword-input')).toBeVisible();
+    await expect(
+      page.getByTestId('signup-confirmpassword-input')
+    ).toBeVisible();
     await expect(page.getByTestId('signup-displayname-input')).toBeVisible();
   });
 
@@ -114,7 +116,7 @@ test.describe('Authentication Flow', () => {
       testUser.email,
       testUser.password,
       testUser.password,
-      testUser.displayName,
+      testUser.displayName
     );
 
     // Should redirect to recipes page after successful sign-up
@@ -143,7 +145,7 @@ test.describe('Authentication Flow', () => {
       testUser.email,
       testUser.password,
       testUser.password,
-      testUser.displayName,
+      testUser.displayName
     );
 
     // Wait for successful sign-up and redirect
@@ -160,7 +162,7 @@ test.describe('Authentication Flow', () => {
       testUser.email,
       testUser.password,
       testUser.password,
-      testUser.displayName,
+      testUser.displayName
     );
 
     // Should show error message (accessible via data-testid)

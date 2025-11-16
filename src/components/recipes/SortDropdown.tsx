@@ -12,21 +12,21 @@ export interface SortDropdownProps {
 }
 
 export function SortDropdown({ sort, order, onSortChange }: SortDropdownProps) {
-  const sortOptions: Array<{
+  const sortOptions: {
     value: RecipeListQueryParams['sort'];
     label: string;
-  }> = [
+  }[] = [
     { value: 'created_at', label: 'Date Created' },
     { value: 'updated_at', label: 'Date Modified' },
     { value: 'title', label: 'Title' },
   ];
 
   const handleToggleOrder = () => {
-    onSortChange(sort!, order === 'asc' ? 'desc' : 'asc');
+    onSortChange(sort ?? 'created_at', order === 'asc' ? 'desc' : 'asc');
   };
 
   const handleSortChange = (newSort: RecipeListQueryParams['sort']) => {
-    onSortChange(newSort, order!);
+    onSortChange(newSort, order ?? 'desc');
   };
 
   return (

@@ -14,8 +14,8 @@ export function EmptyState({ hasSearchQuery = false }: EmptyStateProps) {
         <div className="text-center">
           <h3 className="mb-2 text-xl font-semibold">No recipes found</h3>
           <p className="text-muted-foreground mb-6">
-            We couldn't find any recipes matching your search. Try adjusting
-            your filters or search terms.
+            We couldn&apos;t find any recipes matching your search. Try
+            adjusting your filters or search terms.
           </p>
         </div>
       </div>
@@ -34,7 +34,10 @@ export function EmptyState({ hasSearchQuery = false }: EmptyStateProps) {
           recipe.
         </p>
         <Button asChild>
-          <a href="/recipes/new" data-testid="recipes-create-first-recipe-button">
+          <a
+            href="/recipes/new"
+            data-testid="recipes-create-first-recipe-button"
+          >
             Create New Recipe
           </a>
         </Button>

@@ -169,7 +169,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
       <div className="space-y-2">
         <p className="text-muted-foreground text-sm">
-          Enter your new password below. Make sure it's strong and secure.
+          Enter your new password below. Make sure it&apos;s strong and secure.
         </p>
       </div>
 

@@ -1,4 +1,4 @@
-import type { CreateRecipeCommand, UpdateRecipeCommand } from '../../types.ts';
+import type { CreateRecipeCommand } from '@/types.ts';
 import { createValidationError } from '../errors/api-errors.ts';
 
 export function validateCreateRecipePayload(data: unknown) {
@@ -29,7 +29,7 @@ export function validateCreateRecipePayload(data: unknown) {
 
   // Defaults
   return {
-    title: payload.title!.trim(),
+    title: payload?.title?.trim() ?? '',
     content: payload.content ?? null,
     content_json: payload.content_json ?? null,
     is_public: payload.is_public ?? false,
