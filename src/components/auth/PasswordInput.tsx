@@ -14,6 +14,7 @@ export function PasswordInput({
   ...props
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
+  const testId = props['data-testid'];
 
   return (
     <div className="relative">
@@ -31,6 +32,7 @@ export function PasswordInput({
         className="absolute top-0 right-0 h-full px-3 py-2 hover:bg-transparent"
         onClick={() => setShowPassword(!showPassword)}
         aria-label={showPassword ? 'Hide password' : 'Show password'}
+        data-testid={testId ? `${testId}-toggle` : undefined}
       >
         {showPassword ? (
           <EyeOff className="text-muted-foreground h-4 w-4" />

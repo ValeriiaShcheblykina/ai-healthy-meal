@@ -19,3 +19,19 @@ alwaysApply: false
 - Use expect assertions with specific matchers
 - Leverage parallel execution for faster test runs
 
+#### LOCATOR STRATEGY
+
+**Preferred: data-testid**
+- Use `data-testid` attributes for test-specific element identification
+- Access with `page.getByTestId('element-id')`
+- Naming convention: use kebab-case with component/feature prefix
+  - Auth forms: `signin-email-input`, `signup-submit-button`
+  - Recipes: `recipes-search-input`, `recipe-card`
+  - Navigation: `header-logo-link`, `header-signout-button`
+- Benefits: Resistant to styling/text changes, explicit test intent
+
+**Fallback Hierarchy** (when data-testid is not available):
+1. Accessible roles/labels: `page.getByRole('button', { name: 'Submit' })`
+2. Semantic HTML: `page.getByLabel('Email')`
+3. CSS selectors: Use sparingly, only when necessary
+

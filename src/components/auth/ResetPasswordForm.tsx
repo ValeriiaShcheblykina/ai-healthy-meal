@@ -114,6 +114,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     return (
       <div className="space-y-6">
         <div
+          data-testid="reset-password-success-message"
           className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-900 dark:border-green-800 dark:bg-green-950 dark:text-green-100"
           role="status"
         >
@@ -125,7 +126,9 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         </div>
 
         <Button asChild className="w-full">
-          <a href="/sign-in">Continue to Sign In</a>
+          <a href="/sign-in" data-testid="reset-password-signin-link">
+            Continue to Sign In
+          </a>
         </Button>
       </div>
     );
@@ -156,6 +159,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {globalError && (
         <div
+          data-testid="reset-password-error-message"
           className="bg-destructive/10 text-destructive border-destructive/20 rounded-md border px-4 py-3"
           role="alert"
         >
@@ -177,6 +181,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       >
         <PasswordInput
           id="password"
+          data-testid="reset-password-password-input"
           value={formData.password}
           onChange={(e) => handleChange('password', e.target.value)}
           onBlur={() => handleBlur('password')}
@@ -195,6 +200,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       >
         <PasswordInput
           id="confirmPassword"
+          data-testid="reset-password-confirmpassword-input"
           value={formData.confirmPassword}
           onChange={(e) => handleChange('confirmPassword', e.target.value)}
           onBlur={() => handleBlur('confirmPassword')}
@@ -205,7 +211,12 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
         />
       </FormField>
 
-      <Button type="submit" className="w-full" disabled={isLoading}>
+      <Button
+        type="submit"
+        data-testid="reset-password-submit-button"
+        className="w-full"
+        disabled={isLoading}
+      >
         {isLoading ? 'Resetting password...' : 'Reset Password'}
       </Button>
     </form>

@@ -33,6 +33,7 @@ export function SortDropdown({ sort, order, onSortChange }: SortDropdownProps) {
     <div className="flex items-center gap-2">
       <div className="relative">
         <select
+          data-testid="recipes-sort-select"
           value={sort}
           onChange={(e) =>
             handleSortChange(e.target.value as RecipeListQueryParams['sort'])
@@ -51,6 +52,7 @@ export function SortDropdown({ sort, order, onSortChange }: SortDropdownProps) {
       <Button
         variant="outline"
         size="icon"
+        data-testid="recipes-sort-order-toggle"
         onClick={handleToggleOrder}
         aria-label={`Sort ${order === 'asc' ? 'ascending' : 'descending'}`}
       >

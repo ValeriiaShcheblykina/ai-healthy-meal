@@ -8,25 +8,36 @@ test.describe('Authentication Flow', () => {
     const signInPage = new SignInPage(page);
     await signInPage.goto();
 
-    // Verify page elements are visible
+    // Verify page elements are visible using data-testid selectors
     await expect(signInPage.emailInput).toBeVisible();
     await expect(signInPage.passwordInput).toBeVisible();
     await expect(signInPage.signInButton).toBeVisible();
     await expect(signInPage.forgotPasswordLink).toBeVisible();
     await expect(signInPage.signUpLink).toBeVisible();
+
+    // Verify elements can be found directly by test ID
+    await expect(page.getByTestId('signin-email-input')).toBeVisible();
+    await expect(page.getByTestId('signin-password-input')).toBeVisible();
+    await expect(page.getByTestId('signin-submit-button')).toBeVisible();
   });
 
   test('should display sign up page correctly', async ({ page }) => {
     const signUpPage = new SignUpPage(page);
     await signUpPage.goto();
 
-    // Verify page elements are visible
+    // Verify page elements are visible using data-testid selectors
     await expect(signUpPage.emailInput).toBeVisible();
     await expect(signUpPage.passwordInput).toBeVisible();
     await expect(signUpPage.confirmPasswordInput).toBeVisible();
     await expect(signUpPage.displayNameInput).toBeVisible();
     await expect(signUpPage.signUpButton).toBeVisible();
     await expect(signUpPage.signInLink).toBeVisible();
+
+    // Verify elements have correct test IDs
+    await expect(page.getByTestId('signup-email-input')).toBeVisible();
+    await expect(page.getByTestId('signup-password-input')).toBeVisible();
+    await expect(page.getByTestId('signup-confirmpassword-input')).toBeVisible();
+    await expect(page.getByTestId('signup-displayname-input')).toBeVisible();
   });
 
   test('should show validation error for invalid email on sign in', async ({
@@ -35,7 +46,7 @@ test.describe('Authentication Flow', () => {
     const signInPage = new SignInPage(page);
     await signInPage.goto();
 
-    // Fill in invalid email
+    // Fill in invalid email using data-testid selectors
     await signInPage.emailInput.fill('notanemail');
     await signInPage.passwordInput.fill('password123');
 
@@ -47,12 +58,17 @@ test.describe('Authentication Flow', () => {
 
     // Check if either:
     // 1. Client-side validation prevented submission (still on sign-in page)
-    // 2. Server returned an error message
+    // 2. Server returned an error message (verify using data-testid)
     const currentUrl = page.url();
     const hasError = await signInPage.hasErrorMessage();
 
     // Should either show error or stay on sign-in page due to validation
     expect(currentUrl.includes('/sign-in') || hasError).toBeTruthy();
+
+    // If error is shown, verify it's accessible via test ID
+    if (hasError) {
+      await expect(page.getByTestId('signin-error-message')).toBeVisible();
+    }
   });
 
   test('should navigate between sign in and sign up pages', async ({
@@ -79,5 +95,99 @@ test.describe('Authentication Flow', () => {
 
     // Should redirect to sign in page
     await expect(page).toHaveURL(/\/sign-in/);
+  });
+
+  test('should successfully create a new user account', async ({ page }) => {
+    const signUpPage = new SignUpPage(page);
+    await signUpPage.goto();
+
+    // Generate unique test user
+    const timestamp = Date.now();
+    const testUser = {
+      email: `test+user${timestamp}@example.com`,
+      password: 'TestPassword123!@#',
+      displayName: 'E2E Test User',
+    };
+
+    // Fill in sign-up form
+    await signUpPage.signUp(
+      testUser.email,
+      testUser.password,
+      testUser.password,
+      testUser.displayName,
+    );
+
+    // Should redirect to recipes page after successful sign-up
+    await expect(page).toHaveURL(/\/recipes/, { timeout: 10000 });
+
+    // Verify user is authenticated by checking if we can access protected content
+    const recipesPage = new RecipesPage(page);
+    await expect(recipesPage.searchBar).toBeVisible();
+  });
+
+  test('should show error when signing up with existing email', async ({
+    page,
+  }) => {
+    const signUpPage = new SignUpPage(page);
+
+    // First, create a user
+    await signUpPage.goto();
+    const timestamp = Date.now();
+    const testUser = {
+      email: `test+duplicate${timestamp}@example.com`,
+      password: 'TestPassword123!@#',
+      displayName: 'Duplicate Test User',
+    };
+
+    await signUpPage.signUp(
+      testUser.email,
+      testUser.password,
+      testUser.password,
+      testUser.displayName,
+    );
+
+    // Wait for successful sign-up and redirect
+    await expect(page).toHaveURL(/\/recipes/, { timeout: 10000 });
+
+    // Sign out using header button (verify data-testid)
+    const signOutButton = page.getByTestId('header-signout-button');
+    await expect(signOutButton).toBeVisible();
+    await signOutButton.click();
+
+    // Try to sign up with the same email again
+    await signUpPage.goto();
+    await signUpPage.signUp(
+      testUser.email,
+      testUser.password,
+      testUser.password,
+      testUser.displayName,
+    );
+
+    // Should show error message (accessible via data-testid)
+    await expect(signUpPage.errorMessage).toBeVisible();
+    await expect(page.getByTestId('signup-error-message')).toBeVisible();
+    const errorText = await signUpPage.getErrorMessage();
+    expect(errorText.toLowerCase()).toContain('already');
+  });
+
+  test('should show validation errors for invalid sign-up data', async ({
+    page,
+  }) => {
+    const signUpPage = new SignUpPage(page);
+    await signUpPage.goto();
+
+    // Try to submit with invalid email and weak password
+    await signUpPage.emailInput.fill('notanemail');
+    await signUpPage.passwordInput.fill('weak');
+    await signUpPage.confirmPasswordInput.fill('different');
+    await signUpPage.displayNameInput.fill('Test User');
+
+    // Click sign up
+    await signUpPage.signUpButton.click();
+
+    // Should show validation errors or stay on the page
+    await page.waitForTimeout(1000);
+    const currentUrl = page.url();
+    expect(currentUrl).toContain('/sign-up');
   });
 });

@@ -39,7 +39,7 @@ export function RecipesToolbar({
       <div className="flex w-full justify-between gap-2 sm:w-auto sm:justify-end">
         <ViewToggle viewMode={viewMode} onViewModeChange={onViewModeChange} />
         <Button asChild>
-          <a href="/recipes/new">
+          <a href="/recipes/new" data-testid="recipes-new-recipe-button">
             <Plus className="mr-2 h-4 w-4" />
             New Recipe
           </a>

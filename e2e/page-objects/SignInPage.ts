@@ -14,18 +14,12 @@ export class SignInPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.emailInput = page.getByLabel(/email/i);
-    // Use getByRole for password input to target the textbox specifically, not the button
-    this.passwordInput = page.getByRole('textbox', { name: /password/i });
-    this.signInButton = page.getByRole('button', { name: /sign in/i });
-    this.errorMessage = page.locator('[role="alert"]');
-    this.forgotPasswordLink = page.getByRole('link', {
-      name: /forgot password/i,
-    });
-    // Target the sign up link within the form, not in the header
-    this.signUpLink = page
-      .locator('form')
-      .getByRole('link', { name: /sign up/i });
+    this.emailInput = page.getByTestId('signin-email-input');
+    this.passwordInput = page.getByTestId('signin-password-input');
+    this.signInButton = page.getByTestId('signin-submit-button');
+    this.errorMessage = page.getByTestId('signin-error-message');
+    this.forgotPasswordLink = page.getByTestId('signin-forgot-password-link');
+    this.signUpLink = page.getByTestId('signin-signup-link');
   }
 
   /**

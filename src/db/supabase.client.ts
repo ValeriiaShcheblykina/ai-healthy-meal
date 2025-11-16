@@ -32,9 +32,17 @@ export const createSupabaseServerInstance = (context: {
           return parseCookieHeader(context.headers.get('Cookie') ?? '');
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            context.cookies.set(name, value, options)
-          );
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              context.cookies.set(name, value, options)
+            );
+          } catch (error) {
+            if (error instanceof Error && error.message.includes('already been sent')) {
+              return;
+            }
+        
+            throw error;
+          }
         },
       },
     }

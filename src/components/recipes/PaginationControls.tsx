@@ -44,10 +44,12 @@ export function PaginationControls({
       className="mt-8 flex items-center justify-center gap-1"
       role="navigation"
       aria-label="Pagination"
+      data-testid="recipes-pagination"
     >
       <Button
         variant="outline"
         size="icon"
+        data-testid="recipes-pagination-prev"
         onClick={() => onPageChange(page - 1)}
         disabled={page === 1}
         aria-label="Previous page"
@@ -92,6 +94,7 @@ export function PaginationControls({
       <Button
         variant="outline"
         size="icon"
+        data-testid="recipes-pagination-next"
         onClick={() => onPageChange(page + 1)}
         disabled={page === total_pages}
         aria-label="Next page"

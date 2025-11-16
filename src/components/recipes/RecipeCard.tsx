@@ -23,6 +23,7 @@ export function RecipeCard({ recipe }: RecipeCardProps) {
   return (
     <a
       href={`/recipes/${recipe.id}`}
+      data-testid="recipe-card"
       className="focus-visible:ring-ring block rounded-xl transition-transform hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none"
       aria-label={`View recipe: ${recipe.title}`}
     >
