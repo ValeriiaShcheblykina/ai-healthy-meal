@@ -22,7 +22,7 @@ export async function signInWithTestUser(page: Page) {
     throw new Error(
       'E2E_USERNAME and E2E_PASSWORD must be set in .env.test\n\n' +
         'Add these lines to your .env.test file:\n' +
-        'E2E_USERNAME=test+e2e@example.com\n' +
+        'E2E_USERNAME=test.e2e@example.com\n' +
         'E2E_PASSWORD=TestPassword123!@#\n\n' +
         'Then create this user in Supabase Dashboard.'
     );
@@ -39,12 +39,24 @@ export async function signInWithTestUser(page: Page) {
     await signInPage.emailInput.fill(email);
     await signInPage.passwordInput.fill(password);
 
-    // Click sign in button and wait for navigation
-    await Promise.all([
+    // Click sign in button
+    await signInPage.signInButton.click();
+
+    // Wait for either success (redirect) or error message
+    await Promise.race([
       page.waitForURL(/\/recipes/, { timeout: 15000 }),
-      signInPage.signInButton.click(),
+      page
+        .getByTestId('signin-error-message')
+        .waitFor({ state: 'visible', timeout: 15000 }),
     ]);
-  } catch {
+
+    // Check if we successfully navigated
+    if (!page.url().includes('/recipes')) {
+      const errorMsg = page.getByTestId('signin-error-message');
+      const errorText = await errorMsg.textContent();
+      throw new Error(`Sign-in failed: ${errorText || 'Unknown error'}`);
+    }
+  } catch (error) {
     console.error('Sign-in failed');
 
     // Check for error messages
@@ -59,12 +71,12 @@ export async function signInWithTestUser(page: Page) {
 
     throw new Error(
       `Failed to sign in with user: ${email}\n` +
-        `Failed to sign in with password: ${password}\n` +
         `Current URL: ${page.url()}\n` +
         'Make sure:\n' +
         '1. The user exists in Supabase\n' +
         '2. The credentials are correct\n' +
-        '3. Your app is running at http://localhost:3000'
+        '3. Your app is running at http://localhost:3000\n' +
+        `Original error: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }
@@ -79,7 +91,7 @@ export async function createTestUser(page: Page) {
 
   const timestamp = Date.now();
   const testUser = {
-    email: `test+user${timestamp}@example.com`,
+    email: `test.user${timestamp}@example.com`,
     password: 'TestPassword123!@#',
     displayName: 'E2E Test User',
   };
@@ -90,6 +102,13 @@ export async function createTestUser(page: Page) {
     testUser.password,
     testUser.displayName
   );
+
+  // Wait for redirect to sign-in page after successful sign-up
+  await page.waitForURL(/\/sign-in\?success=true/, { timeout: 10000 });
+
+  // Sign in with the new account
+  const signInPage = new SignInPage(page);
+  await signInPage.signIn(testUser.email, testUser.password);
 
   // Wait for redirect to recipes page
   await page.waitForURL(/\/recipes/, { timeout: 10000 });

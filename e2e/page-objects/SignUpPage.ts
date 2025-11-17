@@ -42,10 +42,30 @@ export class SignUpPage extends BasePage {
     confirmPassword: string,
     displayName: string
   ) {
-    await this.fillField(this.emailInput, email);
+    // Fill email field with explicit steps to ensure it works
+    await this.emailInput.click();
+    await this.emailInput.clear();
+    await this.emailInput.fill(email);
+
+    // Verify email was filled correctly
+    const emailValue = await this.emailInput.inputValue();
+    if (emailValue !== email) {
+      console.error(
+        `Email fill failed. Expected: ${email}, Got: ${emailValue}`
+      );
+      // Try again with pressSequentially
+      await this.emailInput.clear();
+      await this.emailInput.pressSequentially(email);
+    }
+
+    // Fill other fields in order
+    await this.fillField(this.displayNameInput, displayName);
     await this.fillField(this.passwordInput, password);
     await this.fillField(this.confirmPasswordInput, confirmPassword);
-    await this.fillField(this.displayNameInput, displayName);
+
+    // Wait a moment for any async validation to complete
+    await this.page.waitForTimeout(500);
+
     await this.click(this.signUpButton);
   }
 

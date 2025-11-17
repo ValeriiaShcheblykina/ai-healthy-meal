@@ -30,7 +30,7 @@ export async function cleanupTestUsers() {
     // Filter test users (those with test emails)
     const testUsers = users.filter(
       (user) =>
-        user.email?.includes('test+') ||
+        user.email?.startsWith('test.') ||
         user.email?.includes('@example.com') ||
         user.email?.startsWith('e2e-')
     );

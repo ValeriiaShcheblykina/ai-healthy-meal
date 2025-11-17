@@ -80,8 +80,8 @@ export function SignUpForm() {
         return;
       }
 
-      // Redirect to recipes page (email verification disabled per requirements)
-      window.location.href = '/recipes';
+      // Redirect to sign-in page with success message
+      window.location.href = '/sign-in?success=true';
     } catch (error) {
       setIsLoading(false);
       if (error instanceof Error && 'issues' in error) {

@@ -11,6 +11,9 @@ const user = getAuthenticatedUser(Astro);
 if (user) {
   return Astro.redirect('/recipes');
 }
+
+// Check for success message from sign-up
+const isSignUpSuccess = Astro.url.searchParams.get('success') === 'true';
 ---
 
 <Layout title="Sign In - AI Healthy Meal">
@@ -22,6 +25,20 @@ if (user) {
       </div>
 
       <div class="bg-card rounded-lg border p-8 shadow-sm">
+        {
+          isSignUpSuccess && (
+            <div
+              data-testid="signin-success-message"
+              class="mb-6 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-900 dark:border-green-800 dark:bg-green-950 dark:text-green-100"
+              role="status"
+            >
+              <p class="text-sm font-medium">
+                Account created successfully! Please sign in with your
+                credentials.
+              </p>
+            </div>
+          )
+        }
         <SignInForm client:load />
       </div>
     </div>
