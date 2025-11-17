@@ -41,7 +41,8 @@ HealthyMeal solves the challenge of customizing online recipes to match individu
 ### CI/CD & Hosting
 
 - GitHub Actions - CI/CD pipelines
-- Cloudflare Pages - Serverless deployment (primary)
+- Cloudflare Pages - Serverless edge deployment (primary)
+  - **Note**: Code adapted for Cloudflare Workers runtime (uses `runtime.env` instead of `process.env`)
 - DigitalOcean - Application hosting via Docker (alternative)
 
 ## Prerequisites

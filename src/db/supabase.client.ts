@@ -21,35 +21,38 @@ function parseCookieHeader(
 export const createSupabaseServerInstance = (context: {
   headers: Headers;
   cookies: AstroCookies;
+  runtime?: { env?: Record<string, string> };
 }) => {
-  const supabase = createServerClient<Database>(
-    import.meta.env.SUPABASE_URL,
-    import.meta.env.SUPABASE_KEY,
-    {
-      cookieOptions,
-      cookies: {
-        getAll() {
-          return parseCookieHeader(context.headers.get('Cookie') ?? '');
-        },
-        setAll(cookiesToSet) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              context.cookies.set(name, value, options)
-            );
-          } catch (error) {
-            if (
-              error instanceof Error &&
-              error.message.includes('already been sent')
-            ) {
-              return;
-            }
+  // Support both Node.js (import.meta.env) and Cloudflare (runtime.env)
+  const supabaseUrl =
+    context.runtime?.env?.SUPABASE_URL ?? import.meta.env.SUPABASE_URL;
+  const supabaseKey =
+    context.runtime?.env?.SUPABASE_KEY ?? import.meta.env.SUPABASE_KEY;
 
-            throw error;
-          }
-        },
+  const supabase = createServerClient<Database>(supabaseUrl, supabaseKey, {
+    cookieOptions,
+    cookies: {
+      getAll() {
+        return parseCookieHeader(context.headers.get('Cookie') ?? '');
       },
-    }
-  );
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            context.cookies.set(name, value, options)
+          );
+        } catch (error) {
+          if (
+            error instanceof Error &&
+            error.message.includes('already been sent')
+          ) {
+            return;
+          }
+
+          throw error;
+        }
+      },
+    },
+  });
 
   return supabase;
 };
