@@ -80,8 +80,8 @@ export function SignUpForm() {
         return;
       }
 
-      // Redirect to recipes page (email verification disabled per requirements)
-      window.location.href = '/recipes';
+      // Redirect to sign-in page with success message
+      window.location.href = '/sign-in?success=true';
     } catch (error) {
       setIsLoading(false);
       if (error instanceof Error && 'issues' in error) {
@@ -104,6 +104,7 @@ export function SignUpForm() {
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {globalError && (
         <div
+          data-testid="signup-error-message"
           className="bg-destructive/10 text-destructive border-destructive/20 rounded-md border px-4 py-3"
           role="alert"
         >
@@ -114,6 +115,7 @@ export function SignUpForm() {
       <FormField label="Email" htmlFor="email" required error={errors.email}>
         <Input
           id="email"
+          data-testid="signup-email-input"
           type="email"
           value={formData.email}
           onChange={(e) => handleChange('email', e.target.value)}
@@ -132,6 +134,7 @@ export function SignUpForm() {
       >
         <Input
           id="displayName"
+          data-testid="signup-displayname-input"
           type="text"
           value={formData.displayName}
           onChange={(e) => handleChange('displayName', e.target.value)}
@@ -150,6 +153,7 @@ export function SignUpForm() {
       >
         <PasswordInput
           id="password"
+          data-testid="signup-password-input"
           value={formData.password}
           onChange={(e) => handleChange('password', e.target.value)}
           onBlur={() => handleBlur('password')}
@@ -168,6 +172,7 @@ export function SignUpForm() {
       >
         <PasswordInput
           id="confirmPassword"
+          data-testid="signup-confirmpassword-input"
           value={formData.confirmPassword}
           onChange={(e) => handleChange('confirmPassword', e.target.value)}
           onBlur={() => handleBlur('confirmPassword')}
@@ -179,7 +184,12 @@ export function SignUpForm() {
       </FormField>
 
       <div className="space-y-4">
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button
+          type="submit"
+          data-testid="signup-submit-button"
+          className="w-full"
+          disabled={isLoading}
+        >
           {isLoading ? 'Creating account...' : 'Sign Up'}
         </Button>
 
@@ -187,6 +197,7 @@ export function SignUpForm() {
           Already have an account?{' '}
           <a
             href="/sign-in"
+            data-testid="signup-signin-link"
             className="text-primary font-medium hover:underline"
           >
             Sign in

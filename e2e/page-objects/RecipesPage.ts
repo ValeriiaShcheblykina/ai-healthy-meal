@@ -6,6 +6,7 @@ import { BasePage } from './BasePage';
  */
 export class RecipesPage extends BasePage {
   readonly searchInput: Locator;
+  readonly searchBar: Locator; // Alias for searchInput for backward compatibility
   readonly sortDropdown: Locator;
   readonly viewToggleGrid: Locator;
   readonly viewToggleList: Locator;
@@ -17,17 +18,16 @@ export class RecipesPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.searchInput = page.getByPlaceholder(/search/i);
-    this.sortDropdown = page.getByRole('combobox', { name: /sort/i });
-    this.viewToggleGrid = page.getByRole('button', { name: /grid view/i });
-    this.viewToggleList = page.getByRole('button', { name: /list view/i });
-    this.recipeCards = page.locator('[data-testid="recipe-card"]');
-    this.emptyState = page.getByText(/no recipes found/i);
-    this.paginationNext = page.getByRole('button', { name: /next/i });
-    this.paginationPrev = page.getByRole('button', { name: /previous/i });
-    this.createRecipeButton = page.getByRole('button', {
-      name: /create recipe/i,
-    });
+    this.searchInput = page.getByTestId('recipes-search-input');
+    this.searchBar = this.searchInput; // Alias for backward compatibility
+    this.sortDropdown = page.getByTestId('recipes-sort-select');
+    this.viewToggleGrid = page.getByTestId('recipes-view-grid-button');
+    this.viewToggleList = page.getByTestId('recipes-view-list-button');
+    this.recipeCards = page.getByTestId('recipe-card');
+    this.emptyState = page.getByTestId('recipes-empty-state');
+    this.paginationNext = page.getByTestId('recipes-pagination-next');
+    this.paginationPrev = page.getByTestId('recipes-pagination-prev');
+    this.createRecipeButton = page.getByTestId('recipes-new-recipe-button');
   }
 
   /**

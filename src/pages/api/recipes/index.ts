@@ -19,8 +19,6 @@ export const GET: APIRoute = async ({ request, locals }) => {
     // Check authentication via session cookie or Bearer token
     const authHeader = request.headers.get('authorization');
 
-    let userId: string | undefined;
-
     if (authHeader?.startsWith('Bearer ')) {
       // API token authentication
       const token = authHeader.substring('Bearer '.length);
@@ -29,8 +27,6 @@ export const GET: APIRoute = async ({ request, locals }) => {
       if (error || !data.user) {
         throw createUnauthorizedError();
       }
-
-      userId = data.user.id;
     } else {
       // Session cookie authentication
       const { data, error } = await locals.supabase.auth.getUser();
@@ -38,8 +34,6 @@ export const GET: APIRoute = async ({ request, locals }) => {
       if (error || !data.user) {
         throw createUnauthorizedError();
       }
-
-      userId = data.user.id;
     }
 
     // Parse query parameters from URL

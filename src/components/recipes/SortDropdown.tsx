@@ -12,27 +12,28 @@ export interface SortDropdownProps {
 }
 
 export function SortDropdown({ sort, order, onSortChange }: SortDropdownProps) {
-  const sortOptions: Array<{
+  const sortOptions: {
     value: RecipeListQueryParams['sort'];
     label: string;
-  }> = [
+  }[] = [
     { value: 'created_at', label: 'Date Created' },
     { value: 'updated_at', label: 'Date Modified' },
     { value: 'title', label: 'Title' },
   ];
 
   const handleToggleOrder = () => {
-    onSortChange(sort!, order === 'asc' ? 'desc' : 'asc');
+    onSortChange(sort ?? 'created_at', order === 'asc' ? 'desc' : 'asc');
   };
 
   const handleSortChange = (newSort: RecipeListQueryParams['sort']) => {
-    onSortChange(newSort, order!);
+    onSortChange(newSort, order ?? 'desc');
   };
 
   return (
     <div className="flex items-center gap-2">
       <div className="relative">
         <select
+          data-testid="recipes-sort-select"
           value={sort}
           onChange={(e) =>
             handleSortChange(e.target.value as RecipeListQueryParams['sort'])
@@ -51,6 +52,7 @@ export function SortDropdown({ sort, order, onSortChange }: SortDropdownProps) {
       <Button
         variant="outline"
         size="icon"
+        data-testid="recipes-sort-order-toggle"
         onClick={handleToggleOrder}
         aria-label={`Sort ${order === 'asc' ? 'ascending' : 'descending'}`}
       >

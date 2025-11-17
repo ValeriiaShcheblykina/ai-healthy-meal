@@ -14,6 +14,7 @@ export function ViewToggle({ viewMode, onViewModeChange }: ViewToggleProps) {
       <Button
         variant={viewMode === 'grid' ? 'default' : 'ghost'}
         size="icon"
+        data-testid="recipes-view-grid-button"
         onClick={() => onViewModeChange('grid')}
         className="h-7 w-7"
         aria-label="Grid view"
@@ -24,6 +25,7 @@ export function ViewToggle({ viewMode, onViewModeChange }: ViewToggleProps) {
       <Button
         variant={viewMode === 'list' ? 'default' : 'ghost'}
         size="icon"
+        data-testid="recipes-view-list-button"
         onClick={() => onViewModeChange('list')}
         className="h-7 w-7"
         aria-label="List view"

@@ -99,6 +99,7 @@ export function ForgotPasswordForm() {
     return (
       <div className="space-y-6">
         <div
+          data-testid="forgot-password-success-message"
           className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-green-900 dark:border-green-800 dark:bg-green-950 dark:text-green-100"
           role="status"
         >
@@ -110,7 +111,9 @@ export function ForgotPasswordForm() {
         </div>
 
         <Button asChild variant="outline" className="w-full">
-          <a href="/sign-in">Back to Sign In</a>
+          <a href="/sign-in" data-testid="forgot-password-back-to-signin-link">
+            Back to Sign In
+          </a>
         </Button>
       </div>
     );
@@ -120,6 +123,7 @@ export function ForgotPasswordForm() {
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {globalError && (
         <div
+          data-testid="forgot-password-error-message"
           className="bg-destructive/10 text-destructive border-destructive/20 rounded-md border px-4 py-3"
           role="alert"
         >
@@ -129,14 +133,15 @@ export function ForgotPasswordForm() {
 
       <div className="space-y-2">
         <p className="text-muted-foreground text-sm">
-          Enter your email address and we'll send you instructions to reset your
-          password.
+          Enter your email address and we&apos;ll send you instructions to reset
+          your password.
         </p>
       </div>
 
       <FormField label="Email" htmlFor="email" required error={errors.email}>
         <Input
           id="email"
+          data-testid="forgot-password-email-input"
           type="email"
           value={formData.email}
           onChange={(e) => handleChange('email', e.target.value)}
@@ -149,7 +154,12 @@ export function ForgotPasswordForm() {
       </FormField>
 
       <div className="space-y-4">
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button
+          type="submit"
+          data-testid="forgot-password-submit-button"
+          className="w-full"
+          disabled={isLoading}
+        >
           {isLoading ? 'Sending...' : 'Send Reset Instructions'}
         </Button>
 
@@ -157,6 +167,7 @@ export function ForgotPasswordForm() {
           Remember your password?{' '}
           <a
             href="/sign-in"
+            data-testid="forgot-password-signin-link"
             className="text-primary font-medium hover:underline"
           >
             Sign in

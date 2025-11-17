@@ -4,7 +4,7 @@
 
 export const testUsers = {
   validUser: {
-    email: 'test+valid@example.com',
+    email: 'test.valid@example.com',
     password: 'Test123!@#',
     displayName: 'Test User',
   },
@@ -13,7 +13,7 @@ export const testUsers = {
     password: 'WrongPassword123!',
   },
   newUser: {
-    email: `test+${Date.now()}@example.com`,
+    email: `test.${Date.now()}@example.com`,
     password: 'NewUser123!@#',
     displayName: 'New Test User',
   },

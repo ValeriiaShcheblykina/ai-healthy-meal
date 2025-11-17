@@ -102,6 +102,7 @@ export function SignInForm() {
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {globalError && (
         <div
+          data-testid="signin-error-message"
           className="bg-destructive/10 text-destructive border-destructive/20 rounded-md border px-4 py-3"
           role="alert"
         >
@@ -112,6 +113,7 @@ export function SignInForm() {
       <FormField label="Email" htmlFor="email" required error={errors.email}>
         <Input
           id="email"
+          data-testid="signin-email-input"
           type="email"
           value={formData.email}
           onChange={(e) => handleChange('email', e.target.value)}
@@ -131,6 +133,7 @@ export function SignInForm() {
       >
         <PasswordInput
           id="password"
+          data-testid="signin-password-input"
           value={formData.password}
           onChange={(e) => handleChange('password', e.target.value)}
           onBlur={() => handleBlur('password')}
@@ -144,6 +147,7 @@ export function SignInForm() {
       <div className="flex justify-end">
         <a
           href="/forgot-password"
+          data-testid="signin-forgot-password-link"
           className="text-primary text-sm font-medium hover:underline"
         >
           Forgot password?
@@ -151,14 +155,20 @@ export function SignInForm() {
       </div>
 
       <div className="space-y-4">
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button
+          type="submit"
+          data-testid="signin-submit-button"
+          className="w-full"
+          disabled={isLoading}
+        >
           {isLoading ? 'Signing in...' : 'Sign In'}
         </Button>
 
         <p className="text-muted-foreground text-center text-sm">
-          Don't have an account?{' '}
+          Don&apos;t have an account?{' '}
           <a
             href="/sign-up"
+            data-testid="signin-signup-link"
             className="text-primary font-medium hover:underline"
           >
             Sign up

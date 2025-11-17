@@ -9,7 +9,11 @@ const { user } = Astro.locals;
 >
   <div class="flex h-16 items-center justify-between px-4 md:px-6">
     <div class="flex items-center gap-6">
-      <a href="/" class="flex items-center space-x-2">
+      <a
+        href="/"
+        data-testid="header-logo-link"
+        class="flex items-center space-x-2"
+      >
         <span class="text-foreground text-xl font-bold">AI Healthy Meal</span>
       </a>
 
@@ -18,6 +22,7 @@ const { user } = Astro.locals;
           user && (
             <a
               href="/recipes"
+              data-testid="header-recipes-link"
               class="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
             >
               Recipes
@@ -33,12 +38,16 @@ const { user } = Astro.locals;
       {
         user ? (
           <div class="flex items-center gap-2">
-            <span class="text-muted-foreground hidden text-sm sm:inline">
+            <span
+              class="text-muted-foreground hidden text-sm sm:inline"
+              data-testid="header-user-email"
+            >
               {user.email}
             </span>
             <form action="/api/auth/sign-out" method="POST">
               <button
                 type="submit"
+                data-testid="header-signout-button"
                 class="focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-4 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
               >
                 Sign Out
@@ -49,12 +58,14 @@ const { user } = Astro.locals;
           <div class="flex items-center gap-2">
             <a
               href="/sign-in"
+              data-testid="header-signin-link"
               class="focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-4 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
             >
               Sign In
             </a>
             <a
               href="/sign-up"
+              data-testid="header-signup-link"
               class="focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center justify-center rounded-md px-4 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
             >
               Sign Up

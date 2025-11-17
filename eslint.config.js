@@ -22,7 +22,12 @@ const baseConfig = tseslint.config({
     tseslint.configs.stylistic,
   ],
   rules: {
-    'no-console': 'warn',
+    'no-console': [
+      'error',
+      {
+        allow: ['error', 'info', 'warn'],
+      },
+    ],
     'no-unused-vars': 'off',
     '@typescript-eslint/consistent-type-definitions': 'off',
   },
@@ -44,6 +49,7 @@ const reactConfig = tseslint.config({
   extends: [pluginReact.configs.flat.recommended],
   languageOptions: {
     ...pluginReact.configs.flat.recommended.languageOptions,
+    parser: tseslint.parser,
     globals: {
       window: true,
       document: true,

@@ -15,17 +15,15 @@ export class SignUpPage extends BasePage {
 
   constructor(page: Page) {
     super(page);
-    this.emailInput = page.getByLabel(/email/i);
-    // Use getByRole to target the password input, not the show/hide button
-    this.passwordInput = page.getByRole('textbox', { name: /^password\*/i });
-    this.confirmPasswordInput = page.getByLabel(/confirm password/i);
-    this.displayNameInput = page.getByLabel(/display name/i);
-    this.signUpButton = page.getByRole('button', { name: /sign up/i });
-    this.errorMessage = page.locator('[role="alert"]');
-    // Target the sign in link within the form, not in the header
-    this.signInLink = page
-      .locator('form')
-      .getByRole('link', { name: /sign in/i });
+    this.emailInput = page.getByTestId('signup-email-input');
+    this.passwordInput = page.getByTestId('signup-password-input');
+    this.confirmPasswordInput = page.getByTestId(
+      'signup-confirmpassword-input'
+    );
+    this.displayNameInput = page.getByTestId('signup-displayname-input');
+    this.signUpButton = page.getByTestId('signup-submit-button');
+    this.errorMessage = page.getByTestId('signup-error-message');
+    this.signInLink = page.getByTestId('signup-signin-link');
   }
 
   /**
@@ -44,10 +42,30 @@ export class SignUpPage extends BasePage {
     confirmPassword: string,
     displayName: string
   ) {
-    await this.fillField(this.emailInput, email);
+    // Fill email field with explicit steps to ensure it works
+    await this.emailInput.click();
+    await this.emailInput.clear();
+    await this.emailInput.fill(email);
+
+    // Verify email was filled correctly
+    const emailValue = await this.emailInput.inputValue();
+    if (emailValue !== email) {
+      console.error(
+        `Email fill failed. Expected: ${email}, Got: ${emailValue}`
+      );
+      // Try again with pressSequentially
+      await this.emailInput.clear();
+      await this.emailInput.pressSequentially(email);
+    }
+
+    // Fill other fields in order
+    await this.fillField(this.displayNameInput, displayName);
     await this.fillField(this.passwordInput, password);
     await this.fillField(this.confirmPasswordInput, confirmPassword);
-    await this.fillField(this.displayNameInput, displayName);
+
+    // Wait a moment for any async validation to complete
+    await this.page.waitForTimeout(500);
+
     await this.click(this.signUpButton);
   }
 

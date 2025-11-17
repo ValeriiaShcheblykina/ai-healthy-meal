@@ -22,6 +22,7 @@ const { title = 'AI Healthy Meal', showHeader = true } = Astro.props;
     <!-- Prevent flash of wrong theme -->
     <script is:inline>
       const getThemePreference = () => {
+        // eslint-disable-next-line prettier/prettier
         const stored = localStorage.getItem('theme');
         if (stored) {
           return stored;

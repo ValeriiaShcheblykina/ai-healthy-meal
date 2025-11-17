@@ -8,6 +8,7 @@ This project uses **Vitest** for unit tests and **Playwright** for end-to-end (e
 - [Running Tests](#running-tests)
 - [Unit Testing with Vitest](#unit-testing-with-vitest)
 - [E2E Testing with Playwright](#e2e-testing-with-playwright)
+- [Data-TestID Strategy](#data-testid-strategy)
 - [Writing Tests](#writing-tests)
 - [Best Practices](#best-practices)
 
@@ -173,7 +174,7 @@ E2E tests are configured in `playwright.config.ts`:
 
 ### Page Object Model
 
-Use Page Object Model (POM) for maintainable tests. Page objects are in `e2e/page-objects/`:
+Use Page Object Model (POM) for maintainable tests. Page objects are in `e2e/page-objects/` and use `data-testid` selectors internally:
 
 ```typescript
 import { test, expect } from '@playwright/test';
@@ -182,10 +183,57 @@ import { SignInPage } from './page-objects/SignInPage';
 test('should sign in successfully', async ({ page }) => {
   const signInPage = new SignInPage(page);
   await signInPage.goto();
+  
+  // Page objects encapsulate data-testid selectors
   await signInPage.signIn('test@example.com', 'Test123!@#');
+  
   await expect(page).toHaveURL(/\/recipes/);
 });
 ```
+
+## Data-TestID Strategy
+
+This project uses `data-testid` attributes for reliable element selection in E2E tests. All interactive elements have test IDs for easier testing.
+
+### Quick Reference
+
+**Authentication:**
+- `signin-email-input`, `signin-password-input`, `signin-submit-button`
+- `signup-email-input`, `signup-password-input`, `signup-submit-button`
+- Password toggles automatically get `-toggle` suffix
+
+**Recipes:**
+- `recipes-search-input` - Search input field
+- `recipes-sort-select` - Sort dropdown
+- `recipes-view-grid-button`, `recipes-view-list-button` - View toggles
+- `recipe-card` - Individual recipe cards
+- `recipes-pagination-next`, `recipes-pagination-prev` - Pagination buttons
+
+**Navigation:**
+- `header-logo-link`, `header-recipes-link`
+- `header-signout-button`, `header-signin-link`, `header-signup-link`
+
+### Usage Examples
+
+```typescript
+// Direct test ID usage
+await page.getByTestId('signin-email-input').fill('user@example.com');
+await page.getByTestId('signin-submit-button').click();
+
+// Verify elements
+await expect(page.getByTestId('recipes-empty-state')).toBeVisible();
+
+// Work with collections
+const recipeCards = page.getByTestId('recipe-card');
+await expect(recipeCards).toHaveCount(5);
+```
+
+### Documentation
+
+For comprehensive examples and best practices:
+- **[Data-TestID Guide](e2e/DATA_TESTID_GUIDE.md)** - Complete guide with examples
+- **[Test ID Reference](DATA_TESTID_SUMMARY.md)** - Full list of all test IDs
+- **[Example Tests](e2e/recipes.spec.ts)** - Advanced test examples
 
 ### Creating a New Page Object
 
@@ -217,6 +265,51 @@ export class MyPage extends BasePage {
 
 - **Test Data**: Use fixtures from `e2e/fixtures/test-data.ts`
 - **Helpers**: Use helper functions from `e2e/helpers/test-helpers.ts`
+
+### E2E Test Cleanup
+
+The project includes automatic cleanup of test data from Supabase after E2E tests complete.
+
+#### Setup
+
+1. Create a `.env.test` file in the project root:
+
+```env
+# Base URL for E2E tests
+BASE_URL=http://localhost:3000
+
+# Supabase Configuration
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_KEY=your_supabase_anon_key
+
+# Supabase Service Role Key (REQUIRED for E2E test cleanup)
+# Get from: Supabase Dashboard → Project Settings → API → service_role
+# NOTE: This is different from the public anon key!
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+```
+
+⚠️ **IMPORTANT**: 
+- Never commit `.env.test` to version control
+- The **service role key** is required (not the public key) because user deletion and bypassing RLS needs admin privileges
+- This is safe for E2E tests as they run in a controlled environment
+
+#### How It Works
+
+- **Automatic Cleanup**: After all E2E tests complete, a global teardown script runs
+- **Test Users**: Users with emails containing `test+`, `@example.com`, or starting with `e2e-` are deleted
+- **Test Recipes**: All recipes are soft-deleted (sets `deleted_at` timestamp)
+
+#### Cleanup Functions
+
+Available in `e2e/helpers/cleanup.ts`:
+
+- `cleanupAllTestData()` - Cleans up all test data
+- `cleanupTestUsers()` - Deletes test users
+- `cleanupTestRecipes()` - Soft-deletes test recipes
+- `cleanupUserByEmail(email)` - Deletes a specific user
+- `cleanupRecipesForUser(userId)` - Deletes recipes for a specific user
+
+For detailed documentation, see [E2E_TEARDOWN.md](./E2E_TEARDOWN.md).
 
 ## Writing Tests
 
