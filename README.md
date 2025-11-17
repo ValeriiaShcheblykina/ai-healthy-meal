@@ -41,7 +41,8 @@ HealthyMeal solves the challenge of customizing online recipes to match individu
 ### CI/CD & Hosting
 
 - GitHub Actions - CI/CD pipelines
-- DigitalOcean - Application hosting via Docker
+- Cloudflare Pages - Serverless deployment (primary)
+- DigitalOcean - Application hosting via Docker (alternative)
 
 ## Prerequisites
 
@@ -93,7 +94,11 @@ npm run dev
 6. Build for production:
 
 ```bash
+# For local/Docker deployment (Node.js adapter)
 npm run build
+
+# For Cloudflare Pages deployment
+CLOUDFLARE=true npm run build
 ```
 
 ## Available Scripts
@@ -210,6 +215,47 @@ npm run test:e2e
 - **Unit Tests**: Test individual functions and components in isolation
 - **E2E Tests**: Test complete user workflows using Page Object Model
 - **Coverage Target**: 80% for lines, functions, branches, and statements
+
+## Deployment
+
+### Cloudflare Pages
+
+The project is configured for automatic deployment to Cloudflare Pages via GitHub Actions.
+
+#### Prerequisites
+
+1. A Cloudflare account with a Pages project created
+2. The following GitHub secrets configured in your repository:
+   - `CLOUDFLARE_API_TOKEN` - API token with Pages permissions
+   - `CLOUDFLARE_ACCOUNT_ID` - Your Cloudflare account ID
+   - `CLOUDFLARE_PROJECT_NAME` - Your Cloudflare Pages project name
+   - `SUPABASE_URL` - Your Supabase project URL
+   - `SUPABASE_KEY` - Your Supabase anon key
+
+#### Workflow
+
+The `master.yml` workflow automatically:
+
+1. Runs linting checks
+2. Executes unit tests with coverage
+3. Builds the application with Cloudflare adapter
+4. Deploys to Cloudflare Pages
+
+Deployments are triggered on every push to the `master` branch.
+
+#### Manual Build
+
+To build for Cloudflare Pages locally:
+
+```bash
+CLOUDFLARE=true npm run build
+```
+
+The build output will be in the `dist/` directory.
+
+### Alternative: Docker/DigitalOcean
+
+The project also supports traditional Node.js deployment using the Node adapter (default when `CLOUDFLARE` env var is not set).
 
 ## Development Guidelines
 
