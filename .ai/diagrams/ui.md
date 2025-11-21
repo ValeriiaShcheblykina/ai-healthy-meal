@@ -362,3 +362,7 @@ flowchart TD
 5. **Row Level Security** - Bezpieczeństwo na poziomie bazy danych jako dodatkowa warstwa ochrony
 6. **TanStack Query** - Eleganckie zarządzanie stanem serwera z cache i optymistycznymi aktualizacjami
 
+
+
+
+

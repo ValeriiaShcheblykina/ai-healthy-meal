@@ -1,9 +1,8 @@
 import type { APIRoute } from 'astro';
-import { createApiErrorResponse } from '@/lib/errors/api-errors';
 
 export const prerender = false;
 
-export const POST: APIRoute = async ({ locals }) => {
+export const POST: APIRoute = async ({ locals, redirect }) => {
   try {
     const supabase = locals.supabase;
 
@@ -14,35 +13,15 @@ export const POST: APIRoute = async ({ locals }) => {
         console.error('Sign out error:', error);
       }
 
-      return new Response(
-        JSON.stringify({
-          error: {
-            message: 'Unable to sign out',
-          },
-        }),
-        {
-          status: 400,
-          headers: { 'Content-Type': 'application/json' },
-        }
-      );
+      // Redirect to home page even on error (user will be logged out locally)
+      return redirect('/', 302);
     }
 
-    return new Response(
-      JSON.stringify({
-        message: 'Signed out successfully',
-      }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    // Redirect to home page after successful sign out
+    return redirect('/', 302);
   } catch (error) {
     console.error('Sign out error:', error);
-    return createApiErrorResponse({
-      statusCode: 500,
-      code: 'INTERNAL_ERROR',
-      message: 'An unexpected error occurred',
-      details: import.meta.env.DEV ? { error: String(error) } : undefined,
-    });
+    // Redirect to home page even on unexpected error
+    return redirect('/', 302);
   }
 };

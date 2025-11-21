@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/consistent-indexed-object-style */
 export type Json =
   | string
   | number
@@ -8,8 +9,12 @@ export type Json =
 
 export type Database = {
   graphql_public: {
-    Tables: Record<never, never>
-    Views: Record<never, never>
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
     Functions: {
       graphql: {
         Args: {
@@ -21,8 +26,12 @@ export type Database = {
         Returns: Json
       }
     }
-    Enums: Record<never, never>
-    CompositeTypes: Record<never, never>
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
   public: {
     Tables: {
@@ -207,10 +216,18 @@ export type Database = {
         Relationships: []
       }
     }
-    Views: Record<never, never>
-    Functions: Record<never, never>
-    Enums: Record<never, never>
-    CompositeTypes: Record<never, never>
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      [_ in never]: never
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
   }
 }
 

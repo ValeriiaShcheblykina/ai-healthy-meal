@@ -530,10 +530,13 @@ export class RecipeService {
    * @see {@link listRecipes} which automatically excludes soft-deleted recipes
    */
   async deleteRecipe(id: string): Promise<void> {
-    const { error } = await this.supabase
-      .from('recipes')
-      .update({ deleted_at: new Date().toISOString() })
-      .eq('id', id);
+    // Use RPC function with explicit auth.uid() check inside for security
+    // Type cast needed because function was created after types were generated
+    // TODO: Regenerate database types with: npx supabase gen types typescript --local
+    const { error } = await (this.supabase as any).rpc('soft_delete_recipe', {
+      recipe_id: id,
+    });
+
     if (error) {
       console.error('Error in RecipeService.deleteRecipe', error);
       throw createInternalError('Failed to delete recipe');

@@ -1,4 +1,8 @@
-import type { RecipeListQueryParams } from '../../types.ts';
+import type {
+  RecipeListQueryParams,
+  CreateRecipeCommand,
+  UpdateRecipeCommand,
+} from '../../types.ts';
 import { createValidationError } from '../errors/api-errors.ts';
 
 /**
@@ -109,5 +113,116 @@ export function validateRecipeListQueryParams(
   return {
     success: true,
     data: normalized as Required<RecipeListQueryParams>,
+  };
+}
+
+/**
+ * Maximum length for recipe title
+ */
+const MAX_TITLE_LENGTH = 200;
+
+/**
+ * Maximum length for recipe content
+ */
+const MAX_CONTENT_LENGTH = 50000;
+
+/**
+ * Validates recipe data for create or update operations
+ *
+ * @param data - Raw recipe data from request
+ * @param isCreate - Whether this is a create operation (true) or update (false)
+ * @returns Validation result with validated data or error
+ */
+export function validateRecipeData(
+  data: Record<string, unknown>,
+  isCreate: boolean
+): ValidationResult<CreateRecipeCommand | UpdateRecipeCommand> {
+  const errors: Record<string, string> = {};
+  const validated: Partial<CreateRecipeCommand> = {};
+
+  // Validate title
+  if (data.title !== undefined) {
+    if (typeof data.title !== 'string') {
+      errors.title = 'must be a string';
+    } else if (data.title.trim().length === 0) {
+      errors.title = 'cannot be empty';
+    } else if (data.title.length > MAX_TITLE_LENGTH) {
+      errors.title = `must be at most ${MAX_TITLE_LENGTH} characters`;
+    } else {
+      validated.title = data.title.trim();
+    }
+  } else if (isCreate) {
+    errors.title = 'is required';
+  }
+
+  // Validate content (text)
+  if (data.content !== undefined && data.content !== null) {
+    if (typeof data.content !== 'string') {
+      errors.content = 'must be a string';
+    } else if (data.content.trim().length === 0) {
+      validated.content = null; // Allow null for empty content
+    } else if (data.content.length > MAX_CONTENT_LENGTH) {
+      errors.content = `must be at most ${MAX_CONTENT_LENGTH} characters`;
+    } else {
+      validated.content = data.content.trim();
+    }
+  } else if (isCreate && !data.content_json) {
+    // For create, require at least one content field
+    errors.content = 'either content or content_json is required';
+  } else {
+    validated.content = null;
+  }
+
+  // Validate content_json
+  if (data.content_json !== undefined && data.content_json !== null) {
+    // For MVP, accept any JSON object
+    // In production, you'd want to validate the structure
+    try {
+      if (typeof data.content_json === 'object') {
+        validated.content_json = data.content_json;
+      } else {
+        errors.content_json = 'must be a valid JSON object';
+      }
+    } catch {
+      errors.content_json = 'must be valid JSON';
+    }
+  } else {
+    validated.content_json = null;
+  }
+
+  // Validate is_public
+  if (data.is_public !== undefined) {
+    if (typeof data.is_public !== 'boolean') {
+      errors.is_public = 'must be a boolean';
+    } else {
+      validated.is_public = data.is_public;
+    }
+  } else {
+    validated.is_public = false; // default to private
+  }
+
+  // Ensure at least one content field is present for create
+  if (
+    isCreate &&
+    !validated.content &&
+    !validated.content_json &&
+    !errors.content &&
+    !errors.content_json
+  ) {
+    errors.content = 'either content or content_json is required';
+  }
+
+  // If there are validation errors, return error result
+  if (Object.keys(errors).length > 0) {
+    return {
+      success: false,
+      error: createValidationError('Invalid recipe data', errors),
+    };
+  }
+
+  // Return success with validated data
+  return {
+    success: true,
+    data: validated as CreateRecipeCommand | UpdateRecipeCommand,
   };
 }

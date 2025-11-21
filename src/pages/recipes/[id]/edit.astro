@@ -1,0 +1,27 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user';
+import { RecipeEditView } from '@/components/recipes/RecipeEditView';
+
+// Ensure dynamic rendering
+export const prerender = false;
+
+// Check authentication
+const user = await getAuthenticatedUser(Astro);
+
+if (!user) {
+  return Astro.redirect('/');
+}
+
+const { id } = Astro.params;
+
+if (!id) {
+  return Astro.redirect('/recipes');
+}
+---
+
+<Layout title="Edit Recipe">
+  <div class="container mx-auto max-w-3xl px-4 py-8">
+    <RecipeEditView client:load recipeId={id} />
+  </div>
+</Layout>
