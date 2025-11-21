@@ -531,9 +531,7 @@ export class RecipeService {
    */
   async deleteRecipe(id: string): Promise<void> {
     // Use RPC function with explicit auth.uid() check inside for security
-    // Type cast needed because function was created after types were generated
-    // TODO: Regenerate database types with: npx supabase gen types typescript --local
-    const { error } = await (this.supabase as any).rpc('soft_delete_recipe', {
+    const { error } = await this.supabase.rpc('soft_delete_recipe', {
       recipe_id: id,
     });
 
