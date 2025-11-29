@@ -77,7 +77,7 @@ PUBLIC_SUPABASE_URL=your_supabase_url
 PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # OpenRouter.ai
-OPENROUTER_API_KEY=your_openrouter_api_key
+OPEN_ROUTER_API_KEY=your_openrouter_api_key
 ```
 
 4. Set up Supabase:

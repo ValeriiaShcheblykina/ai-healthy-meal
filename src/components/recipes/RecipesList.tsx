@@ -112,6 +112,7 @@ function RecipesListContent() {
           viewMode={viewMode}
           onFiltersChange={handleFiltersChange}
           onViewModeChange={setViewMode}
+          hasRecipes={true}
         />
         <SkeletonLoader viewMode={viewMode} />
       </>
@@ -130,6 +131,7 @@ function RecipesListContent() {
           viewMode={viewMode}
           onFiltersChange={handleFiltersChange}
           onViewModeChange={setViewMode}
+          hasRecipes={false}
         />
         <EmptyState hasSearchQuery={hasSearchQuery} />
       </>
@@ -154,6 +156,7 @@ function RecipesListContent() {
         viewMode={viewMode}
         onFiltersChange={handleFiltersChange}
         onViewModeChange={setViewMode}
+        hasRecipes={recipes.length > 0}
       />
       {viewMode === 'grid' ? (
         <RecipesGrid recipes={recipes} />

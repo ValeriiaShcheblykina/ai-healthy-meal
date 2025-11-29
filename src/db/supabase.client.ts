@@ -45,6 +45,8 @@ export const createSupabaseServerInstance = (context: {
             error instanceof Error &&
             error.message.includes('already been sent')
           ) {
+            // Silently ignore - this can happen during sign-out when
+            // cookies are cleared before the response is sent
             return;
           }
 

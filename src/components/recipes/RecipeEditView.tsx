@@ -2,11 +2,14 @@ import * as React from 'react';
 import { Card } from '@/components/ui/card';
 import { RecipeForm, type RecipeFormData } from './RecipeForm';
 import { ToastProvider, useToast } from '@/components/ui/toast';
+import { RecipesClientService } from '@/lib/services/client/recipes.client.service';
 import type { RecipeListItemDTO } from '@/types';
 
 interface RecipeEditViewProps {
   recipeId: string;
 }
+
+const recipesService = new RecipesClientService();
 
 function RecipeEditViewInner({ recipeId }: RecipeEditViewProps) {
   const [recipe, setRecipe] = React.useState<RecipeListItemDTO | null>(null);
@@ -20,24 +23,12 @@ function RecipeEditViewInner({ recipeId }: RecipeEditViewProps) {
     const fetchRecipe = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/recipes/${recipeId}`);
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            setError('Recipe not found');
-          } else if (response.status === 401) {
-            window.location.href = '/';
-          } else {
-            setError('Failed to load recipe');
-          }
-          return;
-        }
-
-        const data = await response.json();
+        const data = await recipesService.getRecipe(recipeId);
         setRecipe(data);
       } catch (err) {
-        setError('Failed to load recipe');
-        console.error('Error fetching recipe:', err);
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to load recipe';
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -50,18 +41,7 @@ function RecipeEditViewInner({ recipeId }: RecipeEditViewProps) {
     try {
       setIsSubmitting(true);
 
-      const response = await fetch(`/api/recipes/${recipeId}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error?.message || 'Failed to update recipe');
-      }
+      await recipesService.updateRecipe(recipeId, data);
 
       addToast({
         title: 'Success',
@@ -74,7 +54,6 @@ function RecipeEditViewInner({ recipeId }: RecipeEditViewProps) {
         window.location.href = `/recipes/${recipeId}`;
       }, 500);
     } catch (error) {
-      console.error('Error updating recipe:', error);
       addToast({
         title: 'Error',
         description:

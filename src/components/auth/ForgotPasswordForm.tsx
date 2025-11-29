@@ -141,6 +141,7 @@ export function ForgotPasswordForm() {
       <FormField label="Email" htmlFor="email" required error={errors.email}>
         <Input
           id="email"
+          name="email"
           data-testid="forgot-password-email-input"
           type="email"
           value={formData.email}

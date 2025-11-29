@@ -181,6 +181,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       >
         <PasswordInput
           id="password"
+          name="password"
           data-testid="reset-password-password-input"
           value={formData.password}
           onChange={(e) => handleChange('password', e.target.value)}
@@ -200,6 +201,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       >
         <PasswordInput
           id="confirmPassword"
+          name="confirmPassword"
           data-testid="reset-password-confirmpassword-input"
           value={formData.confirmPassword}
           onChange={(e) => handleChange('confirmPassword', e.target.value)}

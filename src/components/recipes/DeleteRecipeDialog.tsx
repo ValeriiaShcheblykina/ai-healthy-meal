@@ -43,6 +43,7 @@ export function DeleteRecipeDialog({
             variant="outline"
             onClick={() => onOpenChange(false)}
             disabled={isDeleting}
+            data-testid="delete-dialog-cancel-button"
           >
             Cancel
           </Button>
@@ -50,6 +51,7 @@ export function DeleteRecipeDialog({
             variant="destructive"
             onClick={handleConfirm}
             disabled={isDeleting}
+            data-testid="delete-dialog-confirm-button"
           >
             {isDeleting ? (
               <>

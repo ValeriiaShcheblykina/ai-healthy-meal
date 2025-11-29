@@ -23,6 +23,8 @@
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
+    "test:e2e:setup": "./scripts/setup-e2e-env.sh",
+    "test:e2e:verify": "./scripts/check-test-user.sh",
     "playwright:install": "playwright install chromium --with-deps",
     "test:all": "npm run test:unit && npm run test:e2e"
   },
@@ -79,7 +81,7 @@
     "prettier": "^3.6.2",
     "prettier-plugin-astro": "0.14.1",
     "prettier-plugin-tailwindcss": "^0.7.1",
-    "supabase": "^2.54.11",
+    "supabase": "^2.58.5",
     "typescript-eslint": "8.28.0",
     "vitest": "^4.0.9"
   },

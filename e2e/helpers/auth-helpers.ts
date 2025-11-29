@@ -17,6 +17,7 @@ import { SignInPage } from '../page-objects/SignInPage';
 export async function signInWithTestUser(page: Page) {
   const email = process.env.E2E_USERNAME;
   const password = process.env.E2E_PASSWORD;
+  const supabaseUrl = process.env.SUPABASE_URL;
 
   if (!email || !password) {
     throw new Error(
@@ -28,55 +29,89 @@ export async function signInWithTestUser(page: Page) {
     );
   }
 
+  if (!supabaseUrl) {
+    throw new Error(
+      'SUPABASE_URL must be set in .env.test\n\n' +
+        'Your .env.test should match the Supabase instance your dev server uses.\n' +
+        'Check your .env file and copy the SUPABASE_URL to .env.test'
+    );
+  }
+
+  console.info(`🔐 Signing in with: ${email}`);
+  console.info(`🔗 Using Supabase URL: ${supabaseUrl}`);
+
   const signInPage = new SignInPage(page);
   await signInPage.goto();
 
-  console.info(`Attempting sign-in with: ${email}`);
-  console.info(`Attempting sign-in with: ${password}`);
+  // Check if already signed in (from previous test or existing session)
+  if (page.url().includes('/recipes')) {
+    console.info('✅ Already signed in');
+    return;
+  }
 
   try {
+    // Wait for page to be fully loaded and React to hydrate
+    await page.waitForLoadState('networkidle');
+
+    // Ensure form elements are ready
+    await signInPage.emailInput.waitFor({ state: 'visible' });
+    await signInPage.passwordInput.waitFor({ state: 'visible' });
+    await signInPage.signInButton.waitFor({ state: 'visible' });
+
     // Fill in credentials
     await signInPage.emailInput.fill(email);
     await signInPage.passwordInput.fill(password);
 
-    // Click sign in button
-    await signInPage.signInButton.click();
+    // Small delay to allow React state updates and validation
+    await page.waitForTimeout(200);
 
-    // Wait for either success (redirect) or error message
-    await Promise.race([
-      page.waitForURL(/\/recipes/, { timeout: 15000 }),
-      page
-        .getByTestId('signin-error-message')
-        .waitFor({ state: 'visible', timeout: 15000 }),
+    // Click sign in and wait for navigation
+    await Promise.all([
+      signInPage.signInButton.click(),
+      // Wait for either recipes page (success) or staying on sign-in (error)
+      page.waitForURL(/\/recipes|sign-in/, { timeout: 15000 }),
     ]);
 
-    // Check if we successfully navigated
-    if (!page.url().includes('/recipes')) {
-      const errorMsg = page.getByTestId('signin-error-message');
-      const errorText = await errorMsg.textContent();
-      throw new Error(`Sign-in failed: ${errorText || 'Unknown error'}`);
+    // Check if we're on the recipes page (success)
+    if (page.url().includes('/recipes')) {
+      console.info('✅ Sign-in successful');
+      return;
     }
-  } catch (error) {
-    console.error('Sign-in failed');
 
-    // Check for error messages
+    // Still on sign-in page - check for error message
     const errorMsg = page.getByTestId('signin-error-message');
-    if (await errorMsg.isVisible()) {
-      const errorText = await errorMsg.textContent();
-      console.error('Error message:', errorText);
+    if (await errorMsg.isVisible().catch(() => false)) {
+      const uiError = (await errorMsg.textContent()) || '';
+      console.error('❌ UI Error:', uiError);
+      throw new Error(`Sign-in failed: ${uiError}`);
     }
+
+    throw new Error('Sign-in failed: No error message displayed');
+  } catch (error) {
+    console.error('❌ Sign-in failed');
 
     // Take screenshot for debugging
     await page.screenshot({ path: 'test-results/signin-failed.png' });
 
+    // Check for UI error message
+    const errorMsg = page.getByTestId('signin-error-message');
+    let uiError = '';
+    if (await errorMsg.isVisible().catch(() => false)) {
+      uiError = (await errorMsg.textContent()) || '';
+      console.error('UI Error:', uiError);
+    }
+
     throw new Error(
       `Failed to sign in with user: ${email}\n` +
         `Current URL: ${page.url()}\n` +
-        'Make sure:\n' +
-        '1. The user exists in Supabase\n' +
-        '2. The credentials are correct\n' +
-        '3. Your app is running at http://localhost:3000\n' +
-        `Original error: ${error instanceof Error ? error.message : String(error)}`
+        `Supabase URL: ${supabaseUrl}\n` +
+        (uiError ? `UI Error: ${uiError}\n` : '') +
+        '\nTroubleshooting:\n' +
+        '1. Verify the user exists in Supabase Dashboard → Authentication\n' +
+        '2. Check that SUPABASE_URL in .env.test matches your .env file\n' +
+        '3. Ensure Supabase is running (npx supabase status)\n' +
+        '4. Verify credentials are correct\n' +
+        `\nOriginal error: ${error instanceof Error ? error.message : String(error)}`
     );
   }
 }

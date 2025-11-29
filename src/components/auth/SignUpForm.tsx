@@ -115,6 +115,7 @@ export function SignUpForm() {
       <FormField label="Email" htmlFor="email" required error={errors.email}>
         <Input
           id="email"
+          name="email"
           data-testid="signup-email-input"
           type="email"
           value={formData.email}
@@ -134,6 +135,7 @@ export function SignUpForm() {
       >
         <Input
           id="displayName"
+          name="displayName"
           data-testid="signup-displayname-input"
           type="text"
           value={formData.displayName}
@@ -153,6 +155,7 @@ export function SignUpForm() {
       >
         <PasswordInput
           id="password"
+          name="password"
           data-testid="signup-password-input"
           value={formData.password}
           onChange={(e) => handleChange('password', e.target.value)}
@@ -172,6 +175,7 @@ export function SignUpForm() {
       >
         <PasswordInput
           id="confirmPassword"
+          name="confirmPassword"
           data-testid="signup-confirmpassword-input"
           value={formData.confirmPassword}
           onChange={(e) => handleChange('confirmPassword', e.target.value)}

@@ -30,8 +30,9 @@ export async function cleanupTestUsers() {
     // Filter test users (those with test emails)
     const testUsers = users.filter(
       (user) =>
-        user.email?.startsWith('test.') ||
+        user.email?.startsWith('test') ||
         user.email?.includes('@example.com') ||
+        user.email?.includes('@tgmail.com') ||
         user.email?.startsWith('e2e-')
     );
 
@@ -153,5 +154,29 @@ export async function cleanupRecipesForUser(userId: string) {
     console.info(`Soft deleted ${count || 0} recipe(s) for user ${userId}`);
   } catch (error) {
     console.error('Unexpected error during recipe cleanup:', error);
+  }
+}
+
+/**
+ * Clean up recipes by title (useful for cleaning up after individual tests)
+ */
+export async function cleanupRecipesByTitle(title: string) {
+  const supabase = createSupabaseTestClient();
+
+  try {
+    const { error, count } = await supabase
+      .from('recipes')
+      .update({ deleted_at: new Date().toISOString() })
+      .ilike('title', title)
+      .is('deleted_at', null);
+
+    if (error) {
+      console.error('Error cleaning up recipes by title:', error);
+      return;
+    }
+
+    console.info(`Soft deleted ${count || 0} recipe(s) with title: ${title}`);
+  } catch (error) {
+    console.error('Unexpected error during recipe cleanup by title:', error);
   }
 }

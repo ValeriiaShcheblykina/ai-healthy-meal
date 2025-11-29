@@ -231,3 +231,105 @@ export type GenerationStatsQueryParams = {
   start_date?: string; // ISO 8601
   end_date?: string; // ISO 8601
 };
+
+// ============================================================================
+// OpenRouter Service Types
+// ============================================================================
+
+/** Chat message role types */
+export type ChatMessageRole = 'system' | 'user' | 'assistant';
+
+/** Single chat message */
+export type ChatMessage = {
+  role: ChatMessageRole;
+  content: string;
+};
+
+/** JSON Schema type definition (simplified) */
+export type JsonSchema = {
+  type: string;
+  properties?: Record<string, JsonSchema>;
+  items?: JsonSchema;
+  required?: string[];
+  additionalProperties?: boolean;
+  description?: string;
+  enum?: unknown[];
+  // Add other JSON Schema properties as needed
+};
+
+/** Response format for JSON schema */
+export type JsonSchemaResponseFormat = {
+  type: 'json_schema';
+  json_schema: {
+    name: string;
+    strict: boolean;
+    schema: JsonSchema;
+  };
+};
+
+/** Chat completion request parameters */
+export type ChatCompletionRequest = {
+  model: string;
+  messages: ChatMessage[];
+  response_format?: JsonSchemaResponseFormat;
+  temperature?: number;
+  max_tokens?: number;
+  top_p?: number;
+  frequency_penalty?: number;
+  presence_penalty?: number;
+  stop?: string[];
+  stream?: boolean;
+};
+
+/** Choice in chat completion response */
+export type ChatCompletionChoice = {
+  index: number;
+  message: ChatMessage;
+  finish_reason: 'stop' | 'length' | 'tool_calls' | 'content_filter' | null;
+};
+
+/** Usage statistics */
+export type UsageStats = {
+  prompt_tokens: number;
+  completion_tokens: number;
+  total_tokens: number;
+};
+
+/** Chat completion response from OpenRouter */
+export type ChatCompletionResponse = {
+  id: string;
+  model: string;
+  choices: ChatCompletionChoice[];
+  usage: UsageStats;
+  created: number;
+};
+
+/** Model information */
+export type ModelInfo = {
+  id: string;
+  name: string;
+  description?: string;
+  pricing?: {
+    prompt: string;
+    completion: string;
+  };
+};
+
+/** Model list response */
+export type ModelListResponse = {
+  data: ModelInfo[];
+};
+
+/** Internal request payload format for OpenRouter API */
+export type OpenRouterRequestPayload = {
+  model: string;
+  messages: ChatMessage[];
+  response_format?: JsonSchemaResponseFormat;
+  temperature?: number;
+  max_tokens?: number;
+  top_p?: number;
+  frequency_penalty?: number;
+  presence_penalty?: number;
+  stop?: string[];
+  stream?: boolean;
+};

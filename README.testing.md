@@ -183,10 +183,10 @@ import { SignInPage } from './page-objects/SignInPage';
 test('should sign in successfully', async ({ page }) => {
   const signInPage = new SignInPage(page);
   await signInPage.goto();
-  
+
   // Page objects encapsulate data-testid selectors
   await signInPage.signIn('test@example.com', 'Test123!@#');
-  
+
   await expect(page).toHaveURL(/\/recipes/);
 });
 ```
@@ -198,18 +198,40 @@ This project uses `data-testid` attributes for reliable element selection in E2E
 ### Quick Reference
 
 **Authentication:**
+
 - `signin-email-input`, `signin-password-input`, `signin-submit-button`
 - `signup-email-input`, `signup-password-input`, `signup-submit-button`
 - Password toggles automatically get `-toggle` suffix
 
 **Recipes:**
+
 - `recipes-search-input` - Search input field
 - `recipes-sort-select` - Sort dropdown
 - `recipes-view-grid-button`, `recipes-view-list-button` - View toggles
 - `recipe-card` - Individual recipe cards
 - `recipes-pagination-next`, `recipes-pagination-prev` - Pagination buttons
+- `recipes-new-recipe-button` - Create new recipe button
+- `recipes-empty-state` - Empty state when no recipes
+
+**Recipe Form:**
+
+- `recipe-title-input` - Recipe title input field
+- `recipe-content-textarea` - Recipe content textarea
+- `recipe-form-submit-button` - Submit button (Create/Update)
+- `recipe-form-cancel-button` - Cancel button
+
+**Recipe Detail:**
+
+- `recipe-edit-button` - Edit recipe button
+- `recipe-delete-button` - Delete recipe button
+
+**Delete Dialog:**
+
+- `delete-dialog-cancel-button` - Cancel deletion
+- `delete-dialog-confirm-button` - Confirm deletion
 
 **Navigation:**
+
 - `header-logo-link`, `header-recipes-link`
 - `header-signout-button`, `header-signin-link`, `header-signup-link`
 
@@ -231,6 +253,7 @@ await expect(recipeCards).toHaveCount(5);
 ### Documentation
 
 For comprehensive examples and best practices:
+
 - **[Data-TestID Guide](e2e/DATA_TESTID_GUIDE.md)** - Complete guide with examples
 - **[Test ID Reference](DATA_TESTID_SUMMARY.md)** - Full list of all test IDs
 - **[Example Tests](e2e/recipes.spec.ts)** - Advanced test examples
@@ -266,38 +289,92 @@ export class MyPage extends BasePage {
 - **Test Data**: Use fixtures from `e2e/fixtures/test-data.ts`
 - **Helpers**: Use helper functions from `e2e/helpers/test-helpers.ts`
 
+### E2E Test Setup
+
+#### Test User Configuration
+
+The recipe E2E tests require a persistent test user to avoid creating new users for each test. This makes tests faster and more reliable.
+
+**Quick Setup (Recommended):**
+
+Run the automated setup script:
+
+```bash
+./scripts/setup-e2e-env.sh
+```
+
+This will:
+
+- Copy Supabase configuration from your `.env` to `.env.test`
+- Set up default test user credentials
+- Provide instructions for creating the test user in Supabase
+
+**Manual Setup:**
+
+1. Create a `.env.test` file in the project root (copy from `.env.test.example`):
+
+```env
+# E2E Test Configuration
+# IMPORTANT: These must match your .env file to connect to the same Supabase instance
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_KEY=your_anon_key_here
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key_here
+
+# Test User Credentials
+E2E_USERNAME=test.e2e@example.com
+E2E_PASSWORD=TestPassword123!@#
+
+# Base URL for tests
+BASE_URL=http://localhost:3000
+```
+
+2. **CRITICAL**: Ensure `SUPABASE_URL` in `.env.test` matches your `.env` file:
+   - If you're using local Supabase: `http://127.0.0.1:54321`
+   - If you're using remote Supabase: `https://your-project.supabase.co`
+   - **Tests will fail if these don't match!**
+
+3. Create the test user in Supabase:
+   - **For local Supabase**: Open http://localhost:54323 (Supabase Studio)
+   - **For remote Supabase**: Open https://supabase.com/dashboard
+   - Go to Authentication → Users
+   - Click "Add user" → "Create new user"
+   - Email: `test.e2e@example.com`
+   - Password: `TestPassword123!@#`
+   - ✓ Check "Confirm email"
+
+4. Verify the test user can sign in:
+
+```bash
+# Start your dev server
+npm run dev
+
+# Open http://localhost:3000/sign-in
+# Sign in with test.e2e@example.com / TestPassword123!@#
+```
+
+⚠️ **COMMON ISSUES**:
+
+- **"Sign-in failed" / Timeout**: Your `.env.test` and `.env` have different `SUPABASE_URL` values
+- **"User not found"**: The test user doesn't exist in the Supabase instance your dev server is using
+- **"Invalid credentials"**: Password is incorrect or user email isn't confirmed
+
+⚠️ **IMPORTANT**:
+
+- Never commit `.env.test` to version control
+- The **service role key** is required (not the public key) for admin operations and test cleanup
+- Use a dedicated test user, not your personal account
+- For local development, use Supabase local instance credentials
+
 ### E2E Test Cleanup
 
 The project includes automatic cleanup of test data from Supabase after E2E tests complete.
-
-#### Setup
-
-1. Create a `.env.test` file in the project root:
-
-```env
-# Base URL for E2E tests
-BASE_URL=http://localhost:3000
-
-# Supabase Configuration
-SUPABASE_URL=your_supabase_project_url
-SUPABASE_KEY=your_supabase_anon_key
-
-# Supabase Service Role Key (REQUIRED for E2E test cleanup)
-# Get from: Supabase Dashboard → Project Settings → API → service_role
-# NOTE: This is different from the public anon key!
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-```
-
-⚠️ **IMPORTANT**: 
-- Never commit `.env.test` to version control
-- The **service role key** is required (not the public key) because user deletion and bypassing RLS needs admin privileges
-- This is safe for E2E tests as they run in a controlled environment
 
 #### How It Works
 
 - **Automatic Cleanup**: After all E2E tests complete, a global teardown script runs
 - **Test Users**: Users with emails containing `test+`, `@example.com`, or starting with `e2e-` are deleted
 - **Test Recipes**: All recipes are soft-deleted (sets `deleted_at` timestamp)
+- **Per-Test Cleanup**: Recipe tests clean up after themselves using `cleanupRecipesByTitle()`
 
 #### Cleanup Functions
 
@@ -308,6 +385,7 @@ Available in `e2e/helpers/cleanup.ts`:
 - `cleanupTestRecipes()` - Soft-deletes test recipes
 - `cleanupUserByEmail(email)` - Deletes a specific user
 - `cleanupRecipesForUser(userId)` - Deletes recipes for a specific user
+- `cleanupRecipesByTitle(title)` - Deletes recipes by title (useful for individual tests)
 
 For detailed documentation, see [E2E_TEARDOWN.md](./E2E_TEARDOWN.md).
 

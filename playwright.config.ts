@@ -2,7 +2,11 @@ import { defineConfig, devices } from '@playwright/test';
 import dotenv from 'dotenv';
 import path from 'path';
 
-dotenv.config({ path: path.resolve(process.cwd(), '.env.test') });
+// Load .env.test and override any existing environment variables
+dotenv.config({
+  path: path.resolve(process.cwd(), '.env.test'),
+  override: true,
+});
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -52,5 +56,15 @@ export default defineConfig({
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     timeout: 120 * 1000,
+    env: {
+      // Pass all test environment variables to the dev server
+      SUPABASE_URL: process.env.SUPABASE_URL,
+      SUPABASE_KEY: process.env.SUPABASE_KEY,
+      SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY,
+      E2E_USERNAME: process.env.E2E_USERNAME,
+      E2E_PASSWORD: process.env.E2E_PASSWORD,
+      E2E_USERNAME_ID: process.env.E2E_USERNAME_ID,
+      NODE_ENV: 'test',
+    },
   },
 });

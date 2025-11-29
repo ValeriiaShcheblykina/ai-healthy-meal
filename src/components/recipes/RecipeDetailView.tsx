@@ -3,11 +3,14 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { DeleteRecipeDialog } from './DeleteRecipeDialog';
 import { ToastProvider, useToast } from '@/components/ui/toast';
+import { RecipesClientService } from '@/lib/services/client/recipes.client.service';
 import type { RecipeListItemDTO } from '@/types';
 
 interface RecipeDetailViewProps {
   recipeId: string;
 }
+
+const recipesService = new RecipesClientService();
 
 function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
   const [recipe, setRecipe] = React.useState<RecipeListItemDTO | null>(null);
@@ -22,24 +25,12 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
     const fetchRecipe = async () => {
       try {
         setIsLoading(true);
-        const response = await fetch(`/api/recipes/${recipeId}`);
-
-        if (!response.ok) {
-          if (response.status === 404) {
-            setError('Recipe not found');
-          } else if (response.status === 401) {
-            window.location.href = '/';
-          } else {
-            setError('Failed to load recipe');
-          }
-          return;
-        }
-
-        const data = await response.json();
+        const data = await recipesService.getRecipe(recipeId);
         setRecipe(data);
       } catch (err) {
-        setError('Failed to load recipe');
-        console.error('Error fetching recipe:', err);
+        const errorMessage =
+          err instanceof Error ? err.message : 'Failed to load recipe';
+        setError(errorMessage);
       } finally {
         setIsLoading(false);
       }
@@ -51,13 +42,7 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
   const handleDelete = async () => {
     try {
       setIsDeleting(true);
-      const response = await fetch(`/api/recipes/${recipeId}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to delete recipe');
-      }
+      await recipesService.deleteRecipe(recipeId);
 
       addToast({
         title: 'Success',
@@ -70,10 +55,11 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
         window.location.href = '/recipes';
       }, 1000);
     } catch (err) {
-      console.error('Error deleting recipe:', err);
+      const errorMessage =
+        err instanceof Error ? err.message : 'Failed to delete recipe';
       addToast({
         title: 'Error',
-        description: 'Failed to delete recipe. Please try again.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -168,7 +154,11 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
             Back to Recipes
           </Button>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={handleEdit}>
+            <Button
+              variant="outline"
+              onClick={handleEdit}
+              data-testid="recipe-edit-button"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
@@ -189,6 +179,7 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
             <Button
               variant="destructive"
               onClick={() => setDeleteDialogOpen(true)}
+              data-testid="recipe-delete-button"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -10,7 +10,7 @@ export interface RecipeFormData {
 }
 
 interface RecipeFormProps {
-  initialData?: RecipeListItemDTO;
+  initialData?: RecipeListItemDTO | Partial<RecipeFormData>;
   onSubmit: (data: RecipeFormData) => Promise<void>;
   onCancel: () => void;
   isSubmitting: boolean;
@@ -74,6 +74,8 @@ export function RecipeForm({
         </label>
         <Input
           id="recipe-title"
+          name="title"
+          data-testid="recipe-title-input"
           type="text"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -103,6 +105,8 @@ export function RecipeForm({
         </label>
         <Textarea
           id="recipe-content"
+          name="content"
+          data-testid="recipe-content-textarea"
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder="Enter recipe ingredients, instructions, and notes"
@@ -128,10 +132,15 @@ export function RecipeForm({
           variant="outline"
           onClick={onCancel}
           disabled={isSubmitting}
+          data-testid="recipe-form-cancel-button"
         >
           Cancel
         </Button>
-        <Button type="submit" disabled={isSubmitting}>
+        <Button
+          type="submit"
+          disabled={isSubmitting}
+          data-testid="recipe-form-submit-button"
+        >
           {isSubmitting ? (
             <>
               <svg

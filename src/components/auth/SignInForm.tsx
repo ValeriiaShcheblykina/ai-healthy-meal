@@ -113,6 +113,7 @@ export function SignInForm() {
       <FormField label="Email" htmlFor="email" required error={errors.email}>
         <Input
           id="email"
+          name="email"
           data-testid="signin-email-input"
           type="email"
           value={formData.email}
@@ -133,6 +134,7 @@ export function SignInForm() {
       >
         <PasswordInput
           id="password"
+          name="password"
           data-testid="signin-password-input"
           value={formData.password}
           onChange={(e) => handleChange('password', e.target.value)}
