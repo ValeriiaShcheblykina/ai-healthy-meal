@@ -61,7 +61,32 @@ export const resetPasswordSchema = resetPasswordBaseSchema.refine(
 // Export base schema for individual field validation
 export const resetPasswordFieldSchema = resetPasswordBaseSchema;
 
+// Profile update validation
+export const updateProfileSchema = z.object({
+  displayName: z
+    .string()
+    .max(100, 'Display name must be less than 100 characters')
+    .optional()
+    .nullable(),
+  diets: z
+    .array(
+      z.enum([
+        'none',
+        'vegan',
+        'vegetarian',
+        'pescatarian',
+        'keto',
+        'paleo',
+        'halal',
+        'kosher',
+      ])
+    )
+    .optional()
+    .nullable(),
+});
+
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 export type SignInFormData = z.infer<typeof signInSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+export type UpdateProfileFormData = z.infer<typeof updateProfileSchema>;

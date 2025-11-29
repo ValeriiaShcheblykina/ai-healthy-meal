@@ -16,16 +16,16 @@ export function FormField({
   children,
 }: FormFieldProps) {
   return (
-    <div className="space-y-2">
-      <Label htmlFor={htmlFor}>
+    <div>
+      <Label htmlFor={htmlFor} className="block">
         {label}
         {required && <span className="text-destructive ml-1">*</span>}
       </Label>
-      {children}
+      <div className="mt-2">{children}</div>
       {error && (
         <p
           id={`${htmlFor}-error`}
-          className="text-destructive text-sm"
+          className="text-destructive mt-2 text-sm"
           role="alert"
           aria-live="polite"
         >

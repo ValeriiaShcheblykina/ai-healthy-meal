@@ -28,11 +28,11 @@ import type { APIContext } from 'astro';
 import { createUnauthorizedError } from '../errors/api-errors.ts';
 
 /**
- * Extracts and validates the authenticated user's ID from the Authorization header.
+ * Extracts and validates the authenticated user's ID from the Authorization header or session cookie.
  *
- * This function is designed for API routes that use Bearer token authentication.
- * It extracts the JWT token from the Authorization header, validates it with Supabase,
- * and returns the authenticated user's ID.
+ * This function supports both Bearer token authentication (for API clients) and session cookie
+ * authentication (for browser-based requests). It automatically detects which method is being used
+ * and validates accordingly.
  *
  * @async
  * @function getAuthenticatedUserId
@@ -44,11 +44,11 @@ import { createUnauthorizedError } from '../errors/api-errors.ts';
  * @returns {Promise<string>} The authenticated user's unique identifier (UUID)
  *
  * @throws {ApiError} Throws 401 UNAUTHORIZED error in the following cases:
- *   - Authorization header is missing
- *   - Authorization header doesn't start with 'Bearer '
- *   - Token is invalid or expired
- *   - Token validation fails with Supabase
- *   - User associated with token doesn't exist
+ *   - No valid authentication method found (no Bearer token and no session cookie)
+ *   - Bearer token is invalid or expired
+ *   - Session cookie is invalid or expired
+ *   - Token/session validation fails with Supabase
+ *   - User associated with token/session doesn't exist
  *
  * @example
  * // Usage in API route
@@ -64,11 +64,17 @@ import { createUnauthorizedError } from '../errors/api-errors.ts';
  * }
  *
  * @example
- * // Client-side: Making authenticated request
+ * // Client-side: Making authenticated request with Bearer token
  * const response = await fetch('/api/protected-route', {
  *   headers: {
  *     'Authorization': `Bearer ${accessToken}`
  *   }
+ * });
+ *
+ * @example
+ * // Browser: Making authenticated request with session cookie (automatic)
+ * const response = await fetch('/api/protected-route', {
+ *   credentials: 'include'
  * });
  *
  * @see {@link createUnauthorizedError} for error structure
@@ -78,19 +84,28 @@ export async function getAuthenticatedUserId(
   context: APIContext
 ): Promise<string> {
   const authHeader = context.request.headers.get('authorization');
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    throw createUnauthorizedError();
-  }
-
-  const token = authHeader.substring('Bearer '.length);
   const supabase = context.locals.supabase;
-  // Validate token via Supabase Auth API
-  const { data, error } = await supabase.auth.getUser(token);
-  if (error || !data.user) {
-    throw createUnauthorizedError();
-  }
 
-  return data.user.id;
+  if (authHeader?.startsWith('Bearer ')) {
+    // API token authentication
+    const token = authHeader.substring('Bearer '.length);
+    const { data, error } = await supabase.auth.getUser(token);
+
+    if (error || !data.user) {
+      throw createUnauthorizedError();
+    }
+
+    return data.user.id;
+  } else {
+    // Session cookie authentication
+    const { data, error } = await supabase.auth.getUser();
+
+    if (error || !data.user) {
+      throw createUnauthorizedError();
+    }
+
+    return data.user.id;
+  }
 }
 
 /**

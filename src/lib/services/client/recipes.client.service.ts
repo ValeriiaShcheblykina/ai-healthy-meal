@@ -16,6 +16,7 @@
  * const recipes = await service.listRecipes({ page: 1, limit: 20 });
  */
 
+import { fetchApi } from './api-client.helper';
 import type {
   RecipeListQueryParams,
   RecipeListResponseDTO,
@@ -54,24 +55,11 @@ export class RecipesClientService {
     if (params.sort) searchParams.set('sort', params.sort);
     if (params.order) searchParams.set('order', params.order);
 
-    const response = await fetch(`${this.baseUrl}?${searchParams.toString()}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
-        window.location.href = '/sign-in';
-        throw new Error('Authentication required');
-      }
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.error?.message || 'Failed to fetch recipes');
-    }
-
-    return response.json();
+    return fetchApi<RecipeListResponseDTO>(
+      `${this.baseUrl}?${searchParams.toString()}`,
+      { method: 'GET' },
+      { defaultMessage: 'Failed to fetch recipes' }
+    );
   }
 
   /**
@@ -85,27 +73,14 @@ export class RecipesClientService {
    * @throws {Error} If recipe not found or request fails
    */
   async getRecipe(id: string): Promise<RecipeListItemDTO> {
-    const response = await fetch(`${this.baseUrl}/${id}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Recipe not found');
+    return fetchApi<RecipeListItemDTO>(
+      `${this.baseUrl}/${id}`,
+      { method: 'GET' },
+      {
+        defaultMessage: 'Failed to fetch recipe',
+        notFoundMessage: 'Recipe not found',
       }
-      if (response.status === 401 || response.status === 403) {
-        window.location.href = '/sign-in';
-        throw new Error('Authentication required');
-      }
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.error?.message || 'Failed to fetch recipe');
-    }
-
-    return response.json();
+    );
   }
 
   /**
@@ -119,25 +94,11 @@ export class RecipesClientService {
    * @throws {Error} If creation fails
    */
   async createRecipe(data: CreateRecipeCommand): Promise<RecipeListItemDTO> {
-    const response = await fetch(this.baseUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
-        window.location.href = '/sign-in';
-        throw new Error('Authentication required');
-      }
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.error?.message || 'Failed to create recipe');
-    }
-
-    return response.json();
+    return fetchApi<RecipeListItemDTO>(
+      this.baseUrl,
+      { method: 'POST', body: data },
+      { defaultMessage: 'Failed to create recipe' }
+    );
   }
 
   /**
@@ -155,28 +116,14 @@ export class RecipesClientService {
     id: string,
     data: UpdateRecipeCommand
   ): Promise<RecipeListItemDTO> {
-    const response = await fetch(`${this.baseUrl}/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Recipe not found');
+    return fetchApi<RecipeListItemDTO>(
+      `${this.baseUrl}/${id}`,
+      { method: 'PUT', body: data },
+      {
+        defaultMessage: 'Failed to update recipe',
+        notFoundMessage: 'Recipe not found',
       }
-      if (response.status === 401 || response.status === 403) {
-        window.location.href = '/sign-in';
-        throw new Error('Authentication required');
-      }
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.error?.message || 'Failed to update recipe');
-    }
-
-    return response.json();
+    );
   }
 
   /**
@@ -190,25 +137,14 @@ export class RecipesClientService {
    * @throws {Error} If deletion fails
    */
   async deleteRecipe(id: string): Promise<void> {
-    const response = await fetch(`${this.baseUrl}/${id}`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-    });
-
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Recipe not found');
+    await fetchApi(
+      `${this.baseUrl}/${id}`,
+      { method: 'DELETE' },
+      {
+        defaultMessage: 'Failed to delete recipe',
+        notFoundMessage: 'Recipe not found',
       }
-      if (response.status === 401 || response.status === 403) {
-        window.location.href = '/sign-in';
-        throw new Error('Authentication required');
-      }
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData?.error?.message || 'Failed to delete recipe');
-    }
+    );
   }
 
   /**
@@ -230,28 +166,12 @@ export class RecipesClientService {
     customPrompt?: string;
     temperature?: number;
     maxRecipes?: number;
+    diets?: string[];
   }): Promise<Record<string, unknown>> {
-    const response = await fetch(`${this.baseUrl}/ai-generation`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify(options || {}),
-    });
-
-    if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
-        window.location.href = '/sign-in';
-        throw new Error('Authentication required');
-      }
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData?.error?.message ||
-          'Failed to generate recipe. Please try again.'
-      );
-    }
-
-    return response.json();
+    return fetchApi<Record<string, unknown>>(
+      `${this.baseUrl}/ai-generation`,
+      { method: 'POST', body: options || {} },
+      { defaultMessage: 'Failed to generate recipe. Please try again.' }
+    );
   }
 }

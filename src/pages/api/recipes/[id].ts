@@ -3,48 +3,31 @@ import { RecipeService } from '@/lib/services/recipe.service';
 import {
   ApiError,
   createErrorResponse,
-  createUnauthorizedError,
   createNotFoundError,
   createApiErrorResponse,
-  createValidationError,
 } from '@/lib/errors/api-errors';
 import { validateRecipeData } from '@/lib/validation/recipe.validation';
+import { getAuthenticatedUserId } from '@/lib/auth/get-authenticated-user';
+import { parseJsonBody } from '@/lib/api/parse-request-body';
 import type { RecipeListItemDTO } from '@/types';
-
-export const prerender = false;
 
 /**
  * GET /api/recipes/:id
  * Gets a single recipe by ID for the authenticated user
  */
-export const GET: APIRoute = async ({ params, request, locals }) => {
+export const GET: APIRoute = async (context) => {
   try {
     // Check authentication
-    const authHeader = request.headers.get('authorization');
+    await getAuthenticatedUserId(context);
 
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.substring('Bearer '.length);
-      const { data, error } = await locals.supabase.auth.getUser(token);
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-    } else {
-      const { data, error } = await locals.supabase.auth.getUser();
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-    }
-
-    const { id } = params;
+    const { id } = context.params;
 
     if (!id) {
       throw createNotFoundError('Recipe ID is required');
     }
 
     // Fetch recipe
-    const recipeService = new RecipeService(locals.supabase);
+    const recipeService = new RecipeService(context.locals.supabase);
     const recipe = await recipeService.getRecipe(id);
 
     if (!recipe) {
@@ -88,39 +71,22 @@ export const GET: APIRoute = async ({ params, request, locals }) => {
  * PUT /api/recipes/:id
  * Updates a recipe for the authenticated user
  */
-export const PUT: APIRoute = async ({ params, request, locals }) => {
+export const PUT: APIRoute = async (context) => {
   try {
     // Check authentication
-    const authHeader = request.headers.get('authorization');
+    await getAuthenticatedUserId(context);
 
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.substring('Bearer '.length);
-      const { data, error } = await locals.supabase.auth.getUser(token);
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-    } else {
-      const { data, error } = await locals.supabase.auth.getUser();
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-    }
-
-    const { id } = params;
+    const { id } = context.params;
 
     if (!id) {
       throw createNotFoundError('Recipe ID is required');
     }
 
     // Parse request body
-    let body;
-    try {
-      body = await request.json();
-    } catch {
-      throw createValidationError('Invalid JSON in request body');
-    }
+    const body = (await parseJsonBody(context.request)) as Record<
+      string,
+      unknown
+    >;
 
     // Validate recipe data
     const validationResult = validateRecipeData(body, false); // false = update mode
@@ -130,7 +96,7 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
     }
 
     // Check if recipe exists
-    const recipeService = new RecipeService(locals.supabase);
+    const recipeService = new RecipeService(context.locals.supabase);
     const existingRecipe = await recipeService.getRecipe(id);
 
     if (!existingRecipe) {
@@ -177,34 +143,19 @@ export const PUT: APIRoute = async ({ params, request, locals }) => {
  * DELETE /api/recipes/:id
  * Soft-deletes a recipe for the authenticated user
  */
-export const DELETE: APIRoute = async ({ params, request, locals }) => {
+export const DELETE: APIRoute = async (context) => {
   try {
     // Check authentication
-    const authHeader = request.headers.get('authorization');
+    await getAuthenticatedUserId(context);
 
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.substring('Bearer '.length);
-      const { data, error } = await locals.supabase.auth.getUser(token);
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-    } else {
-      const { data, error } = await locals.supabase.auth.getUser();
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-    }
-
-    const { id } = params;
+    const { id } = context.params;
 
     if (!id) {
       throw createNotFoundError('Recipe ID is required');
     }
 
     // Check if recipe exists
-    const recipeService = new RecipeService(locals.supabase);
+    const recipeService = new RecipeService(context.locals.supabase);
     const existingRecipe = await recipeService.getRecipe(id);
 
     if (!existingRecipe) {

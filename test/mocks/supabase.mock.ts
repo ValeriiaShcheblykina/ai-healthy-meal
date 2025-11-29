@@ -31,17 +31,8 @@ export const mockSupabaseClient = {
  * Factory function to create a fresh mock Supabase client
  */
 export function createMockSupabaseClient() {
-  return {
-    auth: {
-      signUp: vi.fn(),
-      signInWithPassword: vi.fn(),
-      signOut: vi.fn(),
-      resetPasswordForEmail: vi.fn(),
-      updateUser: vi.fn(),
-      getUser: vi.fn(),
-      getSession: vi.fn(),
-    },
-    from: vi.fn(() => ({
+  const mockFrom = vi.fn(() => {
+    const chainable = {
       select: vi.fn().mockReturnThis(),
       insert: vi.fn().mockReturnThis(),
       update: vi.fn().mockReturnThis(),
@@ -52,6 +43,20 @@ export function createMockSupabaseClient() {
       range: vi.fn().mockReturnThis(),
       single: vi.fn(),
       textSearch: vi.fn().mockReturnThis(),
-    })),
+    };
+    return chainable;
+  });
+
+  return {
+    auth: {
+      signUp: vi.fn(),
+      signInWithPassword: vi.fn(),
+      signOut: vi.fn(),
+      resetPasswordForEmail: vi.fn(),
+      updateUser: vi.fn(),
+      getUser: vi.fn(),
+      getSession: vi.fn(),
+    },
+    from: mockFrom,
   };
 }

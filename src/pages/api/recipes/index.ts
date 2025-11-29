@@ -7,10 +7,11 @@ import {
 import {
   ApiError,
   createErrorResponse,
-  createUnauthorizedError,
   createApiErrorResponse,
   createValidationError,
 } from '@/lib/errors/api-errors';
+import { getAuthenticatedUserId } from '@/lib/auth/get-authenticated-user';
+import { parseJsonBody } from '@/lib/api/parse-request-body';
 import type { RecipeListResponseDTO, RecipeListItemDTO } from '@/types';
 
 export const prerender = false;
@@ -19,30 +20,13 @@ export const prerender = false;
  * GET /api/recipes
  * Lists recipes for the authenticated user with pagination, search, and sorting
  */
-export const GET: APIRoute = async ({ request, locals }) => {
+export const GET: APIRoute = async (context) => {
   try {
     // Check authentication via session cookie or Bearer token
-    const authHeader = request.headers.get('authorization');
-
-    if (authHeader?.startsWith('Bearer ')) {
-      // API token authentication
-      const token = authHeader.substring('Bearer '.length);
-      const { data, error } = await locals.supabase.auth.getUser(token);
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-    } else {
-      // Session cookie authentication
-      const { data, error } = await locals.supabase.auth.getUser();
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-    }
+    await getAuthenticatedUserId(context);
 
     // Parse query parameters from URL
-    const url = new URL(request.url);
+    const url = new URL(context.request.url);
     const queryParams: Record<string, string | undefined> = {};
 
     for (const [key, value] of url.searchParams.entries()) {
@@ -57,7 +41,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
     }
 
     // Create service instance and fetch recipes
-    const recipeService = new RecipeService(locals.supabase);
+    const recipeService = new RecipeService(context.locals.supabase);
     const response: RecipeListResponseDTO = await recipeService.listRecipes(
       validationResult.data
     );
@@ -104,36 +88,16 @@ export const GET: APIRoute = async ({ request, locals }) => {
  * POST /api/recipes
  * Creates a new recipe for the authenticated user
  */
-export const POST: APIRoute = async ({ request, locals }) => {
+export const POST: APIRoute = async (context) => {
   try {
     // Check authentication
-    const authHeader = request.headers.get('authorization');
-    let userId: string;
-
-    if (authHeader?.startsWith('Bearer ')) {
-      const token = authHeader.substring('Bearer '.length);
-      const { data, error } = await locals.supabase.auth.getUser(token);
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-      userId = data.user.id;
-    } else {
-      const { data, error } = await locals.supabase.auth.getUser();
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-      userId = data.user.id;
-    }
+    const userId = await getAuthenticatedUserId(context);
 
     // Parse request body
-    let body;
-    try {
-      body = await request.json();
-    } catch {
-      throw createValidationError('Invalid JSON in request body');
-    }
+    const body = (await parseJsonBody(context.request)) as Record<
+      string,
+      unknown
+    >;
 
     // Validate recipe data
     const validationResult = validateRecipeData(body, true); // true = create mode (all required fields)
@@ -142,12 +106,23 @@ export const POST: APIRoute = async ({ request, locals }) => {
       throw validationResult.error;
     }
 
+    // In create mode, validation ensures title is required, so it will be defined
+    // Defensive check (should never happen if validation passed)
+    if (!validationResult.data.title) {
+      throw createValidationError('Title is required for recipe creation');
+    }
+
+    // Normalize data for createRecipe (convert undefined to null for optional fields)
+    const createData = {
+      title: validationResult.data.title,
+      content: validationResult.data.content ?? null,
+      content_json: validationResult.data.content_json ?? null,
+      is_public: validationResult.data.is_public ?? false,
+    };
+
     // Create recipe
-    const recipeService = new RecipeService(locals.supabase);
-    const newRecipe = await recipeService.createRecipe(
-      userId,
-      validationResult.data
-    );
+    const recipeService = new RecipeService(context.locals.supabase);
+    const newRecipe = await recipeService.createRecipe(userId, createData);
 
     // Transform to DTO (exclude internal fields)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars

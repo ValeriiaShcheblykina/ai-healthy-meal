@@ -1,0 +1,46 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { ProfileForm } from '@/components/profile/ProfileForm';
+import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user';
+
+const user = getAuthenticatedUser(Astro);
+
+if (!user) {
+  return Astro.redirect('/sign-in');
+}
+
+// Fetch user profile data
+const supabase = Astro.locals.supabase;
+const { data: profile } = await supabase
+  .from('user_profiles')
+  .select('display_name, extra')
+  .eq('user_id', user.id)
+  .single();
+
+// Extract diets from extra JSONB field
+const extra = (profile?.extra as Record<string, unknown>) || {};
+const diets = (extra.diets as string[]) || null;
+
+const initialData = {
+  displayName: profile?.display_name || null,
+  diets: diets,
+  email: user.email || '',
+};
+---
+
+<Layout title="Profile - AI Healthy Meal">
+  <div class="container mx-auto max-w-2xl px-4 py-8">
+    <div class="space-y-6">
+      <div>
+        <h1 class="text-3xl font-bold">Profile Settings</h1>
+        <p class="text-muted-foreground mt-2">
+          Manage your profile information and dietary preferences
+        </p>
+      </div>
+
+      <div class="bg-card mt-2 rounded-lg border p-6 shadow-sm">
+        <ProfileForm client:load initialData={initialData} />
+      </div>
+    </div>
+  </div>
+</Layout>

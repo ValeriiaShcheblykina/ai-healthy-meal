@@ -10,7 +10,7 @@ const { user } = Astro.locals;
   <div class="flex h-16 items-center justify-between px-4 md:px-6">
     <div class="flex items-center gap-6">
       <a
-        href="/"
+        href={user ? '/recipes' : '/'}
         data-testid="header-logo-link"
         class="flex items-center space-x-2"
       >
@@ -27,6 +27,13 @@ const { user } = Astro.locals;
                 class="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
               >
                 Recipes
+              </a>
+              <a
+                href="/profile"
+                data-testid="header-profile-link"
+                class="text-muted-foreground hover:text-foreground text-sm font-medium transition-colors"
+              >
+                Profile
               </a>
               <a
                 href="/recipes/new"

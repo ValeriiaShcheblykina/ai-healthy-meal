@@ -206,7 +206,7 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
         <Card className="p-6">
           <div className="space-y-4">
             <div>
-              <h1 className="text-3xl font-bold">{recipe.title}</h1>
+              <h1 className="mb-2 text-3xl font-bold">{recipe.title}</h1>
               <div className="text-muted-foreground mt-2 flex items-center gap-4 text-sm">
                 <time dateTime={recipe.created_at}>
                   Created: {new Date(recipe.created_at).toLocaleDateString()}

@@ -4,10 +4,10 @@ import { RecipeService } from '@/lib/services/recipe.service';
 import {
   ApiError,
   createApiErrorResponse,
-  createUnauthorizedError,
   createValidationError,
   createInternalError,
 } from '@/lib/errors/api-errors';
+import { getAuthenticatedUserId } from '@/lib/auth/get-authenticated-user';
 import type { Database } from '@/db/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
@@ -18,27 +18,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 export const POST: APIRoute = async (context) => {
   try {
     // Check authentication via session cookie or Bearer token
-    const authHeader = context.request.headers.get('authorization');
-    let userId: string;
-
-    if (authHeader?.startsWith('Bearer ')) {
-      // API token authentication
-      const token = authHeader.substring('Bearer '.length);
-      const { data, error } = await context.locals.supabase.auth.getUser(token);
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-      userId = data.user.id;
-    } else {
-      // Session cookie authentication
-      const { data, error } = await context.locals.supabase.auth.getUser();
-
-      if (error || !data.user) {
-        throw createUnauthorizedError();
-      }
-      userId = data.user.id;
-    }
+    const userId = await getAuthenticatedUserId(context);
 
     // Parse request body (optional parameters)
     let body: {
@@ -46,6 +26,7 @@ export const POST: APIRoute = async (context) => {
       customPrompt?: string;
       temperature?: number;
       maxRecipes?: number;
+      diets?: string[]; // Optional: override profile diets
     } = {};
 
     try {
@@ -55,22 +36,6 @@ export const POST: APIRoute = async (context) => {
       }
     } catch {
       // Body is optional, continue with defaults
-    }
-
-    // Fetch user's recipes
-    const recipeService = new RecipeService(context.locals.supabase);
-    const recipesResult = await recipeService.listRecipes({
-      page: 1,
-      limit: body.maxRecipes || 10, // Use up to 10 recipes by default
-      search: '',
-      sort: 'created_at',
-      order: 'desc',
-    });
-
-    if (recipesResult.data.length === 0) {
-      throw createValidationError(
-        'You need at least one recipe in your list to generate a new recipe based on your preferences'
-      );
     }
 
     // Fetch user profile for preferences
@@ -86,34 +51,95 @@ export const POST: APIRoute = async (context) => {
       console.error('Error fetching user profile:', profileError);
     }
 
-    // Prepare existing recipes for generation
-    const existingRecipes = recipesResult.data.map((recipe) => ({
-      title: recipe.title,
-      content: recipe.content || JSON.stringify(recipe.content_json || {}),
-    }));
+    // Fetch user's recipes (optional - only if not generating from diets only)
+    let existingRecipes: { title: string; content: string }[] = [];
+
+    // If diets are provided, we can generate without existing recipes
+    // Otherwise, we need at least one recipe
+    if (!body.diets || body.diets.length === 0) {
+      const recipeService = new RecipeService(context.locals.supabase);
+      const recipesResult = await recipeService.listRecipes({
+        page: 1,
+        limit: body.maxRecipes || 10, // Use up to 10 recipes by default
+        search: '',
+        sort: 'created_at',
+        order: 'desc',
+      });
+
+      if (recipesResult.data.length === 0) {
+        throw createValidationError(
+          'You need at least one recipe in your list to generate a new recipe, or select dietary preferences to generate based on your diet'
+        );
+      }
+
+      // Prepare existing recipes for generation
+      existingRecipes = recipesResult.data.map((recipe) => ({
+        title: recipe.title,
+        content: recipe.content || JSON.stringify(recipe.content_json || {}),
+      }));
+    } else {
+      // If generating from diets, optionally fetch some recipes for context
+      const recipeService = new RecipeService(context.locals.supabase);
+      const recipesResult = await recipeService.listRecipes({
+        page: 1,
+        limit: body.maxRecipes || 5, // Use fewer recipes when diets are specified
+        search: '',
+        sort: 'created_at',
+        order: 'desc',
+      });
+
+      // Prepare existing recipes for generation (optional context)
+      existingRecipes = recipesResult.data.map((recipe) => ({
+        title: recipe.title,
+        content: recipe.content || JSON.stringify(recipe.content_json || {}),
+      }));
+    }
 
     // Build custom prompt with preferences if available
     let customPrompt = body.customPrompt || '';
-    if (profile) {
+    if (profile || body.diets) {
       const preferences: string[] = [];
-      if (profile.diet && profile.diet !== 'none') {
-        preferences.push(`Dietary preference: ${profile.diet}`);
+
+      // Use diets from request body if provided, otherwise from profile
+      let dietsToUse: string[] = [];
+      if (body.diets && body.diets.length > 0) {
+        dietsToUse = body.diets;
+      } else if (profile) {
+        const extra = (profile.extra as Record<string, unknown>) || {};
+        dietsToUse = (extra.diets as string[]) || [];
+        // Fallback to old diet field if diets array is empty
+        if (
+          dietsToUse.length === 0 &&
+          profile.diet &&
+          profile.diet !== 'none'
+        ) {
+          dietsToUse = [profile.diet];
+        }
       }
-      if (profile.allergens && profile.allergens.length > 0) {
-        preferences.push(`Allergens to avoid: ${profile.allergens.join(', ')}`);
+
+      if (dietsToUse.length > 0) {
+        preferences.push(`Dietary preferences: ${dietsToUse.join(', ')}`);
       }
-      if (
-        profile.disliked_ingredients &&
-        profile.disliked_ingredients.length > 0
-      ) {
-        preferences.push(
-          `Disliked ingredients to avoid: ${profile.disliked_ingredients.join(', ')}`
-        );
-      }
-      if (profile.calorie_target) {
-        preferences.push(
-          `Target calorie range: around ${profile.calorie_target} calories per serving`
-        );
+
+      if (profile) {
+        if (profile.allergens && profile.allergens.length > 0) {
+          preferences.push(
+            `Allergens to avoid: ${profile.allergens.join(', ')}`
+          );
+        }
+        if (
+          profile.disliked_ingredients &&
+          profile.disliked_ingredients.length > 0
+        ) {
+          preferences.push(
+            `Disliked ingredients to avoid: ${profile.disliked_ingredients.join(', ')}`
+          );
+        }
+        if (profile.calorie_target) {
+          preferences.push(
+            `Target calorie range: around ${profile.calorie_target} calories per serving`
+          );
+        }
       }
 
       if (preferences.length > 0) {
