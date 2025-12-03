@@ -223,7 +223,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      soft_delete_recipe: { Args: { recipe_id: string }; Returns: undefined }
+      soft_delete_recipe: { Args: { recipe_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never

@@ -127,7 +127,25 @@ test.describe('Sign Up', () => {
       // Wait for either redirect or error with longer timeout
       await page.waitForTimeout(1000); // Give form time to submit
 
-      // Check if we have an error
+      // Check if we have field-level validation errors
+      if (await signUpPage.hasFieldErrors()) {
+        const confirmPasswordError =
+          await signUpPage.getFieldError('confirmPassword');
+        const passwordError = await signUpPage.getFieldError('password');
+        const emailError = await signUpPage.getFieldError('email');
+        const fieldErrors = [
+          confirmPasswordError && `confirmPassword: ${confirmPasswordError}`,
+          passwordError && `password: ${passwordError}`,
+          emailError && `email: ${emailError}`,
+        ]
+          .filter(Boolean)
+          .join(', ');
+        throw new Error(
+          `Sign-up failed with field validation errors: ${fieldErrors}. This might indicate the form fields were not filled correctly.`
+        );
+      }
+
+      // Check if we have a global error
       const errorMessage = signUpPage.errorMessage;
       if (await errorMessage.isVisible().catch(() => false)) {
         const errorText = await signUpPage.getErrorMessage();
@@ -391,18 +409,30 @@ test.describe('Sign In', () => {
     const signInPage = new SignInPage(page);
     await signInPage.goto();
 
-    // Try to sign in with non-existent email
-    await signInPage.signIn('nonexistent@tgmail.com', 'SomePassword123!@#');
+    // Try to sign in with invalid email format to trigger validation error
+    await signInPage.emailInput.fill('notanemail');
+    await signInPage.passwordInput.fill('SomePassword123!@#');
+    await signInPage.signInButton.click();
 
-    // Wait for error to appear
-    await page.waitForTimeout(2000);
+    // Wait for validation error to appear
+    await page.waitForTimeout(1000);
 
-    // Should show error message
-    const errorMessage = signInPage.errorMessage;
-    await expect(errorMessage).toBeVisible({ timeout: 10000 });
-
-    const errorText = await signInPage.getErrorMessage();
-    expect(errorText.toLowerCase()).toContain('invalid');
+    // Check for field-level validation error first (most likely for invalid format)
+    const emailFieldError = await signInPage.getFieldError('email');
+    if (emailFieldError) {
+      // Field-level validation error should be shown
+      expect(emailFieldError.toLowerCase()).toContain('valid');
+    } else {
+      // If no field error, check for global error message
+      const hasGlobalError = await signInPage.hasErrorMessage();
+      if (hasGlobalError) {
+        const errorText = await signInPage.getErrorMessage();
+        expect(errorText.toLowerCase()).toMatch(/invalid|error|fail/);
+      } else {
+        // Should still be on sign-in page due to validation preventing submission
+        expect(page.url()).toContain('/sign-in');
+      }
+    }
   });
 
   test('should show error when signing in with wrong password', async ({

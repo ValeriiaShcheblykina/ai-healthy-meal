@@ -531,13 +531,24 @@ export class RecipeService {
    */
   async deleteRecipe(id: string): Promise<void> {
     // Use RPC function with explicit auth.uid() check inside for security
-    const { error } = await this.supabase.rpc('soft_delete_recipe', {
+    const { data, error } = await this.supabase.rpc('soft_delete_recipe', {
       recipe_id: id,
     });
 
     if (error) {
       console.error('Error in RecipeService.deleteRecipe', error);
       throw createInternalError('Failed to delete recipe');
+    }
+
+    // Check if the recipe was actually deleted
+    // The function returns true if a row was updated, false otherwise
+    if (data === false) {
+      console.error('Recipe deletion failed: no rows updated', {
+        recipe_id: id,
+      });
+      throw createInternalError(
+        'Failed to delete recipe: recipe not found or already deleted'
+      );
     }
   }
 }

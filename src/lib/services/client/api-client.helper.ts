@@ -93,5 +93,27 @@ export async function fetchApi<T>(
     throw new Error(errorMessage || errorOptions.defaultMessage);
   }
 
-  return response.json();
+  // Handle 204 No Content responses (common for DELETE requests)
+  if (response.status === 204) {
+    // 204 No Content has no body, return undefined
+    return undefined as T;
+  }
+
+  // Check if response has content to parse
+  const contentType = response.headers.get('content-type');
+  const contentLength = response.headers.get('content-length');
+
+  // If no content-type or content-length is 0, return undefined
+  if (!contentType?.includes('application/json') || contentLength === '0') {
+    return undefined as T;
+  }
+
+  // Parse JSON response
+  try {
+    return await response.json();
+  } catch {
+    // If JSON parsing fails but status is OK, return undefined
+    // This handles edge cases where response is empty but status is 200
+    return undefined as T;
+  }
 }

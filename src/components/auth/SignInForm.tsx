@@ -58,23 +58,57 @@ export function SignInForm() {
       const validatedData = signInSchema.parse(formData);
       setIsLoading(true);
 
-      // Call sign-in API
-      const response = await fetch('/api/auth/sign-in', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(validatedData),
-        credentials: 'include', // Include cookies in request and response
-      });
+      let response: Response;
+      let data: unknown;
 
-      const data = await response.json();
+      try {
+        // Call sign-in API
+        response = await fetch('/api/auth/sign-in', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(validatedData),
+          credentials: 'include', // Include cookies in request and response
+        });
+
+        // Try to parse JSON, but handle cases where response might not be JSON
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          data = await response.json();
+        } else {
+          // If response is not JSON, read as text for error message
+          const text = await response.text();
+          setIsLoading(false);
+          setGlobalError(
+            `Sign in failed: ${text || response.statusText || 'Unknown error'}`
+          );
+          return;
+        }
+      } catch (fetchError) {
+        // Handle network errors or JSON parsing errors
+        setIsLoading(false);
+        if (
+          fetchError instanceof TypeError &&
+          fetchError.message.includes('fetch')
+        ) {
+          setGlobalError(
+            'Network error. Please check your connection and try again.'
+          );
+        } else {
+          setGlobalError(
+            `Sign in failed: ${fetchError instanceof Error ? fetchError.message : 'Unknown error'}`
+          );
+        }
+        return;
+      }
 
       if (!response.ok) {
-        setGlobalError(
-          data.error?.message || 'Sign in failed. Please try again.'
-        );
         setIsLoading(false);
+        setGlobalError(
+          data?.error?.message ||
+            `Sign in failed: ${response.statusText || 'Unknown error'}`
+        );
         return;
       }
 
@@ -93,7 +127,9 @@ export function SignInForm() {
         });
         setErrors(fieldErrors);
       } else {
-        setGlobalError('An unexpected error occurred. Please try again.');
+        setGlobalError(
+          `An unexpected error occurred: ${error instanceof Error ? error.message : 'Unknown error'}`
+        );
       }
     }
   };

@@ -53,6 +53,17 @@ export class SignInPage extends BasePage {
   }
 
   /**
+   * Get field-level error message for a specific field
+   */
+  async getFieldError(fieldId: string): Promise<string> {
+    const errorElement = this.page.locator(`#${fieldId}-error`);
+    if (await this.isVisible(errorElement)) {
+      return await this.getText(errorElement);
+    }
+    return '';
+  }
+
+  /**
    * Click on forgot password link
    */
   async clickForgotPassword() {

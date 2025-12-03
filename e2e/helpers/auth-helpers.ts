@@ -65,12 +65,51 @@ export async function signInWithTestUser(page: Page) {
     // Small delay to allow React state updates and validation
     await page.waitForTimeout(200);
 
-    // Click sign in and wait for navigation
-    await Promise.all([
-      signInPage.signInButton.click(),
-      // Wait for either recipes page (success) or staying on sign-in (error)
-      page.waitForURL(/\/recipes|sign-in/, { timeout: 15000 }),
-    ]);
+    // Set up network monitoring to catch API errors
+    let apiResponse: { status?: number; body?: unknown } | null = null;
+    const responsePromise = page
+      .waitForResponse(
+        (response) => response.url().includes('/api/auth/sign-in'),
+        { timeout: 15000 }
+      )
+      .catch(() => null);
+
+    // Click sign in and wait for either navigation or response
+    await signInPage.signInButton.click();
+
+    // Wait for API response
+    const response = await responsePromise;
+    if (response) {
+      apiResponse = {
+        status: response.status(),
+        body: await response.json().catch(() => null),
+      };
+      console.info(`📡 API Response: ${apiResponse.status}`);
+    }
+
+    // Wait for either navigation to recipes or error message to appear
+    try {
+      await Promise.race([
+        page.waitForURL(/\/recipes/, { timeout: 10000 }),
+        page.waitForSelector('[data-testid="signin-error-message"]', {
+          state: 'visible',
+          timeout: 10000,
+        }),
+        // Also wait for button to stop loading (isLoading becomes false)
+        page.waitForFunction(
+          () => {
+            const button = document.querySelector(
+              '[data-testid="signin-submit-button"]'
+            );
+            return button && !button.textContent?.includes('Signing in');
+          },
+          { timeout: 10000 }
+        ),
+      ]);
+    } catch {
+      // If none of the above happened, check current state
+      console.warn('⚠️ Timeout waiting for navigation or error message');
+    }
 
     // Check if we're on the recipes page (success)
     if (page.url().includes('/recipes')) {
@@ -80,13 +119,34 @@ export async function signInWithTestUser(page: Page) {
 
     // Still on sign-in page - check for error message
     const errorMsg = page.getByTestId('signin-error-message');
-    if (await errorMsg.isVisible().catch(() => false)) {
+    const isErrorVisible = await errorMsg.isVisible().catch(() => false);
+
+    if (isErrorVisible) {
       const uiError = (await errorMsg.textContent()) || '';
       console.error('❌ UI Error:', uiError);
-      throw new Error(`Sign-in failed: ${uiError}`);
+
+      // Include API response info if available
+      let errorDetails = `Sign-in failed: ${uiError}`;
+      if (apiResponse) {
+        errorDetails += `\nAPI Status: ${apiResponse.status}`;
+        if (apiResponse.body?.error) {
+          errorDetails += `\nAPI Error: ${JSON.stringify(apiResponse.body.error)}`;
+        }
+      }
+
+      throw new Error(errorDetails);
     }
 
-    throw new Error('Sign-in failed: No error message displayed');
+    // No error message visible - check API response for clues
+    let errorMessage = 'Sign-in failed: No error message displayed';
+    if (apiResponse) {
+      errorMessage += `\nAPI returned status ${apiResponse.status}`;
+      if (apiResponse.body?.error) {
+        errorMessage += `\nAPI error: ${JSON.stringify(apiResponse.body.error)}`;
+      }
+    }
+
+    throw new Error(errorMessage);
   } catch (error) {
     console.error('❌ Sign-in failed');
 

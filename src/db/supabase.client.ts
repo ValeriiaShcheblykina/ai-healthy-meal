@@ -36,22 +36,27 @@ export const createSupabaseServerInstance = (context: {
         return parseCookieHeader(context.headers.get('Cookie') ?? '');
       },
       setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            context.cookies.set(name, value, options)
-          );
-        } catch (error) {
-          if (
-            error instanceof Error &&
-            error.message.includes('already been sent')
-          ) {
-            // Silently ignore - this can happen during sign-out when
-            // cookies are cleared before the response is sent
-            return;
+        // Set each cookie individually to handle errors gracefully
+        // This prevents one failed cookie from blocking others
+        cookiesToSet.forEach(({ name, value, options }) => {
+          try {
+            context.cookies.set(name, value, options);
+          } catch (error) {
+            // Silently ignore if cookies have already been sent
+            // This can happen during async operations like token refresh
+            // that occur after the response has been sent
+            if (
+              error instanceof Error &&
+              (error.message.includes('already been sent') ||
+                error.message.includes('cookies had already been sent'))
+            ) {
+              // Expected in some async scenarios - no action needed
+              return;
+            }
+            // Re-throw unexpected errors
+            throw error;
           }
-
-          throw error;
-        }
+        });
       },
     },
   });
