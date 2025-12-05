@@ -224,6 +224,7 @@ export type Database = {
     }
     Functions: {
       soft_delete_recipe: { Args: { recipe_id: string }; Returns: boolean }
+      soft_delete_recipe_variant: { Args: { p_recipe_id: string; p_variant_id: string }; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
