@@ -1,0 +1,27 @@
+---
+import Layout from '@/layouts/Layout.astro';
+import { getAuthenticatedUser } from '@/lib/auth/get-authenticated-user';
+import { VariantDetailView } from '@/components/recipes/VariantDetailView';
+
+// Ensure dynamic rendering
+export const prerender = false;
+
+// Check authentication
+const user = await getAuthenticatedUser(Astro);
+
+if (!user) {
+  return Astro.redirect('/');
+}
+
+const { recipeId, variantId } = Astro.params;
+
+if (!recipeId || !variantId) {
+  return Astro.redirect('/recipes');
+}
+---
+
+<Layout title="Recipe Variant">
+  <div class="container mx-auto px-4 py-8">
+    <VariantDetailView client:load recipeId={recipeId} variantId={variantId} />
+  </div>
+</Layout>

@@ -28,7 +28,13 @@ export const PATCH: APIRoute = async (context) => {
       );
     }
 
-    const { displayName, diets } = result.data;
+    const {
+      displayName,
+      diets,
+      allergens,
+      dislikedIngredients,
+      calorieTarget,
+    } = result.data;
     const supabase = context.locals.supabase;
 
     // Check if profile exists to get current extra data
@@ -41,11 +47,27 @@ export const PATCH: APIRoute = async (context) => {
     // Prepare update data (only include fields that are provided)
     const updateData: {
       display_name?: string | null;
+      allergens?: string[] | null;
+      disliked_ingredients?: string[] | null;
+      calorie_target?: number | null;
       extra?: Json;
     } = {};
 
     if (displayName !== undefined) {
       updateData.display_name = displayName || null;
+    }
+    // Always include allergens if provided (even if empty array)
+    if (allergens !== undefined) {
+      updateData.allergens = Array.isArray(allergens) ? allergens : null;
+    }
+    // Always include disliked ingredients if provided (even if empty array)
+    if (dislikedIngredients !== undefined) {
+      updateData.disliked_ingredients = Array.isArray(dislikedIngredients)
+        ? dislikedIngredients
+        : null;
+    }
+    if (calorieTarget !== undefined) {
+      updateData.calorie_target = calorieTarget || null;
     }
     if (diets !== undefined) {
       // Store diets array in extra JSONB field
@@ -64,7 +86,9 @@ export const PATCH: APIRoute = async (context) => {
         .from('user_profiles')
         .update(updateData)
         .eq('user_id', userId)
-        .select('display_name, extra, updated_at')
+        .select(
+          'display_name, allergens, disliked_ingredients, calorie_target, extra, updated_at'
+        )
         .single();
 
       if (error) {
@@ -85,7 +109,9 @@ export const PATCH: APIRoute = async (context) => {
           user_id: userId,
           ...updateData,
         })
-        .select('display_name, extra, updated_at')
+        .select(
+          'display_name, allergens, disliked_ingredients, calorie_target, extra, updated_at'
+        )
         .single();
 
       if (error) {
@@ -109,6 +135,9 @@ export const PATCH: APIRoute = async (context) => {
         profile: {
           displayName: profile.display_name,
           diets: dietsArray,
+          allergens: profile.allergens || [],
+          dislikedIngredients: profile.disliked_ingredients || [],
+          calorieTarget: profile.calorie_target,
           updatedAt: profile.updated_at,
         },
         message: 'Profile updated successfully',

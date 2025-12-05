@@ -4,8 +4,8 @@ import {
   createMockAPIContext,
   getResponseJson,
   createMockUser,
-} from '../../../../test/helpers/api-test-helpers';
-import { createMockSupabaseClient } from '../../../../test/mocks/supabase.mock';
+} from '@test/helpers/api-test-helpers';
+import { createMockSupabaseClient } from '@test/mocks/supabase.mock';
 
 describe('POST /api/auth/sign-up', () => {
   let mockSupabase: ReturnType<typeof createMockSupabaseClient>;

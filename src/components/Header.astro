@@ -1,5 +1,6 @@
 ---
 import { ThemeToggle } from './ThemeToggle';
+import { GenerateRecipeFromPreferences } from '@/components/GenerateRecipeFromPreferences';
 
 const { user } = Astro.locals;
 ---
@@ -57,6 +58,12 @@ const { user } = Astro.locals;
                 </svg>
                 New Recipe
               </a>
+              <GenerateRecipeFromPreferences
+                client:load
+                variant="outline"
+                size="sm"
+                className="hidden md:inline-flex"
+              />
             </>
           )
         }

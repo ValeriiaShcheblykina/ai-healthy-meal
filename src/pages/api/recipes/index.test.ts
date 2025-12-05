@@ -3,8 +3,8 @@ import { GET, POST } from './index';
 import {
   createMockAPIContext,
   getResponseJson,
-} from '../../../../test/helpers/api-test-helpers';
-import { createMockSupabaseClient } from '../../../../test/mocks/supabase.mock';
+} from '@test/helpers/api-test-helpers';
+import { createMockSupabaseClient } from '@test/mocks/supabase.mock';
 import * as getAuthenticatedUserModule from '@/lib/auth/get-authenticated-user';
 
 // Mock the getAuthenticatedUserId function
@@ -17,7 +17,10 @@ const mockListRecipes = vi.fn();
 const mockCreateRecipe = vi.fn();
 
 vi.mock('@/lib/services/recipe.service', () => ({
-  RecipeService: {},
+  RecipeService: class {
+    listRecipes = mockListRecipes;
+    createRecipe = mockCreateRecipe;
+  },
 }));
 
 describe('GET /api/recipes', () => {

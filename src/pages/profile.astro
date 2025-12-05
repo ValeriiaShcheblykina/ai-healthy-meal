@@ -13,7 +13,9 @@ if (!user) {
 const supabase = Astro.locals.supabase;
 const { data: profile } = await supabase
   .from('user_profiles')
-  .select('display_name, extra')
+  .select(
+    'display_name, allergens, disliked_ingredients, calorie_target, extra'
+  )
   .eq('user_id', user.id)
   .single();
 
@@ -24,6 +26,9 @@ const diets = (extra.diets as string[]) || null;
 const initialData = {
   displayName: profile?.display_name || null,
   diets: diets,
+  allergens: profile?.allergens || null,
+  dislikedIngredients: profile?.disliked_ingredients || null,
+  calorieTarget: profile?.calorie_target || null,
   email: user.email || '',
 };
 ---

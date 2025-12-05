@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { TagInput } from '@/components/ui/tag-input';
 import { FormField } from '@/components/auth/FormField';
 import {
   updateProfileSchema,
   type UpdateProfileFormData,
 } from '@/lib/validation/auth.validation';
 import { ProfileClientService } from '@/lib/services/client/profile.client.service';
-import { GenerateRecipeFromDietButton } from './GenerateRecipeFromDietButton';
+import { GenerateRecipeFromPreferences } from '@/components/GenerateRecipeFromPreferences';
 import type { ZodError } from 'zod';
 import type { DietType } from '@/types';
 
@@ -15,6 +16,9 @@ interface ProfileFormProps {
   initialData?: {
     displayName?: string | null;
     diets?: string[] | null;
+    allergens?: string[] | null;
+    dislikedIngredients?: string[] | null;
+    calorieTarget?: number | null;
     email?: string;
   };
 }
@@ -23,6 +27,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   const [formData, setFormData] = useState<Partial<UpdateProfileFormData>>({
     displayName: initialData?.displayName || '',
     diets: (initialData?.diets as DietType[]) || [],
+    allergens: Array.isArray(initialData?.allergens)
+      ? initialData.allergens
+      : [],
+    dislikedIngredients: Array.isArray(initialData?.dislikedIngredients)
+      ? initialData.dislikedIngredients
+      : [],
+    calorieTarget: initialData?.calorieTarget || null,
   });
   const [errors, setErrors] = useState<
     Partial<Record<keyof UpdateProfileFormData, string>>
@@ -31,6 +42,13 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
   const [successMessage, setSuccessMessage] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const profileService = new ProfileClientService();
+  // Use ref to always have access to latest formData in async handlers
+  const formDataRef = useRef(formData);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    formDataRef.current = formData;
+  }, [formData]);
 
   // Update form data when initialData changes
   useEffect(() => {
@@ -38,15 +56,25 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
       setFormData({
         displayName: initialData.displayName || '',
         diets: (initialData.diets as DietType[]) || [],
+        allergens: Array.isArray(initialData.allergens)
+          ? initialData.allergens
+          : [],
+        dislikedIngredients: Array.isArray(initialData.dislikedIngredients)
+          ? initialData.dislikedIngredients
+          : [],
+        calorieTarget: initialData.calorieTarget || null,
       });
     }
   }, [initialData]);
 
   const handleChange = (
     field: keyof UpdateProfileFormData,
-    value: string | null | string[]
+    value: string | null | string[] | number
   ) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => {
+      const updated = { ...prev, [field]: value };
+      return updated;
+    });
     // Clear field error on change
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
@@ -92,11 +120,48 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
 
     // Validate form
     try {
-      const validatedData = updateProfileSchema.parse(formData);
+      // Use ref to get the latest formData (avoids closure issues)
+      const currentFormData = formDataRef.current;
+
+      // Prepare data for validation - ensure arrays are properly formatted
+      const dataToValidate = {
+        ...currentFormData,
+        // Ensure allergens and dislikedIngredients are arrays if they exist
+        allergens:
+          currentFormData.allergens !== undefined
+            ? Array.isArray(currentFormData.allergens)
+              ? currentFormData.allergens
+              : null
+            : undefined,
+        dislikedIngredients:
+          currentFormData.dislikedIngredients !== undefined
+            ? Array.isArray(currentFormData.dislikedIngredients)
+              ? currentFormData.dislikedIngredients
+              : null
+            : undefined,
+      };
+
+      const validatedData = updateProfileSchema.parse(dataToValidate);
+
+      // Build the final payload - always include allergens and dislikedIngredients
+      // Use the actual values from currentFormData to ensure we send what the user actually entered
+      const dataToSend = {
+        displayName: validatedData.displayName ?? null,
+        diets: validatedData.diets ?? null,
+        // Use currentFormData values directly - if they're arrays, send them; if undefined, send null
+        allergens: Array.isArray(currentFormData.allergens)
+          ? currentFormData.allergens
+          : null,
+        dislikedIngredients: Array.isArray(currentFormData.dislikedIngredients)
+          ? currentFormData.dislikedIngredients
+          : null,
+        calorieTarget: validatedData.calorieTarget ?? null,
+      };
+
       setIsLoading(true);
 
       // Call profile update service
-      const data = await profileService.updateProfile(validatedData);
+      const data = await profileService.updateProfile(dataToSend);
 
       // Success
       setSuccessMessage('Profile updated successfully!');
@@ -107,6 +172,9 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         setFormData({
           displayName: data.profile.displayName || '',
           diets: (data.profile.diets as DietType[]) || [],
+          allergens: data.profile.allergens || [],
+          dislikedIngredients: data.profile.dislikedIngredients || [],
+          calorieTarget: data.profile.calorieTarget || null,
         });
       }
     } catch (error) {
@@ -262,14 +330,90 @@ export function ProfileForm({ initialData }: ProfileFormProps) {
         )}
       </FormField>
 
-      {selectedDiets.length > 0 && (
-        <div className="pt-2">
-          <GenerateRecipeFromDietButton
-            selectedDiets={selectedDiets}
+      <div className="pt-2">
+        <p className="text-muted-foreground mb-2 text-xs sm:text-sm">
+          Generate a recipe using all your profile preferences (diets,
+          allergens, disliked ingredients, and calorie target)
+        </p>
+        <div className="w-full">
+          <GenerateRecipeFromPreferences
             disabled={isLoading}
+            className="w-full"
           />
         </div>
-      )}
+      </div>
+
+      <FormField label="Allergens" htmlFor="allergens" error={errors.allergens}>
+        <TagInput
+          tags={Array.isArray(formData.allergens) ? formData.allergens : []}
+          onTagsChange={(tags) => {
+            handleChange('allergens', tags);
+          }}
+          placeholder="e.g., peanuts, shellfish, dairy"
+          disabled={isLoading}
+          label=""
+          error={errors.allergens}
+          aria-label="Allergens to avoid"
+        />
+        <p className="text-muted-foreground mt-1 text-xs">
+          These allergens will be excluded from AI-generated recipes
+        </p>
+      </FormField>
+
+      <FormField
+        label="Disliked Ingredients"
+        htmlFor="dislikedIngredients"
+        error={errors.dislikedIngredients}
+      >
+        <TagInput
+          tags={
+            Array.isArray(formData.dislikedIngredients)
+              ? formData.dislikedIngredients
+              : []
+          }
+          onTagsChange={(tags) => {
+            handleChange('dislikedIngredients', tags);
+          }}
+          placeholder="e.g., cilantro, mushrooms, onions"
+          disabled={isLoading}
+          label=""
+          error={errors.dislikedIngredients}
+          aria-label="Disliked ingredients to avoid"
+        />
+        <p className="text-muted-foreground mt-1 text-xs">
+          These ingredients will be excluded from AI-generated recipes
+        </p>
+      </FormField>
+
+      <FormField
+        label="Calorie Target"
+        htmlFor="calorieTarget"
+        error={errors.calorieTarget}
+      >
+        <Input
+          id="calorieTarget"
+          name="calorieTarget"
+          type="number"
+          min="0"
+          max="10000"
+          step="50"
+          value={formData.calorieTarget || ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            handleChange(
+              'calorieTarget',
+              value === '' ? null : parseInt(value, 10)
+            );
+          }}
+          onBlur={() => handleBlur('calorieTarget')}
+          placeholder="e.g., 2000"
+          disabled={isLoading}
+          aria-label="Target calories per serving"
+        />
+        <p className="text-muted-foreground mt-1 text-xs">
+          Target calories per serving for AI-generated recipes (optional)
+        </p>
+      </FormField>
 
       <div className="space-y-4">
         <Button type="submit" className="w-full" disabled={isLoading}>

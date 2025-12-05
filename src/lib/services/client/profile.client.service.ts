@@ -42,6 +42,9 @@ export interface UpdateProfileResponse {
   profile: {
     displayName: string | null;
     diets: string[];
+    allergens: string[];
+    dislikedIngredients: string[];
+    calorieTarget: number | null;
     updatedAt: string;
   };
   message: string;
@@ -50,6 +53,9 @@ export interface UpdateProfileResponse {
 export interface UpdateProfileData {
   displayName?: string | null;
   diets?: string[] | null;
+  allergens?: string[] | null;
+  dislikedIngredients?: string[] | null;
+  calorieTarget?: number | null;
 }
 
 export interface GeneratedRecipeData {
@@ -125,6 +131,101 @@ export class ProfileClientService {
     const generatedRecipe = await fetchApi<GeneratedRecipeData>(
       '/api/recipes/ai-generation',
       { method: 'POST', body: { diets } },
+      { defaultMessage: 'Failed to generate recipe. Please try again.' }
+    );
+
+    // Build URL parameters for redirect
+    const params = new URLSearchParams();
+    params.set('generated', 'true');
+    params.set('title', generatedRecipe.title || '');
+
+    if (generatedRecipe.description) {
+      params.set('description', generatedRecipe.description);
+    }
+    if (generatedRecipe.ingredients) {
+      params.set('ingredients', JSON.stringify(generatedRecipe.ingredients));
+    }
+    if (generatedRecipe.instructions) {
+      params.set('instructions', JSON.stringify(generatedRecipe.instructions));
+    }
+    if (generatedRecipe.prep_time) {
+      params.set('prep_time', generatedRecipe.prep_time.toString());
+    }
+    if (generatedRecipe.cook_time) {
+      params.set('cook_time', generatedRecipe.cook_time.toString());
+    }
+    if (generatedRecipe.servings) {
+      params.set('servings', generatedRecipe.servings.toString());
+    }
+
+    return `/recipes/new?${params.toString()}`;
+  }
+
+  /**
+   * Generates a recipe based on all user profile preferences.
+   * Fetches the user's profile and uses all preferences (diets, allergens, disliked ingredients, calorie target).
+   *
+   * @async
+   * @method generateRecipeFromPreferences
+   * @returns {Promise<string>} URL to redirect to recipe creation page with generated data
+   *
+   * @throws {Error} If generation fails or user has no preferences set
+   */
+  async generateRecipeFromPreferences(): Promise<string> {
+    // Fetch user profile
+    const userData = await this.getCurrentUser();
+    const profile = userData.user.profile;
+
+    if (!profile) {
+      throw new Error(
+        'No profile found. Please set your preferences in your profile first.'
+      );
+    }
+
+    // Check if user has any preferences
+    const hasDiets = profile.diets && profile.diets.length > 0;
+    const hasAllergens = profile.allergens && profile.allergens.length > 0;
+    const hasDislikedIngredients =
+      profile.dislikedIngredients && profile.dislikedIngredients.length > 0;
+    const hasCalorieTarget =
+      profile.calorieTarget !== null && profile.calorieTarget !== undefined;
+
+    if (
+      !hasDiets &&
+      !hasAllergens &&
+      !hasDislikedIngredients &&
+      !hasCalorieTarget
+    ) {
+      throw new Error(
+        'No preferences found. Please set your dietary preferences, allergens, disliked ingredients, or calorie target in your profile first.'
+      );
+    }
+
+    // Prepare request body with all preferences
+    const requestBody: {
+      diets?: string[];
+      allergens?: string[];
+      dislikedIngredients?: string[];
+      calorieTarget?: number | null;
+    } = {};
+
+    if (hasDiets) {
+      requestBody.diets = profile.diets;
+    }
+    if (hasAllergens) {
+      requestBody.allergens = profile.allergens;
+    }
+    if (hasDislikedIngredients) {
+      requestBody.dislikedIngredients = profile.dislikedIngredients;
+    }
+    if (hasCalorieTarget) {
+      requestBody.calorieTarget = profile.calorieTarget;
+    }
+
+    // Call recipes API to generate recipe with all preferences
+    const generatedRecipe = await fetchApi<GeneratedRecipeData>(
+      '/api/recipes/ai-generation',
+      { method: 'POST', body: requestBody },
       { defaultMessage: 'Failed to generate recipe. Please try again.' }
     );
 

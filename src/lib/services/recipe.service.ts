@@ -37,6 +37,10 @@ import type {
   RecipeListResponseDTO,
   RecipeListItemDTO,
   RecipeEntity,
+  RecipeVariantListQueryParams,
+  RecipeVariantListResponseDTO,
+  RecipeVariantDTO,
+  RecipeVariantEntity,
 } from '../../types.ts';
 
 /**
@@ -549,6 +553,164 @@ export class RecipeService {
       throw createInternalError(
         'Failed to delete recipe: recipe not found or already deleted'
       );
+    }
+  }
+
+  /**
+   * Lists recipe variants for a specific recipe with pagination and sorting.
+   *
+   * @async
+   * @method listRecipeVariants
+   * @param {string} recipeId - UUID of the recipe
+   * @param {Required<RecipeVariantListQueryParams>} params - Query parameters
+   * @returns {Promise<RecipeVariantListResponseDTO>} Variant list with pagination
+   *
+   * @throws {ApiError} Throws 500 INTERNAL_ERROR if database query fails
+   */
+  async listRecipeVariants(
+    recipeId: string,
+    params: Required<RecipeVariantListQueryParams>
+  ): Promise<RecipeVariantListResponseDTO> {
+    const { page, limit, sort, order } = params;
+    const offset = (page - 1) * limit;
+
+    // Build query
+    const { data, error, count } = await this.supabase
+      .from('recipe_variants')
+      .select('*', { count: 'exact' })
+      .eq('recipe_id', recipeId)
+      .is('deleted_at', null) // Exclude soft-deleted variants
+      .order(sort, { ascending: order === 'asc' })
+      .range(offset, offset + limit - 1);
+
+    // Handle database errors
+    if (error) {
+      console.error(
+        'Database error in RecipeService.listRecipeVariants:',
+        error
+      );
+      throw createInternalError('Failed to fetch recipe variants');
+    }
+
+    // Transform database entities to DTOs (exclude deleted_at)
+    const variants: RecipeVariantDTO[] = (data || []).map(
+      (variant: RecipeVariantEntity) => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { deleted_at, ...variantDTO } = variant;
+        return variantDTO;
+      }
+    );
+
+    // Calculate pagination metadata
+    const total = count ?? 0;
+    const total_pages = Math.ceil(total / limit);
+
+    return {
+      data: variants,
+      pagination: {
+        page,
+        limit,
+        total,
+        total_pages,
+      },
+    };
+  }
+
+  /**
+   * Retrieves a single recipe variant by its unique identifier.
+   *
+   * @async
+   * @method getRecipeVariant
+   * @param {string} recipeId - UUID of the parent recipe
+   * @param {string} variantId - UUID of the variant to retrieve
+   * @returns {Promise<RecipeVariantEntity | null>} Complete variant entity or null if not found
+   *
+   * @throws {ApiError} Throws 500 INTERNAL_ERROR if database query fails
+   */
+  async getRecipeVariant(
+    recipeId: string,
+    variantId: string
+  ): Promise<RecipeVariantEntity | null> {
+    const { data, error } = await this.supabase
+      .from('recipe_variants')
+      .select('*')
+      .eq('id', variantId)
+      .eq('recipe_id', recipeId)
+      .is('deleted_at', null)
+      .single();
+
+    if (error && error.code !== 'PGRST116') {
+      // 116: no rows found
+      console.error('Error in RecipeService.getRecipeVariant', error);
+      throw createInternalError('Failed to fetch recipe variant');
+    }
+
+    return data ?? null;
+  }
+
+  /**
+   * Soft-deletes a recipe variant by setting its deleted_at timestamp.
+   *
+   * This method performs a soft delete rather than permanently removing the variant
+   * from the database. The variant is marked as deleted but remains in the database
+   * for potential recovery or audit purposes. Soft-deleted variants are automatically
+   * excluded from all queries (listRecipeVariants, getRecipeVariant).
+   *
+   * @async
+   * @method deleteRecipeVariant
+   * @param {string} recipeId - UUID of the parent recipe
+   * @param {string} variantId - UUID of the variant to soft-delete
+   *
+   * @returns {Promise<void>} Resolves when deletion is complete (no return value)
+   *
+   * @throws {ApiError} Throws 500 INTERNAL_ERROR if:
+   *   - Database update fails
+   *   - Variant doesn't exist
+   *   - User doesn't own the parent recipe (RLS policy violation)
+   *
+   * @example
+   * // Delete variant
+   * await recipeService.deleteRecipeVariant(recipeId, variantId);
+   * console.log('Variant soft-deleted successfully');
+   *
+   * @remarks
+   * - This is a SOFT delete - data is not permanently removed from database
+   * - Sets deleted_at to current ISO timestamp
+   * - Soft-deleted variants are excluded from listRecipeVariants and getRecipeVariant
+   * - RLS policies ensure users can only delete variants of recipes they own
+   * - Already-deleted variants can be "deleted" again (updates timestamp)
+   * - For permanent deletion, database administrators would need direct access
+   * - No return value - success is indicated by not throwing an error
+   *
+   * @see {@link getRecipeVariant} to verify existence before deletion
+   * @see {@link listRecipeVariants} which automatically excludes soft-deleted variants
+   */
+  async deleteRecipeVariant(
+    recipeId: string,
+    variantId: string
+  ): Promise<void> {
+    // Use RPC function with explicit auth.uid() check inside for security
+    const { data, error } = await this.supabase.rpc(
+      'soft_delete_recipe_variant',
+      {
+        p_recipe_id: recipeId,
+        p_variant_id: variantId,
+      }
+    );
+
+    if (error) {
+      console.error('Error in RecipeService.deleteRecipeVariant', error);
+      throw createInternalError('Failed to delete recipe variant');
+    }
+
+    // Check if the variant was actually deleted
+    // The function returns true if a row was updated, false otherwise
+    if (data === false) {
+      console.error('Variant deletion failed: no rows updated', {
+        recipe_id: recipeId,
+        variant_id: variantId,
+      });
+      throw createNotFoundError('Variant not found or already deleted');
     }
   }
 }

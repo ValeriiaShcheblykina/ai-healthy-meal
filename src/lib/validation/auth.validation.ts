@@ -83,6 +83,31 @@ export const updateProfileSchema = z.object({
     )
     .optional()
     .nullable(),
+  allergens: z
+    .array(
+      z
+        .string()
+        .min(1, 'Allergen cannot be empty')
+        .max(100, 'Allergen name too long')
+    )
+    .optional()
+    .nullable(),
+  dislikedIngredients: z
+    .array(
+      z
+        .string()
+        .min(1, 'Ingredient cannot be empty')
+        .max(100, 'Ingredient name too long')
+    )
+    .optional()
+    .nullable(),
+  calorieTarget: z
+    .number()
+    .int('Calorie target must be a whole number')
+    .min(0, 'Calorie target must be positive')
+    .max(10000, 'Calorie target must be less than 10000')
+    .optional()
+    .nullable(),
 });
 
 export type SignUpFormData = z.infer<typeof signUpSchema>;

@@ -4,6 +4,8 @@ import { Card } from '@/components/ui/card';
 import { DeleteRecipeDialog } from './DeleteRecipeDialog';
 import { ToastProvider, useToast } from '@/components/ui/toast';
 import { RecipesClientService } from '@/lib/services/client/recipes.client.service';
+import { GenerateRecipeVariantButton } from './GenerateRecipeVariantButton';
+import { VariantList } from './VariantList';
 import type { RecipeListItemDTO } from '@/types';
 
 interface RecipeDetailViewProps {
@@ -18,6 +20,7 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
   const [error, setError] = React.useState<string | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [variantRefreshKey, setVariantRefreshKey] = React.useState(0);
   const { addToast } = useToast();
 
   // Fetch recipe data
@@ -154,6 +157,12 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
             Back to Recipes
           </Button>
           <div className="flex gap-2">
+            <GenerateRecipeVariantButton
+              recipeId={recipeId}
+              onVariantGenerated={() => {
+                setVariantRefreshKey((prev) => prev + 1);
+              }}
+            />
             <Button
               variant="outline"
               onClick={handleEdit}
@@ -222,6 +231,16 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
             </div>
           </div>
         </Card>
+
+        {/* Variants list */}
+        <VariantList
+          recipeId={recipeId}
+          refreshKey={variantRefreshKey}
+          onVariantDeleted={() => {
+            // Increment refresh key to force VariantList to refresh
+            setVariantRefreshKey((prev) => prev + 1);
+          }}
+        />
       </div>
 
       {/* Delete confirmation dialog */}

@@ -27,6 +27,9 @@ export const POST: APIRoute = async (context) => {
       temperature?: number;
       maxRecipes?: number;
       diets?: string[]; // Optional: override profile diets
+      allergens?: string[]; // Optional: override profile allergens
+      dislikedIngredients?: string[]; // Optional: override profile disliked ingredients
+      calorieTarget?: number | null; // Optional: override profile calorie target
     } = {};
 
     try {
@@ -51,12 +54,46 @@ export const POST: APIRoute = async (context) => {
       console.error('Error fetching user profile:', profileError);
     }
 
-    // Fetch user's recipes (optional - only if not generating from diets only)
+    // Check if user has any preferences (from body or profile)
+    const hasDiets = body.diets && body.diets.length > 0;
+    const hasAllergens = body.allergens && body.allergens.length > 0;
+    const hasDislikedIngredients =
+      body.dislikedIngredients && body.dislikedIngredients.length > 0;
+    const hasCalorieTarget =
+      body.calorieTarget !== undefined && body.calorieTarget !== null;
+
+    // Check profile for preferences if not in body
+    let profileHasPreferences = false;
+    if (profile) {
+      const extra = (profile.extra as Record<string, unknown>) || {};
+      const profileDiets = (extra.diets as string[]) || [];
+      const profileHasDiets = profileDiets.length > 0;
+      const profileHasAllergens =
+        profile.allergens && profile.allergens.length > 0;
+      const profileHasDislikedIngredients =
+        profile.disliked_ingredients && profile.disliked_ingredients.length > 0;
+      const profileHasCalorieTarget =
+        profile.calorie_target !== null && profile.calorie_target !== undefined;
+
+      profileHasPreferences =
+        profileHasDiets ||
+        profileHasAllergens ||
+        profileHasDislikedIngredients ||
+        profileHasCalorieTarget;
+    }
+
+    const hasAnyPreferences =
+      hasDiets ||
+      hasAllergens ||
+      hasDislikedIngredients ||
+      hasCalorieTarget ||
+      profileHasPreferences;
+
+    // Fetch user's recipes (optional - only needed if no preferences)
     let existingRecipes: { title: string; content: string }[] = [];
 
-    // If diets are provided, we can generate without existing recipes
-    // Otherwise, we need at least one recipe
-    if (!body.diets || body.diets.length === 0) {
+    if (!hasAnyPreferences) {
+      // If no preferences, we need at least one recipe
       const recipeService = new RecipeService(context.locals.supabase);
       const recipesResult = await recipeService.listRecipes({
         page: 1,
@@ -68,7 +105,7 @@ export const POST: APIRoute = async (context) => {
 
       if (recipesResult.data.length === 0) {
         throw createValidationError(
-          'You need at least one recipe in your list to generate a new recipe, or select dietary preferences to generate based on your diet'
+          'You need at least one recipe in your list to generate a new recipe, or set your dietary preferences, allergens, disliked ingredients, or calorie target in your profile'
         );
       }
 
@@ -78,26 +115,17 @@ export const POST: APIRoute = async (context) => {
         content: recipe.content || JSON.stringify(recipe.content_json || {}),
       }));
     } else {
-      // If generating from diets, optionally fetch some recipes for context
-      const recipeService = new RecipeService(context.locals.supabase);
-      const recipesResult = await recipeService.listRecipes({
-        page: 1,
-        limit: body.maxRecipes || 5, // Use fewer recipes when diets are specified
-        search: '',
-        sort: 'created_at',
-        order: 'desc',
-      });
-
-      // Prepare existing recipes for generation (optional context)
-      existingRecipes = recipesResult.data.map((recipe) => ({
-        title: recipe.title,
-        content: recipe.content || JSON.stringify(recipe.content_json || {}),
-      }));
+      // If generating from preferences only, we don't need existing recipes
+      // But we can optionally fetch some for additional context if they exist
+      // For now, we'll generate purely from preferences (empty recipes array)
+      existingRecipes = [];
     }
 
     // Build custom prompt with preferences if available
     let customPrompt = body.customPrompt || '';
-    if (profile || body.diets) {
+
+    // Always check for preferences if we have any (from body or profile)
+    if (hasAnyPreferences) {
       const preferences: string[] = [];
 
       // Use diets from request body if provided, otherwise from profile
@@ -121,25 +149,35 @@ export const POST: APIRoute = async (context) => {
         preferences.push(`Dietary preferences: ${dietsToUse.join(', ')}`);
       }
 
-      if (profile) {
-        if (profile.allergens && profile.allergens.length > 0) {
-          preferences.push(
-            `Allergens to avoid: ${profile.allergens.join(', ')}`
-          );
-        }
-        if (
-          profile.disliked_ingredients &&
-          profile.disliked_ingredients.length > 0
-        ) {
-          preferences.push(
-            `Disliked ingredients to avoid: ${profile.disliked_ingredients.join(', ')}`
-          );
-        }
-        if (profile.calorie_target) {
-          preferences.push(
-            `Target calorie range: around ${profile.calorie_target} calories per serving`
-          );
-        }
+      // Use allergens from request body if provided, otherwise from profile
+      const allergensToUse =
+        body.allergens && body.allergens.length > 0
+          ? body.allergens
+          : profile?.allergens || [];
+      if (allergensToUse.length > 0) {
+        preferences.push(`Allergens to avoid: ${allergensToUse.join(', ')}`);
+      }
+
+      // Use disliked ingredients from request body if provided, otherwise from profile
+      const dislikedIngredientsToUse =
+        body.dislikedIngredients && body.dislikedIngredients.length > 0
+          ? body.dislikedIngredients
+          : profile?.disliked_ingredients || [];
+      if (dislikedIngredientsToUse.length > 0) {
+        preferences.push(
+          `Disliked ingredients to avoid: ${dislikedIngredientsToUse.join(', ')}`
+        );
+      }
+
+      // Use calorie target from request body if provided, otherwise from profile
+      const calorieTargetToUse =
+        body.calorieTarget !== undefined
+          ? body.calorieTarget
+          : profile?.calorie_target;
+      if (calorieTargetToUse) {
+        preferences.push(
+          `Target calorie range: around ${calorieTargetToUse} calories per serving`
+        );
       }
 
       if (preferences.length > 0) {

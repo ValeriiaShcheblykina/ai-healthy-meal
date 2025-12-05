@@ -108,17 +108,6 @@ These views are protected by authentication and are wrapped in the main applicat
   - **Accessibility:** Full form accessibility, including labels and keyboard navigation for all custom controls.
   - **API Mapping:** This view will fetch initial data from a `GET /api/profile` endpoint and save changes via a `PUT /api/profile` endpoint.
 
-#### **Activity Logs**
-
-- **View Path:** `/logs`
-- **Main Purpose:** To provide a historical view of the user's recipe generation and modification activities.
-- **Key Information:** A chronological list of log entries, grouped by day, showing the action performed (e.g., "Generated a variant for 'Pasta'").
-- **Key Components:** `Header`, `LogList`, `LogItem`, `DateFilterControls`.
-- **Considerations:**
-  - **UX:** Infinite scrolling or pagination for long lists. An empty state for new users.
-  - **Accessibility:** Use appropriate heading levels for date groupings.
-  - **API Mapping:** Powered by the `GET /api/logs` endpoint, with filters for date range and action type.
-
 ## 3. User Journey Map
 
 The primary user journey involves creating a base recipe and then using AI to tailor it to personal preferences.
@@ -152,7 +141,7 @@ The primary user journey involves creating a base recipe and then using AI to ta
 - **Main Layout:** A single, persistent layout component (`Layout.astro`) will wrap all authenticated views. This layout contains the global navigation header and a main content area.
 - **Global Navigation:** A responsive header at the top of the page will contain:
   - **Logo:** Links back to the `/recipes` dashboard.
-  - **Primary Navigation Links:** "Recipes", "Create New Recipe", "Profile", "Activity Logs".
+  - **Primary Navigation Links:** "Recipes", "Create New Recipe", "Profile".
   - **User Menu:** An icon/avatar on the right that opens a dropdown with a "Sign Out" link.
 - **Responsive Behavior:**
   - On desktop screens (`md` breakpoint and up), the navigation links will be displayed horizontally in the header.
@@ -167,7 +156,7 @@ This is a list of key reusable components that will form the UI's building block
 - **`Input` / `Form`:** Standard form elements for data entry, used in auth, recipe creation, and profile settings.
 - **`Card`:** A container component used to display snippets of information, such as in the `RecipeCard` on the dashboard.
 - **`SearchBar`:** A dedicated input component with a search icon for filtering the recipe list.
-- **`PaginationControls`:** A component for navigating between pages of data in lists (`/recipes`, `/logs`).
+- **`PaginationControls`:** A component for navigating between pages of data in lists (e.g., `/recipes`).
 - **`ConfirmationModal`:** A modal dialog that prompts the user to confirm a critical action, such as deleting a recipe.
 - **`AIGenerationDrawer`:** A slide-out panel containing options for generating an AI recipe variant.
 - **`Toast`:** A non-intrusive notification element used to provide feedback on asynchronous actions (e.g., "Recipe saved successfully").

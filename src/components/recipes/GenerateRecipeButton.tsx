@@ -70,7 +70,7 @@ export function GenerateRecipeButton({
         onClick={handleGenerate}
         disabled={disabled || isGenerating}
         variant="secondary"
-        className="w-full gap-1.5 sm:w-auto sm:gap-2"
+        className="ai-generation-button-secondary w-full gap-1.5 sm:w-auto sm:gap-2"
         size="default"
         data-testid="generate-recipe-button"
         aria-label="Generate recipe based on your list and preferences"

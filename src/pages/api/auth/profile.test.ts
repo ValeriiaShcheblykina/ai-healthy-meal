@@ -3,8 +3,8 @@ import { PATCH } from './profile';
 import {
   createMockAPIContext,
   getResponseJson,
-} from '../../../../test/helpers/api-test-helpers';
-import { createMockSupabaseClient } from '../../../../test/mocks/supabase.mock';
+} from '@test/helpers/api-test-helpers';
+import { createMockSupabaseClient } from '@test/mocks/supabase.mock';
 import * as getAuthenticatedUserModule from '@/lib/auth/get-authenticated-user';
 
 // Mock the getAuthenticatedUserId function

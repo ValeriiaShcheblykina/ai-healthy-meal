@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { POST } from './sign-out';
-import { createMockAPIContext } from '../../../../test/helpers/api-test-helpers';
-import { createMockSupabaseClient } from '../../../../test/mocks/supabase.mock';
+import { createMockAPIContext } from '@test/helpers/api-test-helpers';
+import { createMockSupabaseClient } from '@test/mocks/supabase.mock';
 
 describe('POST /api/auth/sign-out', () => {
   let mockSupabase: ReturnType<typeof createMockSupabaseClient>;

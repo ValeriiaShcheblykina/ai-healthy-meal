@@ -1,5 +1,6 @@
 import type {
   RecipeListQueryParams,
+  RecipeVariantListQueryParams,
   CreateRecipeCommand,
   UpdateRecipeCommand,
 } from '../../types.ts';
@@ -224,5 +225,88 @@ export function validateRecipeData(
   return {
     success: true,
     data: validated as CreateRecipeCommand | UpdateRecipeCommand,
+  };
+}
+
+/**
+ * Valid sort fields for recipe variant list endpoint
+ */
+const VALID_VARIANT_SORT_FIELDS = ['created_at'] as const;
+
+/**
+ * Validates and normalizes recipe variant list query parameters
+ *
+ * @param params - Raw query parameters from request
+ * @returns Validation result with normalized parameters or error
+ */
+export function validateRecipeVariantListQueryParams(
+  params: Record<string, string | undefined>
+): ValidationResult<Required<RecipeVariantListQueryParams>> {
+  const errors: Record<string, string> = {};
+  const normalized: Partial<Required<RecipeVariantListQueryParams>> = {};
+
+  // Validate and normalize page
+  if (params.page !== undefined) {
+    const page = parseInt(params.page, 10);
+    if (isNaN(page) || page < 1) {
+      errors.page = 'must be a positive integer';
+    } else {
+      normalized.page = page;
+    }
+  } else {
+    normalized.page = 1; // default
+  }
+
+  // Validate and normalize limit
+  if (params.limit !== undefined) {
+    const limit = parseInt(params.limit, 10);
+    if (isNaN(limit) || limit < 1 || limit > 100) {
+      errors.limit = 'must be between 1 and 100';
+    } else {
+      normalized.limit = limit;
+    }
+  } else {
+    normalized.limit = 20; // default
+  }
+
+  // Validate and normalize sort
+  if (params.sort !== undefined) {
+    if (
+      !VALID_VARIANT_SORT_FIELDS.includes(
+        params.sort as (typeof VALID_VARIANT_SORT_FIELDS)[number]
+      )
+    ) {
+      errors.sort = `must be one of: ${VALID_VARIANT_SORT_FIELDS.join(', ')}`;
+    } else {
+      normalized.sort =
+        params.sort as (typeof VALID_VARIANT_SORT_FIELDS)[number];
+    }
+  } else {
+    normalized.sort = 'created_at'; // default
+  }
+
+  // Validate and normalize order
+  if (params.order !== undefined) {
+    if (!VALID_ORDERS.includes(params.order as (typeof VALID_ORDERS)[number])) {
+      errors.order = `must be one of: ${VALID_ORDERS.join(', ')}`;
+    } else {
+      normalized.order = params.order as (typeof VALID_ORDERS)[number];
+    }
+  } else {
+    normalized.order = 'desc'; // default
+  }
+
+  // If there are validation errors, return error result
+  if (Object.keys(errors).length > 0) {
+    return {
+      success: false,
+      error: createValidationError('Invalid query parameters', errors),
+    };
+  }
+
+  // Return success with normalized, required parameters
+  return {
+    success: true,
+    data: normalized as Required<RecipeVariantListQueryParams>,
   };
 }

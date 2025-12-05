@@ -803,25 +803,43 @@ export class OpenRouterService {
     temperature?: number;
     max_tokens?: number;
   }): Promise<ChatCompletionResponse> {
-    // Validate input
-    if (!params.existingRecipes || params.existingRecipes.length === 0) {
+    // Check if we have preferences in customPrompt (indicates generation from preferences)
+    const hasPreferences = params.customPrompt?.includes('User preferences:');
+
+    // Validate input: need either existing recipes OR preferences
+    if (
+      (!params.existingRecipes || params.existingRecipes.length === 0) &&
+      !hasPreferences
+    ) {
       throw createValidationError(
-        'At least one existing recipe is required for generation'
+        'At least one existing recipe is required for generation, or provide dietary preferences'
       );
     }
 
-    // Build context from existing recipes
-    const recipesContext = params.existingRecipes
-      .map(
-        (recipe, index) =>
-          `Recipe ${index + 1}: ${recipe.title}\n${recipe.content}`
-      )
-      .join('\n\n---\n\n');
+    // Build context from existing recipes (if any)
+    const recipesContext =
+      params.existingRecipes && params.existingRecipes.length > 0
+        ? params.existingRecipes
+            .map(
+              (recipe, index) =>
+                `Recipe ${index + 1}: ${recipe.title}\n${recipe.content}`
+            )
+            .join('\n\n---\n\n')
+        : null;
 
     // Build system message
-    const systemMessage = `You are an expert chef and recipe creator. Your task is to generate a new, creative recipe inspired by the existing recipes provided by the user. The new recipe should:
+    let systemMessage = `You are an expert chef and recipe creator. Your task is to generate a new, creative recipe.`;
+
+    if (recipesContext) {
+      systemMessage += ` The new recipe should:
 - Be inspired by the style, ingredients, or techniques from the existing recipes
-- Be a unique, creative combination or variation
+- Be a unique, creative combination or variation`;
+    } else {
+      systemMessage += ` The new recipe should:
+- Be created based on the user's dietary preferences and requirements`;
+    }
+
+    systemMessage += `
 - Include clear, step-by-step instructions
 - List all ingredients with quantities
 - Be practical and achievable for home cooking
@@ -829,12 +847,20 @@ export class OpenRouterService {
 Generate the recipe in the exact JSON format specified.`;
 
     // Build user message
-    let userMessage = `Based on these existing recipes:\n\n${recipesContext}\n\n`;
-    if (params.customPrompt) {
-      userMessage += `Additional instructions: ${params.customPrompt}\n\n`;
+    let userMessage = '';
+    if (recipesContext) {
+      userMessage = `Based on these existing recipes:\n\n${recipesContext}\n\n`;
+      if (params.customPrompt) {
+        userMessage += `${params.customPrompt}\n\n`;
+      }
+      userMessage +=
+        'Generate a new, creative recipe inspired by these recipes. Make it unique while drawing inspiration from the provided examples.';
+    } else {
+      // Generating from preferences only
+      userMessage = params.customPrompt || '';
+      userMessage +=
+        '\n\nGenerate a new, creative recipe that meets these requirements. Make it delicious, practical, and suitable for home cooking.';
     }
-    userMessage +=
-      'Generate a new, creative recipe inspired by these recipes. Make it unique while drawing inspiration from the provided examples.';
 
     // Define recipe JSON schema
     // Note: When using strict mode, ALL properties must be in the required array

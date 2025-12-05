@@ -4,38 +4,50 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: oklch(0.872 0.01 258.338);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(0.985 0.001 106.423);
-  --card-foreground: oklch(0.145 0 0);
+  /* Light mode - Health app optimized colors */
+  /* Background: Clean white with slight warm tint for comfort */
+  --background: oklch(0.99 0.002 106.423);
+  --foreground: oklch(0.15 0.01 258.338);
+  /* Card: Pure white for cleanliness */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.15 0.01 258.338);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.532 0.157 131.589);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.81 0.1 252);
-  --chart-2: oklch(0.62 0.19 260);
-  --chart-3: oklch(0.55 0.22 263);
-  --chart-4: oklch(0.49 0.22 264);
-  --chart-5: oklch(0.42 0.18 266);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --popover-foreground: oklch(0.15 0.01 258.338);
+  /* Primary: Calming blue (hue ~240) - most popular in health apps */
+  --primary: oklch(0.50 0.15 240);
+  --primary-foreground: oklch(0.99 0 0);
+  /* Secondary: Fresh green (hue ~145) - wellness and nature */
+  --secondary: oklch(0.95 0.02 145);
+  --secondary-foreground: oklch(0.25 0.05 145);
+  /* Muted: Soft neutral grey */
+  --muted: oklch(0.96 0.005 258.338);
+  --muted-foreground: oklch(0.50 0.01 258.338);
+  /* Accent: Light blue-green for highlights */
+  --accent: oklch(0.94 0.03 200);
+  --accent-foreground: oklch(0.25 0.05 240);
+  /* Destructive: Warm red for errors */
+  --destructive: oklch(0.55 0.22 25);
+  --destructive-foreground: oklch(0.99 0 0);
+  /* Borders and inputs: Subtle grey */
+  --border: oklch(0.90 0.005 258.338);
+  --input: oklch(0.92 0.005 258.338);
+  /* Ring: Blue for focus states */
+  --ring: oklch(0.50 0.15 240);
+  /* Chart colors: Health-focused palette */
+  --chart-1: oklch(0.65 0.15 240);
+  --chart-2: oklch(0.60 0.18 145);
+  --chart-3: oklch(0.55 0.20 200);
+  --chart-4: oklch(0.50 0.18 180);
+  --chart-5: oklch(0.45 0.15 220);
+  /* Sidebar: Clean white */
+  --sidebar: oklch(0.99 0.002 106.423);
+  --sidebar-foreground: oklch(0.15 0.01 258.338);
+  --sidebar-primary: oklch(0.50 0.15 240);
+  --sidebar-primary-foreground: oklch(0.99 0 0);
+  --sidebar-accent: oklch(0.96 0.005 258.338);
+  --sidebar-accent-foreground: oklch(0.25 0.05 145);
+  --sidebar-border: oklch(0.90 0.005 258.338);
+  --sidebar-ring: oklch(0.50 0.15 240);
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
@@ -68,38 +80,50 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.269 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.532 0.157 131.589);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.371 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.275 0 0);
-  --input: oklch(0.325 0 0);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.81 0.1 252);
-  --chart-2: oklch(0.62 0.19 260);
-  --chart-3: oklch(0.55 0.22 263);
-  --chart-4: oklch(0.49 0.22 264);
-  --chart-5: oklch(0.42 0.18 266);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.275 0 0);
-  --sidebar-ring: oklch(0.439 0 0);
+  /* Dark mode - Health app optimized colors */
+  /* Background: Dark grey (not pure black) to reduce eye strain */
+  --background: oklch(0.12 0.01 258.338);
+  --foreground: oklch(0.95 0.005 258.338);
+  /* Card: Slightly lighter dark grey */
+  --card: oklch(0.18 0.01 258.338);
+  --card-foreground: oklch(0.95 0.005 258.338);
+  --popover: oklch(0.20 0.01 258.338);
+  --popover-foreground: oklch(0.95 0.005 258.338);
+  /* Primary: Desaturated blue for dark mode (softer, less intense) */
+  --primary: oklch(0.55 0.12 240);
+  --primary-foreground: oklch(0.12 0.01 258.338);
+  /* Secondary: Desaturated green for wellness features */
+  --secondary: oklch(0.25 0.02 145);
+  --secondary-foreground: oklch(0.90 0.01 145);
+  /* Muted: Medium dark grey */
+  --muted: oklch(0.22 0.01 258.338);
+  --muted-foreground: oklch(0.65 0.01 258.338);
+  /* Accent: Subtle blue-green for highlights */
+  --accent: oklch(0.28 0.03 200);
+  --accent-foreground: oklch(0.90 0.01 240);
+  /* Destructive: Softer red for dark mode */
+  --destructive: oklch(0.60 0.18 25);
+  --destructive-foreground: oklch(0.95 0.005 258.338);
+  /* Borders and inputs: Dark grey with slight contrast */
+  --border: oklch(0.25 0.01 258.338);
+  --input: oklch(0.22 0.01 258.338);
+  /* Ring: Lighter blue for focus visibility */
+  --ring: oklch(0.55 0.12 240);
+  /* Chart colors: Desaturated health palette for dark mode */
+  --chart-1: oklch(0.60 0.12 240);
+  --chart-2: oklch(0.55 0.15 145);
+  --chart-3: oklch(0.50 0.15 200);
+  --chart-4: oklch(0.45 0.15 180);
+  --chart-5: oklch(0.40 0.12 220);
+  /* Sidebar: Matching dark background */
+  --sidebar: oklch(0.12 0.01 258.338);
+  --sidebar-foreground: oklch(0.95 0.005 258.338);
+  --sidebar-primary: oklch(0.55 0.12 240);
+  --sidebar-primary-foreground: oklch(0.12 0.01 258.338);
+  --sidebar-accent: oklch(0.22 0.01 258.338);
+  --sidebar-accent-foreground: oklch(0.90 0.01 145);
+  --sidebar-border: oklch(0.25 0.01 258.338);
+  --sidebar-ring: oklch(0.55 0.12 240);
   --font-sans:
     ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
     Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif,
@@ -209,5 +233,65 @@
   :focus-visible {
     outline: 2px solid var(--ring);
     outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* AI Generation Button - Brighter styling */
+  .ai-generation-button {
+    /* Light mode: Brighter, more saturated blue */
+    background: oklch(0.55 0.20 240) !important;
+    color: oklch(0.99 0 0) !important;
+    box-shadow: 0 2px 8px oklch(0.55 0.20 240 / 0.3) !important;
+  }
+
+  .ai-generation-button:hover:not(:disabled) {
+    background: oklch(0.58 0.22 240) !important;
+    box-shadow: 0 4px 12px oklch(0.55 0.20 240 / 0.4) !important;
+    transform: scale(1.02) !important;
+  }
+
+  .ai-generation-button:active:not(:disabled) {
+    transform: scale(0.98) !important;
+  }
+
+  .dark .ai-generation-button {
+    /* Dark mode: Brighter blue with glow */
+    background: oklch(0.60 0.18 240) !important;
+    color: oklch(0.12 0.01 258.338) !important;
+    box-shadow: 0 2px 8px oklch(0.60 0.18 240 / 0.4) !important;
+  }
+
+  .dark .ai-generation-button:hover:not(:disabled) {
+    background: oklch(0.63 0.20 240) !important;
+    box-shadow: 0 4px 16px oklch(0.60 0.18 240 / 0.5) !important;
+  }
+
+  /* Secondary variant AI buttons (like GenerateRecipeButton) */
+  .ai-generation-button-secondary {
+    /* Light mode: Brighter green */
+    background: oklch(0.92 0.05 145) !important;
+    color: oklch(0.20 0.08 145) !important;
+    border: 1px solid oklch(0.85 0.08 145) !important;
+    box-shadow: 0 2px 8px oklch(0.92 0.05 145 / 0.3) !important;
+  }
+
+  .ai-generation-button-secondary:hover:not(:disabled) {
+    background: oklch(0.94 0.06 145) !important;
+    box-shadow: 0 4px 12px oklch(0.92 0.05 145 / 0.4) !important;
+    transform: scale(1.02) !important;
+  }
+
+  .dark .ai-generation-button-secondary {
+    /* Dark mode: Brighter green */
+    background: oklch(0.30 0.05 145) !important;
+    color: oklch(0.92 0.02 145) !important;
+    border: 1px solid oklch(0.35 0.06 145) !important;
+    box-shadow: 0 2px 8px oklch(0.30 0.05 145 / 0.4) !important;
+  }
+
+  .dark .ai-generation-button-secondary:hover:not(:disabled) {
+    background: oklch(0.33 0.06 145) !important;
+    box-shadow: 0 4px 16px oklch(0.30 0.05 145 / 0.5) !important;
   }
 }

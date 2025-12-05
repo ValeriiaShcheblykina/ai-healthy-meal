@@ -3,8 +3,8 @@ import { POST } from './forgot-password';
 import {
   createMockAPIContext,
   getResponseJson,
-} from '../../../../test/helpers/api-test-helpers';
-import { createMockSupabaseClient } from '../../../../test/mocks/supabase.mock';
+} from '@test/helpers/api-test-helpers';
+import { createMockSupabaseClient } from '@test/mocks/supabase.mock';
 
 describe('POST /api/auth/forgot-password', () => {
   let mockSupabase: ReturnType<typeof createMockSupabaseClient>;

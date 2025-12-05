@@ -1,24 +1,24 @@
-# Aplikacja - HealthyMeal (MVP)
+# Application – HealthyMeal (MVP)
 
-### Główny problem
+### Main Problem
 
-Dostosowywanie dostępnych w sieci przepisów kulinarnych do osobistych potrzeb i wymagań żywieniowych jest problematyczne. Aplikacja wykorzystuje AI oraz preferencje użytkownika do proponowania dopasowanych przepisów.
+Adjusting online recipes to personal dietary needs and requirements is difficult. The application uses AI and user preferences to propose tailored recipes.
 
-### Najmniejszy zestaw funkcjonalności
+### Minimum Feature Set
 
-- Zapisywanie, odczytywanie, przeglądanie i usuwanie przepisów w formie tekstowej
-- Prosty system kont użytkowników do powiązania użytkownika z własnymi przepisami
-- Strona profilu użytkownika służąca do zapisywania preferencji żywnościowych
-- Integracja z AI umożliwiająca modyfikowanie przepisów wg preferencji żywieniowych użytkownika
+- Saving, reading, browsing, and deleting recipes in text form
+- A simple user account system to associate users with their own recipes
+- A user profile page for storing dietary preferences
+- AI integration that allows modifying recipes according to the user’s dietary requirements
 
-### Co NIE wchodzi w zakres MVP
+### Out of Scope for MVP
 
-- Import przepisów z adresu URL
-- Bogata obsługa multimediów (np. zdjęć przepisów)
-- Udostępnianie przepisów dla innych użytkowników
-- Funkcje społecznościowe
+- Importing recipes from a URL
+- Rich multimedia support (e.g., recipe photos)
+- Sharing recipes with other users
+- Social features
 
-### Kryteria sukcesu
+### Success Criteria
 
-- 90% użytkowników posiada wypełnioną sekcję preferencji żywnościowych w swoim profilu
-- 75% użytkowników generuje jeden lub więcej przepisów w tygodniu
+- 90% of users have completed the dietary preferences section in their profile
+- 75% of users generate one or more recipes per week
