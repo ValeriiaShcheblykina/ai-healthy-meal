@@ -1,4 +1,5 @@
 import type { Page, Locator } from '@playwright/test';
+import { expect } from '@playwright/test';
 import { BasePage } from './BasePage';
 
 /**
@@ -91,14 +92,31 @@ export class ProfilePage extends BasePage {
    * Fill display name
    */
   async fillDisplayName(value: string) {
-    await this.fillField(this.displayNameInput, value);
+    // Focus and select all text to ensure complete replacement
+    await this.displayNameInput.click();
+    await this.displayNameInput.selectText();
+    // Type the new value (will replace selected text)
+    await this.displayNameInput.type(value, { delay: 10 });
+    // Wait for React state to update
+    await this.page.waitForTimeout(100);
   }
 
   /**
    * Fill calorie target
    */
   async fillCalorieTarget(value: number | string) {
-    await this.fillField(this.calorieTargetInput, String(value));
+    // Focus and select all text to ensure complete replacement
+    await this.calorieTargetInput.click();
+    await this.calorieTargetInput.selectText();
+    // Type the new value (will replace selected text)
+    if (value === '' || value === null) {
+      // Clear the field
+      await this.page.keyboard.press('Delete');
+    } else {
+      await this.calorieTargetInput.type(String(value), { delay: 10 });
+    }
+    // Wait for React state to update
+    await this.page.waitForTimeout(100);
   }
 
   /**
@@ -136,7 +154,22 @@ export class ProfilePage extends BasePage {
       | 'kosher'
   ) {
     const checkbox = this.getDietCheckbox(diet);
-    await checkbox.click();
+    const label = checkbox.locator('..');
+
+    // Get current state before toggling
+    const wasChecked = await checkbox.isChecked().catch(() => false);
+    const expectedState = !wasChecked;
+
+    // Click the label that contains the checkbox (checkbox is sr-only, label is clickable)
+    await label.click();
+
+    // Wait for the checkbox state to change using Playwright's built-in waiting
+    // This is more reliable than waitForFunction
+    if (expectedState) {
+      await expect(checkbox).toBeChecked({ timeout: 3000 });
+    } else {
+      await expect(checkbox).not.toBeChecked({ timeout: 3000 });
+    }
   }
 
   /**
@@ -153,7 +186,7 @@ export class ProfilePage extends BasePage {
       | 'kosher'
   ): Promise<boolean> {
     const checkbox = this.getDietCheckbox(diet);
-    return await checkbox.isChecked();
+    return await checkbox.isChecked().catch(() => false);
   }
 
   /**
@@ -191,33 +224,52 @@ export class ProfilePage extends BasePage {
    * Add allergen tag
    */
   async addAllergen(tag: string) {
-    await this.fillField(this.allergensInput, tag);
-    // Press Enter or click Add button
+    await this.allergensInput.clear();
+    await this.allergensInput.type(tag, { delay: 10 });
+    // Press Enter to add tag
     await this.allergensInput.press('Enter');
-    // Wait a moment for tag to be added
-    await this.page.waitForTimeout(200);
+    // Wait for tag to appear in the DOM
+    await this.page.waitForSelector('.bg-primary\\/10', {
+      state: 'visible',
+      timeout: 5000,
+    });
+    await this.page.waitForTimeout(300);
   }
 
   /**
    * Add multiple allergen tags (comma-separated)
    */
   async addAllergens(tags: string) {
-    await this.fillField(this.allergensInput, tags);
+    await this.allergensInput.clear();
+    await this.allergensInput.type(tags, { delay: 10 });
+    // Press Enter to add tags (TagInput splits by comma)
     await this.allergensInput.press('Enter');
-    await this.page.waitForTimeout(200);
+    // Wait for tags to appear in the DOM - wait for at least one tag
+    const tagContainer = this.page
+      .locator('input[aria-label="Allergens to avoid"]')
+      .locator('..')
+      .locator('..')
+      .locator('.bg-muted\\/30');
+    await tagContainer
+      .locator('.bg-primary\\/10')
+      .first()
+      .waitFor({ state: 'visible', timeout: 5000 });
+    await this.page.waitForTimeout(300);
   }
 
   /**
    * Remove allergen tag
    */
   async removeAllergen(tag: string) {
-    const container = this.page
+    const tagContainer = this.page
       .locator('input[aria-label="Allergens to avoid"]')
       .locator('..')
       .locator('..')
-      .locator('.bg-primary\\/10');
-    const tagElement = container.filter({ hasText: tag });
-    const removeButton = tagElement.getByRole('button', {
+      .locator('.bg-muted\\/30');
+    const tagSpan = tagContainer
+      .locator('.bg-primary\\/10')
+      .filter({ hasText: tag });
+    const removeButton = tagSpan.getByRole('button', {
       name: new RegExp(`Remove ${tag}`, 'i'),
     });
     await removeButton.click();
@@ -228,20 +280,31 @@ export class ProfilePage extends BasePage {
    * Get all allergen tags
    */
   async getAllergens(): Promise<string[]> {
-    // Find the allergens input, then navigate to its parent container
-    const container = this.page
+    // Find the tag container (the div with bg-muted/30 that contains all tags)
+    const tagContainer = this.page
       .locator('input[aria-label="Allergens to avoid"]')
       .locator('..')
       .locator('..')
-      .locator('.bg-primary\\/10'); // Tag container class
-    const count = await container.count();
+      .locator('.bg-muted\\/30'); // Container div with all tags
+
+    // Find all tag spans (each tag is a span with bg-primary/10)
+    const tagSpans = tagContainer.locator('.bg-primary\\/10');
+    const count = await tagSpans.count();
     const tags: string[] = [];
+
     for (let i = 0; i < count; i++) {
-      const tagElement = container.nth(i);
-      // Get text before the X button
-      const tagText = await tagElement.locator('span').first().textContent();
-      if (tagText) {
-        tags.push(tagText.trim());
+      const tagSpan = tagSpans.nth(i);
+      // Get all text content, then remove button text (X icon)
+      const fullText = await tagSpan.textContent();
+      if (fullText) {
+        // The text is the tag name, button adds nothing visible (just X icon)
+        // So we can use the text directly, or get first text node
+        const tagText = fullText.trim();
+        // Remove any button text if present (shouldn't be, but just in case)
+        const cleanText = tagText.replace(/×/g, '').trim();
+        if (cleanText) {
+          tags.push(cleanText);
+        }
       }
     }
     return tags;
@@ -251,31 +314,51 @@ export class ProfilePage extends BasePage {
    * Add disliked ingredient tag
    */
   async addDislikedIngredient(tag: string) {
-    await this.fillField(this.dislikedIngredientsInput, tag);
+    await this.dislikedIngredientsInput.clear();
+    await this.dislikedIngredientsInput.type(tag, { delay: 10 });
     await this.dislikedIngredientsInput.press('Enter');
-    await this.page.waitForTimeout(200);
+    // Wait for tag to appear in the DOM
+    await this.page.waitForSelector('.bg-primary\\/10', {
+      state: 'visible',
+      timeout: 5000,
+    });
+    await this.page.waitForTimeout(300);
   }
 
   /**
    * Add multiple disliked ingredient tags (comma-separated)
    */
   async addDislikedIngredients(tags: string) {
-    await this.fillField(this.dislikedIngredientsInput, tags);
+    await this.dislikedIngredientsInput.clear();
+    await this.dislikedIngredientsInput.type(tags, { delay: 10 });
+    // Press Enter to add tags (TagInput splits by comma)
     await this.dislikedIngredientsInput.press('Enter');
-    await this.page.waitForTimeout(200);
+    // Wait for tags to appear in the DOM - wait for at least one tag
+    const tagContainer = this.page
+      .locator('input[aria-label="Disliked ingredients to avoid"]')
+      .locator('..')
+      .locator('..')
+      .locator('.bg-muted\\/30');
+    await tagContainer
+      .locator('.bg-primary\\/10')
+      .first()
+      .waitFor({ state: 'visible', timeout: 5000 });
+    await this.page.waitForTimeout(300);
   }
 
   /**
    * Remove disliked ingredient tag
    */
   async removeDislikedIngredient(tag: string) {
-    const container = this.page
+    const tagContainer = this.page
       .locator('input[aria-label="Disliked ingredients to avoid"]')
       .locator('..')
       .locator('..')
-      .locator('.bg-primary\\/10');
-    const tagElement = container.filter({ hasText: tag });
-    const removeButton = tagElement.getByRole('button', {
+      .locator('.bg-muted\\/30');
+    const tagSpan = tagContainer
+      .locator('.bg-primary\\/10')
+      .filter({ hasText: tag });
+    const removeButton = tagSpan.getByRole('button', {
       name: new RegExp(`Remove ${tag}`, 'i'),
     });
     await removeButton.click();
@@ -286,20 +369,31 @@ export class ProfilePage extends BasePage {
    * Get all disliked ingredient tags
    */
   async getDislikedIngredients(): Promise<string[]> {
-    // Find the disliked ingredients input, then navigate to its parent container
-    const container = this.page
+    // Find the tag container (the div with bg-muted/30 that contains all tags)
+    const tagContainer = this.page
       .locator('input[aria-label="Disliked ingredients to avoid"]')
       .locator('..')
       .locator('..')
-      .locator('.bg-primary\\/10'); // Tag container class
-    const count = await container.count();
+      .locator('.bg-muted\\/30'); // Container div with all tags
+
+    // Find all tag spans (each tag is a span with bg-primary/10)
+    const tagSpans = tagContainer.locator('.bg-primary\\/10');
+    const count = await tagSpans.count();
     const tags: string[] = [];
+
     for (let i = 0; i < count; i++) {
-      const tagElement = container.nth(i);
-      // Get text before the X button
-      const tagText = await tagElement.locator('span').first().textContent();
-      if (tagText) {
-        tags.push(tagText.trim());
+      const tagSpan = tagSpans.nth(i);
+      // Get all text content, then remove button text (X icon)
+      const fullText = await tagSpan.textContent();
+      if (fullText) {
+        // The text is the tag name, button adds nothing visible (just X icon)
+        // So we can use the text directly, or get first text node
+        const tagText = fullText.trim();
+        // Remove any button text if present (shouldn't be, but just in case)
+        const cleanText = tagText.replace(/×/g, '').trim();
+        if (cleanText) {
+          tags.push(cleanText);
+        }
       }
     }
     return tags;
