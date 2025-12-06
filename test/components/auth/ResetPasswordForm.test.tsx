@@ -368,8 +368,12 @@ describe('ResetPasswordForm', () => {
       await user.click(submitButton);
 
       await waitFor(() => {
-        const passwordError = screen.queryByText(/password must be at least 8 characters/i);
-        const confirmPasswordError = screen.queryByText(/please confirm your password/i);
+        const passwordError = screen.queryByText(
+          /password must be at least 8 characters/i
+        );
+        const confirmPasswordError = screen.queryByText(
+          /please confirm your password/i
+        );
         expect(passwordError || confirmPasswordError).toBeInTheDocument();
       });
 
