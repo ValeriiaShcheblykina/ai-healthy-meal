@@ -5,8 +5,12 @@ import { DeleteRecipeDialog } from './DeleteRecipeDialog';
 import { ToastProvider, useToast } from '@/components/ui/toast';
 import { RecipesClientService } from '@/lib/services/client/recipes.client.service';
 import { GenerateRecipeVariantButton } from './GenerateRecipeVariantButton';
-import { VariantList } from './VariantList';
 import type { RecipeListItemDTO } from '@/types';
+
+// Lazy load VariantList for code splitting
+const VariantList = React.lazy(() =>
+  import('./VariantList').then((module) => ({ default: module.VariantList }))
+);
 
 interface RecipeDetailViewProps {
   recipeId: string;
@@ -232,15 +236,31 @@ function RecipeDetailViewInner({ recipeId }: RecipeDetailViewProps) {
           </div>
         </Card>
 
-        {/* Variants list */}
-        <VariantList
-          recipeId={recipeId}
-          refreshKey={variantRefreshKey}
-          onVariantDeleted={() => {
-            // Increment refresh key to force VariantList to refresh
-            setVariantRefreshKey((prev) => prev + 1);
-          }}
-        />
+        {/* Variants list - lazy loaded */}
+        <React.Suspense
+          fallback={
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold">Variants</h2>
+              <div className="space-y-2">
+                {[1, 2].map((i) => (
+                  <Card key={i} className="p-4">
+                    <div className="bg-muted h-4 w-3/4 animate-pulse rounded" />
+                    <div className="bg-muted mt-2 h-3 w-1/2 animate-pulse rounded" />
+                  </Card>
+                ))}
+              </div>
+            </div>
+          }
+        >
+          <VariantList
+            recipeId={recipeId}
+            refreshKey={variantRefreshKey}
+            onVariantDeleted={() => {
+              // Increment refresh key to force VariantList to refresh
+              setVariantRefreshKey((prev) => prev + 1);
+            }}
+          />
+        </React.Suspense>
       </div>
 
       {/* Delete confirmation dialog */}

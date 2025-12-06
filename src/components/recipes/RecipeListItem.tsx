@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
   Card,
   CardHeader,
@@ -10,7 +11,9 @@ export interface RecipeListItemProps {
   recipe: RecipeListItemDTO;
 }
 
-export function RecipeListItem({ recipe }: RecipeListItemProps) {
+export const RecipeListItem = React.memo(function RecipeListItem({
+  recipe,
+}: RecipeListItemProps) {
   const formattedDate = new Date(recipe.created_at).toLocaleDateString(
     'en-US',
     {
@@ -38,4 +41,4 @@ export function RecipeListItem({ recipe }: RecipeListItemProps) {
       </Card>
     </a>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { RecipesToolbar, type RecipesListState } from './RecipesToolbar';
 import { RecipesGrid } from './RecipesGrid';
@@ -11,7 +11,24 @@ import { useLocalStorage } from '@/components/hooks/useLocalStorage';
 import type { RecipesListViewMode } from './ViewToggle';
 import { Button } from '@/components/ui/button';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes (formerly cacheTime)
+      retry: (failureCount, error) => {
+        // Don't retry on authentication errors
+        if (
+          error instanceof Error &&
+          error.message === 'Authentication required'
+        ) {
+          return false;
+        }
+        return failureCount < 3;
+      },
+    },
+  },
+});
 
 function RecipesListContent() {
   // Parse initial state from URL
@@ -48,6 +65,14 @@ function RecipesListContent() {
 
   // Fetch recipes using TanStack Query
   const { data, isLoading, error, refetch } = useRecipesQuery(filters);
+
+  // Memoize derived data to avoid unnecessary recalculations
+  // Must be called before any conditional returns to follow Rules of Hooks
+  const recipes = useMemo(() => data?.data || [], [data?.data]);
+  const hasSearchQuery = useMemo(
+    () => filters.search.trim().length > 0,
+    [filters.search]
+  );
 
   // Sync filters to URL
   useEffect(() => {
@@ -118,10 +143,6 @@ function RecipesListContent() {
       </>
     );
   }
-
-  // Empty state
-  const recipes = data?.data || [];
-  const hasSearchQuery = filters.search.trim().length > 0;
 
   if (recipes.length === 0) {
     return (
