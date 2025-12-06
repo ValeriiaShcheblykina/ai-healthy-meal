@@ -22,6 +22,6 @@ if (!id) {
 
 <Layout title="Recipe Details">
   <div class="container mx-auto px-4 py-8">
-    <RecipeDetailView client:load recipeId={id} />
+    <RecipeDetailView client:idle recipeId={id} />
   </div>
 </Layout>
