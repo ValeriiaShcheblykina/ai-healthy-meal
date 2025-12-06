@@ -2,6 +2,10 @@
   "name": "10x-astro-starter",
   "type": "module",
   "version": "0.0.1",
+  "engines": {
+    "node": ">=22.14.0",
+    "npm": ">=9.6.5"
+  },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",

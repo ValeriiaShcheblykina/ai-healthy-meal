@@ -349,6 +349,9 @@ describe('POST /api/openrouter/generate-variant', () => {
       content: 'Original recipe content',
     };
 
+    // Store original value to restore later
+    const originalApiKey = import.meta.env.OPEN_ROUTER_API_KEY;
+
     const context = createMockAPIContext({
       method: 'POST',
       url: 'http://localhost:4321/api/openrouter/generate-variant',
@@ -358,14 +361,20 @@ describe('POST /api/openrouter/generate-variant', () => {
       supabase: mockSupabase,
     });
 
-    // Remove API key from environment
-    import.meta.env.OPEN_ROUTER_API_KEY = undefined;
+    // Remove API key from both environment sources
+    // Set to empty string to ensure it's falsy
+    import.meta.env.OPEN_ROUTER_API_KEY = '';
     context.locals.runtime = {
-      env: {},
+      env: {
+        OPEN_ROUTER_API_KEY: undefined,
+      },
     } as never;
 
     const response = await POST(context);
     const json = await getResponseJson(response);
+
+    // Restore original value
+    import.meta.env.OPEN_ROUTER_API_KEY = originalApiKey;
 
     expect(response.status).toBe(500);
     expect(json && typeof json === 'object' && 'error' in json).toBe(true);
