@@ -174,7 +174,6 @@ export class ProfilePage extends BasePage {
 
   /**
    * Check if a diet is selected
-   * Uses the checkbox's checked state as the primary indicator
    */
   async isDietSelected(
     diet:
@@ -187,7 +186,6 @@ export class ProfilePage extends BasePage {
       | 'kosher'
   ): Promise<boolean> {
     const checkbox = this.getDietCheckbox(diet);
-    // Check the checkbox's checked state directly (most reliable)
     return await checkbox.isChecked().catch(() => false);
   }
 

@@ -21,7 +21,7 @@ const user = getAuthenticatedUser(Astro);
             </p>
           </div>
 
-          <RecipesList client:load />
+          <RecipesList client:visible />
         </>
       ) : (
         <div class="flex min-h-[60vh] flex-col items-center justify-center text-center">

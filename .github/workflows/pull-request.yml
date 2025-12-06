@@ -62,8 +62,8 @@ jobs:
       SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
       SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
       SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
-      E2E_USERNAME: ${{ secrets.E2E_USERNAME }}
-      E2E_PASSWORD: ${{ secrets.E2E_PASSWORD }}
+      E2E_USERNAME: ${{ vars.E2E_USERNAME }}
+      E2E_PASSWORD: ${{ vars.E2E_PASSWORD }}
       BASE_URL: http://localhost:3000
     steps:
       - name: Checkout code
