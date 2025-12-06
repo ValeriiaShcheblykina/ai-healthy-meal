@@ -4,25 +4,22 @@ import { Button } from './ui/button';
 type Theme = 'light' | 'dark';
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('light');
+  const [theme, setTheme] = useState<Theme>('dark');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
 
-    // Get theme from localStorage or system preference
+    // Get theme from localStorage or default to dark
     const storedTheme = localStorage.getItem('theme') as Theme | null;
 
     if (storedTheme) {
       setTheme(storedTheme);
       document.documentElement.classList.toggle('dark', storedTheme === 'dark');
     } else {
-      const prefersDark = window.matchMedia(
-        '(prefers-color-scheme: dark)'
-      ).matches;
-      const systemTheme = prefersDark ? 'dark' : 'light';
-      setTheme(systemTheme);
-      document.documentElement.classList.toggle('dark', prefersDark);
+      // Default to dark mode
+      setTheme('dark');
+      document.documentElement.classList.add('dark');
     }
   }, []);
 

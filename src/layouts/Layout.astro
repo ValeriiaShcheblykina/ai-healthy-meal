@@ -27,9 +27,8 @@ const { title = 'AI Healthy Meal', showHeader = true } = Astro.props;
         if (stored) {
           return stored;
         }
-        return window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light';
+        // Default to dark mode
+        return 'dark';
       };
 
       const theme = getThemePreference();

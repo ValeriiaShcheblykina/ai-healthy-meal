@@ -67,47 +67,7 @@ describe('ThemeToggle', () => {
   });
 
   describe('Theme initialization', () => {
-    it('should use light theme when no localStorage value and system prefers light', async () => {
-      Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        value: vi.fn().mockImplementation((query) => ({
-          matches: query === '(prefers-color-scheme: dark)' ? false : false,
-          media: query,
-          onchange: null,
-          addListener: vi.fn(),
-          removeListener: vi.fn(),
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        })),
-      });
-
-      render(<ThemeToggle />);
-
-      await waitFor(() => {
-        const button = screen.getByRole('button', {
-          name: /switch to dark mode/i,
-        });
-        expect(button).toBeInTheDocument();
-        expect(document.documentElement).not.toHaveClass('dark');
-      });
-    });
-
-    it('should use dark theme when system prefers dark', async () => {
-      Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        value: vi.fn().mockImplementation((query) => ({
-          matches: query === '(prefers-color-scheme: dark)',
-          media: query,
-          onchange: null,
-          addListener: vi.fn(),
-          removeListener: vi.fn(),
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        })),
-      });
-
+    it('should use dark theme by default when no localStorage value', async () => {
       render(<ThemeToggle />);
 
       await waitFor(() => {
@@ -119,7 +79,7 @@ describe('ThemeToggle', () => {
       });
     });
 
-    it('should use stored theme from localStorage', async () => {
+    it('should use dark theme from localStorage when stored', async () => {
       localStorage.setItem('theme', 'dark');
 
       render(<ThemeToggle />);
@@ -133,22 +93,8 @@ describe('ThemeToggle', () => {
       });
     });
 
-    it('should prioritize localStorage over system preference', async () => {
+    it('should use light theme from localStorage when stored', async () => {
       localStorage.setItem('theme', 'light');
-
-      Object.defineProperty(window, 'matchMedia', {
-        writable: true,
-        value: vi.fn().mockImplementation((query) => ({
-          matches: query === '(prefers-color-scheme: dark)',
-          media: query,
-          onchange: null,
-          addListener: vi.fn(),
-          removeListener: vi.fn(),
-          addEventListener: vi.fn(),
-          removeEventListener: vi.fn(),
-          dispatchEvent: vi.fn(),
-        })),
-      });
 
       render(<ThemeToggle />);
 
