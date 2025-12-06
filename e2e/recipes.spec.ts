@@ -892,14 +892,24 @@ test.describe('Recipe Management - Navigation', () => {
 
       // Navigate back to list
       await page.getByRole('button', { name: /back to recipes/i }).click();
-      await expect(page).toHaveURL(/\/recipes$/);
+      await expect(page).toHaveURL(/\/recipes$/, { timeout: 10000 });
 
-      // Click on the recipe card
-      await page
+      // Wait for recipe list page to load - wait for search bar to be visible
+      const recipesPage = new RecipesPage(page);
+      await expect(recipesPage.searchBar).toBeVisible({ timeout: 10000 });
+
+      // Wait for page to be stable (network idle or DOM content loaded)
+      await page.waitForLoadState('domcontentloaded', { timeout: 10000 });
+
+      // Wait for the specific recipe card to be visible
+      const recipeCard = page
         .getByTestId('recipe-card')
         .filter({ hasText: testRecipe.title })
-        .first()
-        .click();
+        .first();
+      await expect(recipeCard).toBeVisible({ timeout: 10000 });
+
+      // Click on the recipe card
+      await recipeCard.click();
 
       // Should navigate to detail page
       await page.waitForURL(/\/recipes\/[a-f0-9-]+$/, { timeout: 10000 });
