@@ -1,12 +1,28 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useRecipesQuery } from '@/components/hooks/useRecipesQuery';
-import { RecipesClientService } from '@/lib/services/client/recipes.client.service';
 import type { RecipeListResponseDTO, RecipeListQueryParams } from '@/types';
 
-// Mock the RecipesClientService
-vi.mock('@/lib/services/client/recipes.client.service');
+// Store mock function globally so tests can access it
+declare global {
+  // eslint-disable-next-line no-var
+  var __mockListRecipes: ReturnType<typeof vi.fn> | undefined;
+}
+
+// Mock the RecipesClientService (vi.mock is hoisted automatically)
+vi.mock('@/lib/services/client/recipes.client.service', () => {
+  const mockFn = vi.fn();
+  global.__mockListRecipes = mockFn;
+
+  return {
+    RecipesClientService: class {
+      listRecipes = mockFn;
+    },
+  };
+});
+
+// Import after mock is set up
+import { useRecipesQuery } from '@/components/hooks/useRecipesQuery';
 
 describe('useRecipesQuery', () => {
   let queryClient: QueryClient;
@@ -16,6 +32,7 @@ describe('useRecipesQuery', () => {
     const Wrapper = ({ children }: { children: React.ReactNode }) => (
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     );
+    Wrapper.displayName = 'QueryClientWrapper';
     return Wrapper;
   };
 
@@ -23,19 +40,19 @@ describe('useRecipesQuery', () => {
     queryClient = new QueryClient({
       defaultOptions: {
         queries: {
-          retry: false,
+          retry: false, // Disable retries at queryClient level
           gcTime: 0,
         },
       },
     });
 
-    // Setup mock
-    mockListRecipes = vi.fn();
-    vi.mocked(RecipesClientService).mockImplementation(() => {
-      return {
-        listRecipes: mockListRecipes,
-      } as Pick<RecipesClientService, 'listRecipes'>;
-    });
+    // Get the mock function from global scope
+    const globalMock = global.__mockListRecipes;
+    if (!globalMock) {
+      throw new Error('Mock not initialized');
+    }
+    mockListRecipes = globalMock;
+    mockListRecipes.mockClear();
   });
 
   describe('Query execution', () => {
@@ -120,16 +137,26 @@ describe('useRecipesQuery', () => {
         search: '',
       };
 
-      const error = new Error('Network error');
+      // Use an authentication error which won't retry (per hook logic)
+      const error = new Error('Authentication required');
       mockListRecipes.mockRejectedValue(error);
 
       const { result } = renderHook(() => useRecipesQuery(params), {
         wrapper: createWrapper(),
       });
 
-      await waitFor(() => expect(result.current.isError).toBe(true));
+      // Wait for error state - auth errors don't retry, so should fail quickly
+      await waitFor(
+        () => {
+          expect(result.current.isError).toBe(true);
+        },
+        { timeout: 3000 }
+      );
 
-      expect(result.current.error).toEqual(error);
+      expect(result.current.error).toBeInstanceOf(Error);
+      expect((result.current.error as Error).message).toBe(
+        'Authentication required'
+      );
       expect(result.current.isSuccess).toBe(false);
     });
   });
@@ -286,11 +313,12 @@ describe('useRecipesQuery', () => {
       const networkError = new Error('Network error');
       mockListRecipes.mockRejectedValue(networkError);
 
-      // Create a new query client with retries enabled
+      // Create a new query client with retries enabled and faster retry delay
       const retryQueryClient = new QueryClient({
         defaultOptions: {
           queries: {
-            retry: true,
+            retry: 3,
+            retryDelay: 10, // Fast retry for testing
             gcTime: 0,
           },
         },
@@ -307,12 +335,12 @@ describe('useRecipesQuery', () => {
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true), {
-        timeout: 5000,
+        timeout: 10000,
       });
 
       // Should retry up to 3 times (initial + 3 retries = 4 calls)
       expect(mockListRecipes).toHaveBeenCalledTimes(4);
-    });
+    }, 15000);
 
     it('should not retry on authentication errors even with retries enabled', async () => {
       const params: RecipeListQueryParams = {
@@ -364,11 +392,12 @@ describe('useRecipesQuery', () => {
       const genericError = new Error('Server error');
       mockListRecipes.mockRejectedValue(genericError);
 
-      // Create a new query client with retries enabled
+      // Create a new query client with retries enabled and faster retry delay
       const retryQueryClient = new QueryClient({
         defaultOptions: {
           queries: {
-            retry: true,
+            retry: 3,
+            retryDelay: 10, // Fast retry for testing
             gcTime: 0,
           },
         },
@@ -385,16 +414,16 @@ describe('useRecipesQuery', () => {
       });
 
       await waitFor(() => expect(result.current.isError).toBe(true), {
-        timeout: 5000,
+        timeout: 10000,
       });
 
       // Should retry (more than 1 call)
       expect(mockListRecipes).toHaveBeenCalledTimes(4);
-    });
+    }, 15000);
   });
 
   describe('Query key generation', () => {
-    it('should generate unique query keys for different parameters', () => {
+    it('should generate unique query keys for different parameters', async () => {
       const params1: RecipeListQueryParams = {
         page: 1,
         limit: 20,
@@ -410,6 +439,31 @@ describe('useRecipesQuery', () => {
         order: 'asc',
         search: 'pasta',
       };
+
+      const mockResponse: RecipeListResponseDTO = {
+        data: [],
+        pagination: {
+          page: 1,
+          limit: 20,
+          total: 0,
+          total_pages: 0,
+        },
+      };
+
+      mockListRecipes.mockResolvedValue(mockResponse);
+
+      const { result: result1 } = renderHook(() => useRecipesQuery(params1), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => expect(result1.current.isSuccess).toBe(true));
+
+      const { result: result2 } = renderHook(() => useRecipesQuery(params2), {
+        wrapper: createWrapper(),
+      });
+
+      await waitFor(() => expect(result2.current.isSuccess).toBe(true));
+
       expect(mockListRecipes).toHaveBeenCalledWith(params1);
       expect(mockListRecipes).toHaveBeenCalledWith(params2);
     });

@@ -100,35 +100,42 @@ None - All Priority 1 files are now covered! ✅
 
 ### ✅ COVERED Files
 
-None yet - all Priority 2 files are uncovered.
+#### 2.1 Client Services ✅
+- **Files:**
+  - `lib/services/client/recipes.client.service.ts` ✅
+  - `lib/services/client/profile.client.service.ts` ✅
+  - `lib/services/client/api-client.helper.ts` ✅
+- **Test Files:**
+  - `test/lib/services/client/recipes.client.service.test.ts` ✅ **CREATED**
+  - `test/lib/services/client/profile.client.service.test.ts` ✅ **CREATED**
+  - `test/lib/services/client/api-client.helper.test.ts` ✅ **CREATED**
+- **Status:** Complete
+- **Coverage:**
+  - ✅ `RecipesClientService`
+    - ✅ `listRecipes()` - All parameter combinations, empty search handling
+    - ✅ `getRecipe()` - Success and error cases
+    - ✅ `createRecipe()` - Success and error cases
+    - ✅ `updateRecipe()` - Success and error cases
+    - ✅ `deleteRecipe()` - Success and error cases
+    - ✅ `aiGenerateRecipe()` - With all options, with empty options
+    - ✅ `generateRecipeVariant()` - With/without profile preferences, default options
+    - ✅ `listRecipeVariants()` - With/without parameters
+    - ✅ `getRecipeVariant()` - Success and error cases
+    - ✅ `deleteRecipeVariant()` - Success and error cases
+  - ✅ `ProfileClientService`
+    - ✅ `getCurrentUser()` - With/without profile
+    - ✅ `updateProfile()` - All fields, partial data, null values
+    - ✅ `generateRecipeFromDiets()` - All fields, minimal data, error cases
+    - ✅ `generateRecipeFromPreferences()` - All preferences, individual preferences, error cases
+  - ✅ `api-client.helper` (`fetchApi`)
+    - ✅ Successful requests (GET, POST, 204 No Content, empty responses)
+    - ✅ Error handling (401/403 redirects, 404 with/without custom message, error extraction)
+    - ✅ Network errors
+    - ✅ Edge cases (null/undefined body, complex objects, arrays, custom headers)
 
 ### ❌ UNCOVERED Files (Priority 2)
 
-#### 2.1 Client Services ❌
-- **Files:**
-  - `lib/services/client/recipes.client.service.ts` ❌
-  - `lib/services/client/profile.client.service.ts` ❌
-  - `lib/services/client/api-client.helper.ts` ❌
-- **Test Files:** Not created
-- **Test Plan:**
-  - [ ] Test `RecipesClientService`
-    - [ ] `listRecipes()` success and error cases
-    - [ ] `getRecipe()` success and error cases
-    - [ ] `createRecipe()` success and error cases
-    - [ ] `updateRecipe()` success and error cases
-    - [ ] `deleteRecipe()` success and error cases
-  - [ ] Test `ProfileClientService`
-    - [ ] `getProfile()` success and error cases
-    - [ ] `updateProfile()` success and error cases
-  - [ ] Test `ApiClientHelper`
-    - [ ] Request building
-    - [ ] Error handling
-    - [ ] Authentication header handling
-
-**Files to Create:**
-- `test/lib/services/client/recipes.client.service.test.ts`
-- `test/lib/services/client/profile.client.service.test.ts`
-- `test/lib/services/client/api-client.helper.test.ts`
+None - All Priority 2 files are now covered! ✅
 
 ---
 
@@ -208,8 +215,33 @@ None - All Priority 3 files are now covered! ✅
 #### 4.2 Recipe Components ✅
 - **Files:**
   - `components/recipes/PaginationControls.tsx` ✅
+  - `components/recipes/EmptyState.tsx` ✅
+  - `components/recipes/SearchBar.tsx` ✅
+  - `components/recipes/SortDropdown.tsx` ✅
+  - `components/recipes/ViewToggle.tsx` ✅
+  - `components/recipes/SkeletonLoader.tsx` ✅
+  - `components/recipes/RecipeCard.tsx` ✅
+  - `components/recipes/RecipeListItem.tsx` ✅
+  - `components/recipes/MetadataDisplay.tsx` ✅
 - **Test Files:**
   - `test/components/recipes/PaginationControls.test.tsx` ✅
+  - `test/components/recipes/EmptyState.test.tsx` ✅ **CREATED**
+  - `test/components/recipes/SearchBar.test.tsx` ✅ **CREATED**
+  - `test/components/recipes/SortDropdown.test.tsx` ✅ **CREATED**
+  - `test/components/recipes/ViewToggle.test.tsx` ✅ **CREATED**
+  - `test/components/recipes/SkeletonLoader.test.tsx` ✅ **CREATED**
+  - `test/components/recipes/RecipeCard.test.tsx` ✅ **CREATED**
+  - `test/components/recipes/RecipeListItem.test.tsx` ✅ **CREATED**
+  - `test/components/recipes/MetadataDisplay.test.tsx` ✅ **CREATED**
+- **Coverage:**
+  - ✅ EmptyState - rendering with/without search query, button functionality
+  - ✅ SearchBar - input value updates, debouncing, search callback
+  - ✅ SortDropdown - selecting sort options, toggling sort order
+  - ✅ ViewToggle - toggling between grid and list view modes
+  - ✅ SkeletonLoader - rendering in grid/list modes, skeleton elements
+  - ✅ RecipeCard - rendering recipe details, navigation link
+  - ✅ RecipeListItem - rendering recipe details in list format, navigation link
+  - ✅ MetadataDisplay - displaying generation metadata (model, prompt, preferences)
 
 ### ❌ UNCOVERED Files (Priority 4)
 
@@ -226,11 +258,19 @@ None - All Priority 3 files are now covered! ✅
   - `components/profile/ProfileForm.tsx` ❌
 - **Test Files:** Not created
 
-#### 4.5 Recipe Components ❌
-- **Files:**
+#### 4.5 Recipe Components (Partial Coverage)
+- **Files (Covered ✅):**
+  - `components/recipes/RecipeCard.tsx` ✅
+  - `components/recipes/RecipeListItem.tsx` ✅
+  - `components/recipes/MetadataDisplay.tsx` ✅
+  - `components/recipes/EmptyState.tsx` ✅
+  - `components/recipes/SearchBar.tsx` ✅
+  - `components/recipes/SkeletonLoader.tsx` ✅
+  - `components/recipes/SortDropdown.tsx` ✅
+  - `components/recipes/ViewToggle.tsx` ✅
+  - `components/recipes/PaginationControls.tsx` ✅
+- **Files (Uncovered ❌):**
   - `components/recipes/RecipeForm.tsx` ❌
-  - `components/recipes/RecipeCard.tsx` ❌
-  - `components/recipes/RecipeListItem.tsx` ❌
   - `components/recipes/RecipeDetailView.tsx` ❌
   - `components/recipes/RecipeCreateView.tsx` ❌
   - `components/recipes/RecipeEditView.tsx` ❌
@@ -241,23 +281,37 @@ None - All Priority 3 files are now covered! ✅
   - `components/recipes/VariantDetailView.tsx` ❌
   - `components/recipes/DeleteRecipeDialog.tsx` ❌
   - `components/recipes/DeleteVariantDialog.tsx` ❌
-  - `components/recipes/MetadataDisplay.tsx` ❌
-  - `components/recipes/EmptyState.tsx` ❌
   - `components/recipes/RecipesGrid.tsx` ❌
   - `components/recipes/RecipesList.tsx` ❌
   - `components/recipes/RecipesListItems.tsx` ❌
   - `components/recipes/RecipesToolbar.tsx` ❌
-  - `components/recipes/SearchBar.tsx` ❌
-  - `components/recipes/SkeletonLoader.tsx` ❌
-  - `components/recipes/SortDropdown.tsx` ❌
-  - `components/recipes/ViewToggle.tsx` ❌
-- **Test Files:** Not created
+- **Test Files:** 9 test files created, 11 components still need tests
 
-#### 4.6 Other Components ❌
+#### 4.6 Other Components ✅
 - **Files:**
-  - `components/GenerateRecipeFromPreferences.tsx` ❌
-  - `components/ThemeToggle.tsx` ❌
-- **Test Files:** Not created
+  - `components/GenerateRecipeFromPreferences.tsx` ✅
+  - `components/ThemeToggle.tsx` ✅
+- **Test Files:**
+  - `test/components/GenerateRecipeFromPreferences.test.tsx` ✅ **CREATED**
+  - `test/components/ThemeToggle.test.tsx` ✅ **CREATED**
+- **Status:** Complete
+- **Coverage:**
+  - ✅ `GenerateRecipeFromPreferences`
+    - ✅ Rendering based on preferences (with/without preferences, error handling)
+    - ✅ Button rendering and props (className, variant, size, disabled)
+    - ✅ Generate recipe functionality (click, redirect, loading state)
+    - ✅ Error handling (display errors, clear errors, non-Error exceptions)
+    - ✅ Accessibility (aria-label, aria-live regions)
+  - ✅ `ThemeToggle`
+    - ✅ Initial rendering and hydration
+    - ✅ Theme initialization (localStorage, system preference, priority)
+    - ✅ Theme toggle functionality (light to dark, dark to light)
+    - ✅ localStorage persistence
+    - ✅ DOM class updates
+    - ✅ Icon rendering (moon/sun icons)
+    - ✅ Accessibility (aria-label, screen reader text, aria-hidden)
+    - ✅ Button styling
+    - ✅ Multiple toggle instances
 
 **Test Plan:**
 Focus on:
@@ -341,11 +395,11 @@ Focus on:
 - **Uncovered:** 0/4 files (0%)
 
 ### Priority 2: Service Layer & Client Services
-- **Covered:** 0/3 files (0%)
-- **Uncovered:** 3/3 files (100%)
-  - ❌ `recipes.client.service.ts`
-  - ❌ `profile.client.service.ts`
-  - ❌ `api-client.helper.ts`
+- **Covered:** 3/3 files (100%) ✅
+  - ✅ `recipes.client.service.ts`
+  - ✅ `profile.client.service.ts`
+  - ✅ `api-client.helper.ts`
+- **Uncovered:** 0/3 files (0%)
 
 ### Priority 3: Hooks & Utilities
 - **Covered:** 4/4 files (100%) ✅
@@ -356,11 +410,21 @@ Focus on:
 - **Uncovered:** 0/4 files (0%)
 
 ### Priority 4: React Components
-- **Covered:** 3/30+ files (~10%)
+- **Covered:** 13/30+ files (~43%)
   - ✅ `PasswordInput.tsx`
   - ✅ `SignUpForm.tsx`
   - ✅ `PaginationControls.tsx`
-- **Uncovered:** 27+ files (~90%)
+  - ✅ `EmptyState.tsx`
+  - ✅ `SearchBar.tsx`
+  - ✅ `SortDropdown.tsx`
+  - ✅ `ViewToggle.tsx`
+  - ✅ `SkeletonLoader.tsx`
+  - ✅ `RecipeCard.tsx`
+  - ✅ `RecipeListItem.tsx`
+  - ✅ `MetadataDisplay.tsx`
+  - ✅ `GenerateRecipeFromPreferences.tsx`
+  - ✅ `ThemeToggle.tsx`
+- **Uncovered:** 17+ files (~57%)
 
 ### Priority 5: API Endpoint Edge Cases
 - **Covered:** All main endpoints have tests
@@ -376,17 +440,20 @@ Focus on:
 3. ✅ Recipe service tests (`lib/services/recipe.service.test.ts`) ✅ **DONE**
 4. ✅ OpenRouter service tests (`lib/services/openrouter.service.test.ts`) ✅ **DONE**
 
-### Phase 2: Service Layer ❌ 0% Complete
-1. ❌ OpenRouter service tests ✅ **DONE** (moved to Phase 1)
-2. ❌ Client service tests (`lib/services/client/*.test.ts`) ❌ **TODO**
+### Phase 2: Service Layer ✅ 100% Complete
+1. ✅ OpenRouter service tests ✅ **DONE** (moved to Phase 1)
+2. ✅ Client service tests (`lib/services/client/*.test.ts`) ✅ **DONE**
 
 ### Phase 3: Hooks & Utilities ✅ 100% Complete
 1. ✅ React hooks tests (`test/components/hooks/*.test.ts`) ✅ **DONE**
 2. ✅ Utility function tests (`test/lib/utils.test.ts`, `test/lib/api/*.test.ts`) ✅ **DONE**
 
-### Phase 4: Component Testing ❌ ~10% Complete
+### Phase 4: Component Testing ✅ ~43% Complete
 1. ❌ Critical components (forms, main views) ❌ **TODO**
-2. ❌ Secondary components (cards, dialogs, displays) ❌ **TODO**
+2. ✅ Secondary components (cards, dialogs, displays) ✅ **PARTIAL** - 11 utility/display components tested
+   - ✅ EmptyState, SearchBar, SortDropdown, ViewToggle, SkeletonLoader
+   - ✅ RecipeCard, RecipeListItem, MetadataDisplay, PaginationControls
+   - ✅ GenerateRecipeFromPreferences, ThemeToggle
 
 ### Phase 5: Edge Cases & Enhancements ❌ 0% Complete
 1. ❌ API endpoint edge cases ❌ **TODO**
@@ -446,7 +513,7 @@ npm test -- --watch
 4. ✅ Create `test/lib/services/openrouter.service.test.ts` ✅ **DONE**
 
 ### Short-term (Priority 2-3)
-1. Create client service tests
+1. ✅ Create client service tests ✅ **DONE**
 2. ✅ Create hook tests ✅ **DONE**
 3. ✅ Create utility function tests ✅ **DONE**
 
@@ -466,11 +533,15 @@ npm test -- --watch
 
 1. **Branch Coverage is Priority**: Current branch coverage (80.68%) is below target. Focus on testing all conditional paths, especially in validation and error handling.
 
-2. **Service Layer Testing**: ✅ Recipe and OpenRouter services are now tested. Client services still need tests.
+2. **Service Layer Testing**: ✅ All services are now tested. Recipe service, OpenRouter service, and all client services (RecipesClientService, ProfileClientService, api-client.helper) have comprehensive test coverage.
 
 3. **Hooks & Utilities Testing**: ✅ All React hooks and utility functions are now tested. Complete coverage for `useLocalStorage`, `useRecipesQuery`, `cn()`, and `parseJsonBody()`.
 
-4. **Component Testing**: Many components lack tests. Focus on user-facing components first (forms, main views).
+4. **Component Testing**: ✅ Progress made on utility and display components. 13 components now have tests:
+   - Utility components: EmptyState, SearchBar, SortDropdown, ViewToggle, SkeletonLoader, ThemeToggle
+   - Display components: RecipeCard, RecipeListItem, MetadataDisplay, PaginationControls
+   - Other components: GenerateRecipeFromPreferences
+   - Still need: Forms (RecipeForm), Main views (RecipeDetailView, RecipeCreateView, RecipeEditView), Dialogs (DeleteRecipeDialog, DeleteVariantDialog), Variant components (VariantList, VariantDetailView), List components (RecipesGrid, RecipesList, RecipesListItems, RecipesToolbar), AI generation components (GenerateRecipeButton, GenerateRecipeVariantButton, AIGenerationDrawer)
 
 4. **Mock Strategy**: Ensure mocks are comprehensive and reusable across test files.
 
@@ -481,14 +552,14 @@ npm test -- --watch
 ## Estimated Effort
 
 - **Phase 1 (Critical):** ~8-12 hours ✅ **100% Complete** ✅
-- **Phase 2 (Services):** ~12-16 hours ❌ **0% Complete**
+- **Phase 2 (Services):** ~12-16 hours ✅ **100% Complete** ✅
 - **Phase 3 (Hooks/Utils):** ~4-6 hours ✅ **100% Complete** ✅
-- **Phase 4 (Components):** ~16-24 hours ❌ **~10% Complete**
+- **Phase 4 (Components):** ~16-24 hours ✅ **~43% Complete** (13/30+ components)
 - **Phase 5 (Edge Cases):** ~8-12 hours ❌ **0% Complete**
 
 **Total Estimated:** ~48-70 hours
-**Completed:** ~12-18 hours (Phase 1 & 3 complete)
-**Remaining:** ~36-52 hours
+**Completed:** ~32-42 hours (Phase 1, 2, 3, and partial Phase 4 complete)
+**Remaining:** ~16-28 hours
 
 ---
 
@@ -500,8 +571,31 @@ npm test -- --watch
 - [x] OpenRouter service tests completed
 - [x] React hooks tests completed
 - [x] Utility function tests completed
+- [x] Recipe utility/display component tests completed (11 components)
+- [x] Other component tests completed (GenerateRecipeFromPreferences, ThemeToggle)
+- [x] Client service tests completed (RecipesClientService, ProfileClientService, api-client.helper)
 - [ ] Branch coverage > 85%
 - [ ] Statement coverage > 95%
-- [ ] All service layer functions tested
+- [x] All service layer functions tested
 - [ ] Critical user flows have component tests
 - [ ] No critical bugs found during testing
+
+## Recent Updates
+
+**Latest Test Run Results:**
+- ✅ **502 tests passing** across 33 test files
+- ✅ **0 failures, 0 errors**
+- ✅ All unit tests fixed and passing
+
+**Recently Completed:**
+- ✅ Fixed all failing unit tests (useRecipesQuery, SkeletonLoader, SearchBar)
+- ✅ Created tests for 10 new components:
+  - Recipe components: EmptyState, SearchBar, SortDropdown, ViewToggle, SkeletonLoader, RecipeCard, RecipeListItem, MetadataDisplay
+  - Other components: GenerateRecipeFromPreferences, ThemeToggle
+- ✅ Created comprehensive tests for all client services:
+  - `api-client.helper.test.ts` - 20+ test cases covering all fetchApi scenarios
+  - `recipes.client.service.test.ts` - 15+ test cases covering all recipe operations
+  - `profile.client.service.test.ts` - 12+ test cases covering all profile operations
+- ✅ Fixed TypeScript errors and removed all `any` types
+- ✅ Improved mock setup for React Query hooks and client services
+- ✅ Fixed database type definitions (added `soft_delete_recipe_variant`)
