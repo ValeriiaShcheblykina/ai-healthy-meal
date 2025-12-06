@@ -359,7 +359,7 @@ describe('POST /api/openrouter/generate-variant', () => {
     });
 
     // Remove API key from environment
-    delete import.meta.env.OPEN_ROUTER_API_KEY;
+    import.meta.env.OPEN_ROUTER_API_KEY = undefined;
     context.locals.runtime = {
       env: {},
     } as never;
@@ -561,7 +561,7 @@ describe('POST /api/openrouter/generate-variant', () => {
       ],
     });
 
-    delete import.meta.env.OPEN_ROUTER_API_KEY;
+    import.meta.env.OPEN_ROUTER_API_KEY = undefined;
 
     const context = createMockAPIContext({
       method: 'POST',
