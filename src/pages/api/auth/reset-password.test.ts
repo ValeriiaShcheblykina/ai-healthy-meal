@@ -65,7 +65,10 @@ describe('POST /api/auth/reset-password', () => {
 
     expect(response.status).toBe(400);
     expect(json).toHaveProperty('error');
-    expect(json.error).toHaveProperty('message', 'Invalid request data');
+    if (json && typeof json === 'object' && 'error' in json) {
+      const errorJson = json as { error: { message: string } };
+      expect(errorJson.error.message).toBe('Invalid request data');
+    }
     expect(mockSupabase.auth.updateUser).not.toHaveBeenCalled();
   });
 
@@ -177,5 +180,10 @@ describe('POST /api/auth/reset-password', () => {
 
     expect(response.status).toBe(500);
     expect(json).toHaveProperty('error');
+    if (json && typeof json === 'object' && 'error' in json) {
+      const errorJson = json as { error: { code: string; message: string } };
+      expect(errorJson.error.code).toBe('INTERNAL_ERROR');
+      expect(errorJson.error.message).toBe('An unexpected error occurred');
+    }
   });
 });

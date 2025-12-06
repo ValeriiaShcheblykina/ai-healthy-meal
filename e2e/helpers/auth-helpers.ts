@@ -129,7 +129,11 @@ export async function signInWithTestUser(page: Page) {
       let errorDetails = `Sign-in failed: ${uiError}`;
       if (apiResponse) {
         errorDetails += `\nAPI Status: ${apiResponse.status}`;
-        if (apiResponse.body?.error) {
+        if (
+          apiResponse.body &&
+          typeof apiResponse.body === 'object' &&
+          'error' in apiResponse.body
+        ) {
           errorDetails += `\nAPI Error: ${JSON.stringify(apiResponse.body.error)}`;
         }
       }
@@ -141,7 +145,11 @@ export async function signInWithTestUser(page: Page) {
     let errorMessage = 'Sign-in failed: No error message displayed';
     if (apiResponse) {
       errorMessage += `\nAPI returned status ${apiResponse.status}`;
-      if (apiResponse.body?.error) {
+      if (
+        apiResponse.body &&
+        typeof apiResponse.body === 'object' &&
+        'error' in apiResponse.body
+      ) {
         errorMessage += `\nAPI error: ${JSON.stringify(apiResponse.body.error)}`;
       }
     }

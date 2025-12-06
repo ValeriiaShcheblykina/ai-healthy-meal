@@ -26,9 +26,6 @@ function RecipeCreateViewInner() {
       const description = params.get('description') || '';
       const ingredientsParam = params.get('ingredients');
       const instructionsParam = params.get('instructions');
-      const prepTime = params.get('prep_time');
-      const cookTime = params.get('cook_time');
-      const servings = params.get('servings');
 
       let content = '';
       if (description) {
@@ -72,16 +69,8 @@ function RecipeCreateViewInner() {
         content: content.trim() || undefined,
       };
 
-      // Add optional fields if present
-      if (prepTime) {
-        initialData.prep_time = parseInt(prepTime, 10);
-      }
-      if (cookTime) {
-        initialData.cook_time = parseInt(cookTime, 10);
-      }
-      if (servings) {
-        initialData.servings = parseInt(servings, 10);
-      }
+      // Note: prep_time, cook_time, and servings are not part of RecipeFormData
+      // They are stored in content_json if needed
 
       return initialData;
     } catch (error) {

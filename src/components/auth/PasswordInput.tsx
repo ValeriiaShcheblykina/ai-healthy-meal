@@ -14,7 +14,7 @@ export function PasswordInput({
   ...props
 }: PasswordInputProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const testId = props['data-testid'];
+  const testId = (props as { 'data-testid'?: string })['data-testid'];
 
   return (
     <div className="relative">

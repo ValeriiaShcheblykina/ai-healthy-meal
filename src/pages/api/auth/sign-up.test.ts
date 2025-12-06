@@ -115,7 +115,10 @@ describe('POST /api/auth/sign-up', () => {
 
     expect(response.status).toBe(400);
     expect(json).toHaveProperty('error');
-    expect(json.error).toHaveProperty('message', 'Invalid request data');
+    if (json && typeof json === 'object' && 'error' in json) {
+      const errorJson = json as { error: { message: string } };
+      expect(errorJson.error.message).toBe('Invalid request data');
+    }
     expect(mockSupabase.auth.signUp).not.toHaveBeenCalled();
   });
 
@@ -147,8 +150,10 @@ describe('POST /api/auth/sign-up', () => {
 
     expect(response.status).toBe(409);
     expect(json).toHaveProperty('error');
-    expect(json.error).toHaveProperty('message');
-    expect(json.error.message).toContain('already exists');
+    if (json && typeof json === 'object' && 'error' in json) {
+      const errorJson = json as { error: { message: string } };
+      expect(errorJson.error.message).toContain('already exists');
+    }
   });
 
   it('should return 400 for other sign-up errors', async () => {

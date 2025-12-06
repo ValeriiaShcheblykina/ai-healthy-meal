@@ -3,8 +3,9 @@ import type {
   RecipeVariantListQueryParams,
   CreateRecipeCommand,
   UpdateRecipeCommand,
-} from '../../types.ts';
-import { createValidationError } from '../errors/api-errors.ts';
+} from '@/types.ts';
+import type { Json } from '@/db/database.types.ts';
+import { createValidationError } from '@/lib/errors/api-errors.ts';
 
 /**
  * Valid sort fields for recipe list endpoint
@@ -176,16 +177,22 @@ export function validateRecipeData(
 
   // Validate content_json
   if (data.content_json !== undefined && data.content_json !== null) {
-    // For MVP, accept any JSON object
-    // In production, you'd want to validate the structure
-    try {
-      if (typeof data.content_json === 'object') {
-        validated.content_json = data.content_json;
-      } else {
+    // Validate it's a valid JSON object (not array, not primitive)
+    if (
+      typeof data.content_json !== 'object' ||
+      Array.isArray(data.content_json) ||
+      data.content_json === null
+    ) {
+      errors.content_json = 'must be a valid JSON object';
+    } else {
+      try {
+        // Validate it's JSON-serializable by attempting to serialize
+        JSON.stringify(data.content_json);
+        // If successful, cast to Json (we've validated it's serializable)
+        validated.content_json = data.content_json as Json;
+      } catch {
         errors.content_json = 'must be a valid JSON object';
       }
-    } catch {
-      errors.content_json = 'must be valid JSON';
     }
   } else {
     validated.content_json = null;

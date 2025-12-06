@@ -14,7 +14,7 @@
  * }
  */
 
-import { createValidationError } from '../errors/api-errors';
+import { createValidationError } from '@/lib/errors/api-errors';
 
 /**
  * Safely parses a JSON request body with consistent error handling.

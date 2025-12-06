@@ -168,7 +168,10 @@ describe('PATCH /api/auth/profile', () => {
 
     expect(response.status).toBe(400);
     expect(json).toHaveProperty('error');
-    expect(json.error).toHaveProperty('message', 'Invalid request data');
+    if (json && typeof json === 'object' && 'error' in json) {
+      const errorJson = json as { error: { message: string } };
+      expect(errorJson.error.message).toBe('Invalid request data');
+    }
   });
 
   it('should update only displayName when only displayName is provided', async () => {

@@ -11,7 +11,7 @@ import {
   createClient,
   type SupabaseClient as SupabaseClientType,
 } from '@supabase/supabase-js';
-import type { Database } from '../../src/db/database.types';
+import type { Database } from '@/db/database.types';
 
 /**
  * Create Supabase admin client for E2E test cleanup

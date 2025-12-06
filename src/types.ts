@@ -3,7 +3,7 @@ import type {
   TablesInsert,
   TablesUpdate,
   Json,
-} from './db/database.types';
+} from '@/db/database.types';
 
 // ============================================================================
 // Entity Types (convenience aliases from database)

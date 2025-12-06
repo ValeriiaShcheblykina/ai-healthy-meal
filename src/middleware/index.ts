@@ -1,5 +1,5 @@
 import { defineMiddleware } from 'astro:middleware';
-import { createSupabaseServerInstance } from '../db/supabase.client.ts';
+import { createSupabaseServerInstance } from '@/db/supabase.client.ts';
 
 // Public paths that don't require authentication
 const PUBLIC_PATHS = [
@@ -17,10 +17,7 @@ function isPublicPath(pathname: string): boolean {
     return true;
   }
   // Allow all auth API endpoints
-  if (pathname.startsWith('/api/auth/')) {
-    return true;
-  }
-  return false;
+  return pathname.startsWith('/api/auth/');
 }
 
 export const onRequest = defineMiddleware(async (context, next) => {

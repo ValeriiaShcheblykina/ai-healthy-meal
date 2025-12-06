@@ -170,11 +170,11 @@ describe('RecipesClientService', () => {
       const mockRecipe: RecipeListItemDTO = {
         id: 'recipe-123',
         title: recipeData.title,
-        content: recipeData.content,
+        content: recipeData.content ?? '',
         content_json: null,
         created_at: '2024-01-01T00:00:00Z',
         updated_at: '2024-01-01T00:00:00Z',
-        is_public: recipeData.is_public,
+        is_public: recipeData.is_public ?? false,
       };
 
       vi.mocked(fetchApi).mockResolvedValue(mockRecipe);
@@ -336,9 +336,15 @@ describe('RecipesClientService', () => {
       const mockVariant: GeneratedRecipeVariantDTO = {
         id: 'variant-123',
         recipe_id: recipeId,
-        generated_recipe: mockGeneratedRecipe,
+        output_json: mockGeneratedRecipe,
         model: 'openai/gpt-4o',
         created_at: '2024-01-02T00:00:00Z',
+        created_by: 'test-user-id',
+        parent_variant_id: null,
+        prompt: 'Test prompt',
+        preferences_snapshot: {},
+        output_text: 'Variant Recipe',
+        updated_at: '2024-01-02T00:00:00Z',
       };
 
       // Mock ProfileClientService constructor
@@ -388,9 +394,15 @@ describe('RecipesClientService', () => {
       const mockVariant: GeneratedRecipeVariantDTO = {
         id: 'variant-123',
         recipe_id: recipeId,
-        generated_recipe: mockGeneratedRecipe,
+        output_json: mockGeneratedRecipe,
         model: 'openai/gpt-4o',
         created_at: '2024-01-02T00:00:00Z',
+        created_by: 'test-user-id',
+        parent_variant_id: null,
+        prompt: 'Test prompt',
+        preferences_snapshot: {},
+        output_text: 'Variant Recipe',
+        updated_at: '2024-01-02T00:00:00Z',
       };
 
       vi.mocked(fetchApi)
@@ -433,9 +445,15 @@ describe('RecipesClientService', () => {
       const mockVariant: GeneratedRecipeVariantDTO = {
         id: 'variant-123',
         recipe_id: recipeId,
-        generated_recipe: mockGeneratedRecipe,
+        output_json: mockGeneratedRecipe,
         model: 'openai/gpt-4o-2024-08-06',
         created_at: '2024-01-02T00:00:00Z',
+        created_by: 'test-user-id',
+        parent_variant_id: null,
+        prompt: 'Test prompt',
+        preferences_snapshot: {},
+        output_text: 'Variant Recipe',
+        updated_at: '2024-01-02T00:00:00Z',
       };
 
       const mockGetCurrentUser = vi.fn().mockResolvedValue(mockProfile);
@@ -536,9 +554,15 @@ describe('RecipesClientService', () => {
       const mockVariant: RecipeVariantDTO = {
         id: variantId,
         recipe_id: recipeId,
-        generated_recipe: { title: 'Variant' },
+        output_json: { title: 'Variant' },
         model: 'openai/gpt-4o',
         created_at: '2024-01-01T00:00:00Z',
+        created_by: 'test-user-id',
+        parent_variant_id: null,
+        prompt: 'Test prompt',
+        preferences_snapshot: null,
+        output_text: 'Variant',
+        updated_at: '2024-01-01T00:00:00Z',
       };
 
       // Clear previous mocks and set new one

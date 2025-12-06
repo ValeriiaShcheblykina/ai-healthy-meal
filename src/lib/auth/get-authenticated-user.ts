@@ -25,7 +25,7 @@
  */
 
 import type { APIContext } from 'astro';
-import { createUnauthorizedError } from '../errors/api-errors.ts';
+import { createUnauthorizedError } from '@/lib/errors/api-errors.ts';
 
 /**
  * Extracts and validates the authenticated user's ID from the Authorization header or session cookie.

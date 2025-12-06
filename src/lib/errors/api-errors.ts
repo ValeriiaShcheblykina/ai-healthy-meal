@@ -26,7 +26,7 @@
  * }
  */
 
-import type { ErrorResponseDTO } from '../../types.ts';
+import type { ErrorResponseDTO } from '@/types.ts';
 
 /**
  * Standard error codes for API responses.

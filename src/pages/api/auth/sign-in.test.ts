@@ -75,7 +75,10 @@ describe('POST /api/auth/sign-in', () => {
 
     expect(response.status).toBe(400);
     expect(json).toHaveProperty('error');
-    expect(json.error).toHaveProperty('message', 'Invalid request data');
+    if (json && typeof json === 'object' && 'error' in json) {
+      const errorJson = json as { error: { message: string } };
+      expect(errorJson.error.message).toBe('Invalid request data');
+    }
     expect(mockSupabase.auth.signInWithPassword).not.toHaveBeenCalled();
   });
 
@@ -106,8 +109,10 @@ describe('POST /api/auth/sign-in', () => {
 
     expect(response.status).toBe(401);
     expect(json).toHaveProperty('error');
-    expect(json.error).toHaveProperty('message');
-    expect(json.error.message).toContain('Invalid email or password');
+    if (json && typeof json === 'object' && 'error' in json) {
+      const errorJson = json as { error: { message: string } };
+      expect(errorJson.error.message).toContain('Invalid email or password');
+    }
   });
 
   it('should return 500 when session creation fails', async () => {
@@ -136,7 +141,10 @@ describe('POST /api/auth/sign-in', () => {
 
     expect(response.status).toBe(500);
     expect(json).toHaveProperty('error');
-    expect(json.error).toHaveProperty('message', 'Failed to create session');
+    if (json && typeof json === 'object' && 'error' in json) {
+      const errorJson = json as { error: { message: string } };
+      expect(errorJson.error.message).toBe('Failed to create session');
+    }
   });
 
   it('should return 500 when session verification fails', async () => {
@@ -171,7 +179,10 @@ describe('POST /api/auth/sign-in', () => {
 
     expect(response.status).toBe(500);
     expect(json).toHaveProperty('error');
-    expect(json.error).toHaveProperty('message', 'Failed to verify session');
+    if (json && typeof json === 'object' && 'error' in json) {
+      const errorJson = json as { error: { message: string } };
+      expect(errorJson.error.message).toBe('Failed to verify session');
+    }
   });
 
   it('should handle JSON parsing errors', async () => {

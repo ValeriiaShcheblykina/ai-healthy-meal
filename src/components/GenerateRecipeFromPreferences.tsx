@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Sparkles } from 'lucide-react';
 import { ProfileClientService } from '@/lib/services/client/profile.client.service';
@@ -63,8 +63,8 @@ export function GenerateRecipeFromPreferences({
 
     try {
       // Generate recipe using all user preferences from profile
-      const redirectUrl = await profileService.generateRecipeFromPreferences();
-      window.location.href = redirectUrl;
+      window.location.href =
+        await profileService.generateRecipeFromPreferences();
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : 'An unexpected error occurred';
@@ -82,7 +82,7 @@ export function GenerateRecipeFromPreferences({
     <div className="relative">
       <Button
         onClick={handleGenerate}
-        disabled={disabled || isGenerating || hasPreferences === false}
+        disabled={disabled || isGenerating || hasPreferences !== true}
         variant={variant}
         size={size}
         className={`ai-generation-button-secondary gap-2 ${className}`}

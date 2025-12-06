@@ -30,11 +30,11 @@
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 
-import type { Database } from '../../db/database.types.ts';
+import type { Database } from '@/db/database.types.ts';
 import {
   createInternalError,
   createNotFoundError,
-} from '../errors/api-errors.ts';
+} from '@/lib/errors/api-errors.ts';
 import type {
   RecipeListQueryParams,
   RecipeListResponseDTO,
@@ -44,7 +44,7 @@ import type {
   RecipeVariantListResponseDTO,
   RecipeVariantDTO,
   RecipeVariantEntity,
-} from '../../types.ts';
+} from '@/types.ts';
 
 /**
  * Service class for recipe-related business logic and database operations.

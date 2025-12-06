@@ -48,7 +48,7 @@ import {
   createInternalError,
   createUnauthorizedError,
   createValidationError,
-} from '../errors/api-errors.ts';
+} from '@/lib/errors/api-errors.ts';
 
 /**
  * Service class for OpenRouter API interactions.
@@ -165,11 +165,7 @@ export class OpenRouterService {
         );
       }
 
-      if (
-        !message.content ||
-        typeof message.content !== 'string' ||
-        message.content.trim().length === 0
-      ) {
+      if (!message.content || message.content.trim().length === 0) {
         throw createValidationError(
           `Message at index ${i} must have non-empty content string`
         );
@@ -300,7 +296,7 @@ export class OpenRouterService {
       errorBody: JSON.stringify(errorBody, null, 2),
     });
 
-    if (errorBody && typeof errorBody === 'object' && errorBody !== null) {
+    if (errorBody && typeof errorBody === 'object') {
       const body = errorBody as Record<string, unknown>;
       if (
         'error' in body &&
@@ -550,10 +546,7 @@ export class OpenRouterService {
       };
 
       // If response_format was used, parse JSON content
-      if (
-        originalRequest.response_format &&
-        typeof message.content === 'string'
-      ) {
+      if (originalRequest.response_format) {
         try {
           message.content = JSON.parse(message.content);
         } catch (parseError) {
@@ -599,7 +592,7 @@ export class OpenRouterService {
     };
 
     // Build and return typed response
-    const chatResponse: ChatCompletionResponse = {
+    return {
       id: data.id,
       model: data.model,
       choices,
@@ -610,8 +603,6 @@ export class OpenRouterService {
       },
       created: data.created || Math.floor(Date.now() / 1000),
     };
-
-    return chatResponse;
   }
 
   /**

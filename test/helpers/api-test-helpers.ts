@@ -1,7 +1,7 @@
 import type { APIContext } from 'astro';
 import { vi } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { createMockSupabaseClient } from '../mocks/supabase.mock';
+import { createMockSupabaseClient } from '@test/mocks/supabase.mock';
 
 /**
  * Creates a mock APIContext for testing API routes

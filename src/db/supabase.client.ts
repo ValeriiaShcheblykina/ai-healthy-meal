@@ -1,6 +1,6 @@
 import type { AstroCookies } from 'astro';
-import { createServerClient, type CookieOptionsWithName } from '@supabase/ssr';
-import type { Database } from './database.types.ts';
+import { type CookieOptionsWithName, createServerClient } from '@supabase/ssr';
+import type { Database } from '@/db/database.types.ts';
 
 export const cookieOptions: CookieOptionsWithName = {
   path: '/',
@@ -29,7 +29,7 @@ export const createSupabaseServerInstance = (context: {
   const supabaseKey =
     context.runtime?.env?.SUPABASE_KEY ?? import.meta.env.SUPABASE_KEY;
 
-  const supabase = createServerClient<Database>(supabaseUrl, supabaseKey, {
+  return createServerClient<Database>(supabaseUrl, supabaseKey, {
     cookieOptions,
     cookies: {
       getAll() {
@@ -60,8 +60,6 @@ export const createSupabaseServerInstance = (context: {
       },
     },
   });
-
-  return supabase;
 };
 
 export type SupabaseClient = ReturnType<typeof createSupabaseServerInstance>;

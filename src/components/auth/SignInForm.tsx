@@ -105,10 +105,18 @@ export function SignInForm() {
 
       if (!response.ok) {
         setIsLoading(false);
-        setGlobalError(
-          data?.error?.message ||
-            `Sign in failed: ${response.statusText || 'Unknown error'}`
-        );
+        const errorMessage =
+          (data &&
+          typeof data === 'object' &&
+          'error' in data &&
+          typeof data.error === 'object' &&
+          data.error !== null &&
+          'message' in data.error &&
+          typeof data.error.message === 'string'
+            ? data.error.message
+            : null) ||
+          `Sign in failed: ${response.statusText || 'Unknown error'}`;
+        setGlobalError(errorMessage);
         return;
       }
 

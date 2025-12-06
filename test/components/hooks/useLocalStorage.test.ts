@@ -69,7 +69,9 @@ describe('useLocalStorage', () => {
       const storedArray = [1, 2, 3, 'test'];
       localStorage.setItem(STORAGE_KEY, JSON.stringify(storedArray));
 
-      const { result } = renderHook(() => useLocalStorage(STORAGE_KEY, []));
+      const { result } = renderHook(() =>
+        useLocalStorage<(number | string)[]>(STORAGE_KEY, [])
+      );
 
       expect(result.current[0]).toEqual(storedArray);
     });
@@ -105,7 +107,9 @@ describe('useLocalStorage', () => {
     });
 
     it('should update localStorage with arrays', () => {
-      const { result } = renderHook(() => useLocalStorage(STORAGE_KEY, []));
+      const { result } = renderHook(() =>
+        useLocalStorage<string[]>(STORAGE_KEY, [])
+      );
 
       const newArray = ['a', 'b', 'c'];
 

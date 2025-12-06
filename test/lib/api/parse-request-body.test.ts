@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { parseJsonBody } from '@/lib/api/parse-request-body';
+import { ApiError } from '@/lib/errors/api-errors';
 
 describe('parseJsonBody', () => {
   describe('Valid JSON', () => {
@@ -170,10 +171,11 @@ describe('parseJsonBody', () => {
         await parseJsonBody(request);
         expect.fail('Should have thrown an error');
       } catch (error: unknown) {
-        expect(error).toBeInstanceOf(Error);
-        expect((error as Error).message).toBe('Invalid JSON in request body');
-        expect(error.code).toBe('VALIDATION_ERROR');
-        expect(error.statusCode).toBe(400);
+        expect(error).toBeInstanceOf(ApiError);
+        const apiError = error as ApiError;
+        expect(apiError.message).toBe('Invalid JSON in request body');
+        expect(apiError.code).toBe('VALIDATION_ERROR');
+        expect(apiError.statusCode).toBe(400);
       }
     });
   });

@@ -7,7 +7,7 @@ import {
   resetPasswordFieldSchema,
   type ResetPasswordFormData,
 } from '@/lib/validation/auth.validation';
-import type { ZodError } from 'zod';
+import { ZodError } from 'zod';
 
 export interface ResetPasswordFormProps {
   token?: string;
@@ -70,17 +70,39 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       setIsLoading(true);
 
       // Call reset password API
-      const response = await fetch('/api/auth/reset-password', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(validatedData),
-      });
+      let response: Response;
+      try {
+        response = await fetch('/api/auth/reset-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(validatedData),
+        });
+      } catch {
+        // Network error or fetch failed
+        setIsLoading(false);
+        setGlobalError('An unexpected error occurred. Please try again.');
+        return;
+      }
 
-      const data = await response.json();
+      let data: { error?: { message?: string }; message?: string };
+      try {
+        data = await response.json();
+      } catch {
+        // Invalid JSON response
+        setIsLoading(false);
+        setGlobalError('An unexpected error occurred. Please try again.');
+        return;
+      }
 
-      if (!response.ok) {
+      // Check response status - use ok property if available, otherwise check status code
+      const isOk =
+        response.ok !== undefined
+          ? response.ok
+          : response.status >= 200 && response.status < 300;
+
+      if (!isOk) {
         setGlobalError(
           data.error?.message || 'Password reset failed. Please try again.'
         );
@@ -92,12 +114,11 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       setIsSuccess(true);
     } catch (error) {
       setIsLoading(false);
-      if (error instanceof Error && 'issues' in error) {
-        const zodError = error as ZodError;
+      if (error instanceof ZodError) {
         const fieldErrors: Partial<
           Record<keyof ResetPasswordFormData, string>
         > = {};
-        zodError.issues.forEach((issue) => {
+        error.issues.forEach((issue) => {
           const field = issue.path[0] as keyof ResetPasswordFormData;
           if (field) {
             fieldErrors[field] = issue.message;

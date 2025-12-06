@@ -154,8 +154,8 @@ describe('cn (class name utility)', () => {
 
   describe('Real-world scenarios', () => {
     it('should handle button component classes', () => {
-      const variant = 'primary';
-      const size = 'large';
+      const variant: 'primary' | 'secondary' = 'primary';
+      const size: 'large' | 'small' = 'large';
       const disabled = false;
 
       const result = cn(
@@ -163,10 +163,10 @@ describe('cn (class name utility)', () => {
         'px-4',
         'py-2',
         'rounded',
-        variant === 'primary' && 'bg-blue-500 text-white',
-        variant === 'secondary' && 'bg-gray-500 text-black',
-        size === 'large' && 'text-lg',
-        size === 'small' && 'text-sm',
+        variant === 'primary'
+          ? 'bg-blue-500 text-white'
+          : 'bg-gray-500 text-black',
+        size === 'large' ? 'text-lg' : 'text-sm',
         disabled && 'opacity-50 cursor-not-allowed'
       );
 

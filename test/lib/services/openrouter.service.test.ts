@@ -1,15 +1,21 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { OpenRouterService } from '@/lib/services/openrouter.service';
-import { createUnauthorizedError } from '@/lib/errors/api-errors';
+import {
+  createUnauthorizedError,
+  createInternalError,
+} from '@/lib/errors/api-errors';
 import type {
   ChatCompletionRequest,
   ChatMessage,
+  ChatMessageRole,
   OpenRouterRequestPayload,
   ChatCompletionResponse,
 } from '@/types';
 
 // Type for accessing private methods in tests
-type OpenRouterServiceWithPrivateMethods = OpenRouterService & {
+// Since private methods can't be accessed via intersection types,
+// we define a separate interface that matches the private method signatures
+interface OpenRouterServicePrivateMethods {
   validateMessages: (messages: ChatMessage[] | null) => void;
   buildRequestPayload: (
     request: Partial<ChatCompletionRequest>
@@ -23,8 +29,7 @@ type OpenRouterServiceWithPrivateMethods = OpenRouterService & {
     response: Response,
     originalRequest: ChatCompletionRequest
   ) => Promise<ChatCompletionResponse>;
-};
-
+}
 // Mock fetch globally
 global.fetch = vi.fn();
 
@@ -65,36 +70,44 @@ describe('OpenRouterService', () => {
   describe('validateMessages', () => {
     it('should throw error for empty messages array', () => {
       expect(() => {
-        // Access private method via type assertion
-        (service as OpenRouterServiceWithPrivateMethods).validateMessages([]);
+        // Access private method via type assertion (using unknown for type safety)
+        (
+          service as unknown as OpenRouterServicePrivateMethods
+        ).validateMessages([]);
       }).toThrow();
     });
 
     it('should throw error for null messages', () => {
       expect(() => {
-        (service as OpenRouterServiceWithPrivateMethods).validateMessages(null);
+        (
+          service as unknown as OpenRouterServicePrivateMethods
+        ).validateMessages(null);
       }).toThrow();
     });
 
     it('should throw error for invalid message role', () => {
       expect(() => {
-        (service as OpenRouterServiceWithPrivateMethods).validateMessages([
-          { role: 'invalid', content: 'test' },
+        (
+          service as unknown as OpenRouterServicePrivateMethods
+        ).validateMessages([
+          { role: 'invalid' as ChatMessageRole, content: 'test' },
         ]);
       }).toThrow();
     });
 
     it('should throw error for empty message content', () => {
       expect(() => {
-        (service as OpenRouterServiceWithPrivateMethods).validateMessages([
-          { role: 'user', content: '' },
-        ]);
+        (
+          service as unknown as OpenRouterServicePrivateMethods
+        ).validateMessages([{ role: 'user', content: '' }]);
       }).toThrow();
     });
 
     it('should throw error when system message is not first', () => {
       expect(() => {
-        (service as OpenRouterServiceWithPrivateMethods).validateMessages([
+        (
+          service as unknown as OpenRouterServicePrivateMethods
+        ).validateMessages([
           { role: 'user', content: 'test' },
           { role: 'system', content: 'system message' },
         ]);
@@ -103,23 +116,25 @@ describe('OpenRouterService', () => {
 
     it('should throw error when last message is not from user', () => {
       expect(() => {
-        (service as OpenRouterServiceWithPrivateMethods).validateMessages([
-          { role: 'assistant', content: 'response' },
-        ]);
+        (
+          service as unknown as OpenRouterServicePrivateMethods
+        ).validateMessages([{ role: 'assistant', content: 'response' }]);
       }).toThrow();
     });
 
     it('should accept valid messages array', () => {
       expect(() => {
-        (service as OpenRouterServiceWithPrivateMethods).validateMessages([
-          { role: 'user', content: 'Hello' },
-        ]);
+        (
+          service as unknown as OpenRouterServicePrivateMethods
+        ).validateMessages([{ role: 'user', content: 'Hello' }]);
       }).not.toThrow();
     });
 
     it('should accept system message as first message', () => {
       expect(() => {
-        (service as OpenRouterServiceWithPrivateMethods).validateMessages([
+        (
+          service as unknown as OpenRouterServicePrivateMethods
+        ).validateMessages([
           { role: 'system', content: 'You are a helpful assistant' },
           { role: 'user', content: 'Hello' },
         ]);
@@ -129,13 +144,13 @@ describe('OpenRouterService', () => {
 
   describe('buildRequestPayload', () => {
     it('should build payload with required fields', () => {
-      const request = {
+      const request: Partial<ChatCompletionRequest> = {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Hello' }],
       };
 
       const payload = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).buildRequestPayload(request);
 
       expect(payload.model).toBe('openai/gpt-4o');
@@ -144,14 +159,16 @@ describe('OpenRouterService', () => {
 
     it('should throw error for missing model', () => {
       expect(() => {
-        (service as OpenRouterServiceWithPrivateMethods).buildRequestPayload({
+        (
+          service as unknown as OpenRouterServicePrivateMethods
+        ).buildRequestPayload({
           messages: [{ role: 'user', content: 'Hello' }],
         });
       }).toThrow('Model name is required');
     });
 
     it('should include response_format when provided', () => {
-      const request = {
+      const request: Partial<ChatCompletionRequest> = {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Hello' }],
         response_format: {
@@ -165,7 +182,7 @@ describe('OpenRouterService', () => {
       };
 
       const payload = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).buildRequestPayload(request);
 
       expect(payload.response_format).toBeDefined();
@@ -173,7 +190,7 @@ describe('OpenRouterService', () => {
     });
 
     it('should include optional parameters', () => {
-      const request = {
+      const request: Partial<ChatCompletionRequest> = {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Hello' }],
         temperature: 0.7,
@@ -182,7 +199,7 @@ describe('OpenRouterService', () => {
       };
 
       const payload = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).buildRequestPayload(request);
 
       expect(payload.temperature).toBe(0.7);
@@ -191,13 +208,13 @@ describe('OpenRouterService', () => {
     });
 
     it('should use default temperature when not provided', () => {
-      const request = {
+      const request: Partial<ChatCompletionRequest> = {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Hello' }],
       };
 
       const payload = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).buildRequestPayload(request);
 
       expect(payload.temperature).toBe(1);
@@ -208,7 +225,7 @@ describe('OpenRouterService', () => {
     it('should handle 401 Unauthorized', () => {
       const response = new Response(null, { status: 401 });
       const error = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).handleApiError(response, {
         error: { message: 'Invalid API key' },
       });
@@ -219,7 +236,7 @@ describe('OpenRouterService', () => {
     it('should handle 402 Payment Required', () => {
       const response = new Response(null, { status: 402 });
       const error = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).handleApiError(response);
 
       expect(error.statusCode).toBe(500);
@@ -229,7 +246,7 @@ describe('OpenRouterService', () => {
     it('should handle 400 Bad Request', () => {
       const response = new Response(null, { status: 400 });
       const error = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).handleApiError(response, {
         error: { message: 'Invalid request' },
       });
@@ -241,7 +258,7 @@ describe('OpenRouterService', () => {
     it('should handle 429 Rate Limit', () => {
       const response = new Response(null, { status: 429 });
       const error = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).handleApiError(response);
 
       expect(error.statusCode).toBe(500);
@@ -251,7 +268,7 @@ describe('OpenRouterService', () => {
     it('should handle 500+ Server Errors', () => {
       const response = new Response(null, { status: 500 });
       const error = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).handleApiError(response);
 
       expect(error.statusCode).toBe(500);
@@ -261,7 +278,7 @@ describe('OpenRouterService', () => {
     it('should extract error message from response body', () => {
       const response = new Response(null, { status: 400 });
       const error = (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).handleApiError(response, {
         error: { message: 'Custom error message', code: 'INVALID_INPUT' },
       });
@@ -279,13 +296,13 @@ describe('OpenRouterService', () => {
 
       vi.mocked(fetch).mockResolvedValue(mockResponse);
 
-      const payload = {
+      const payload: OpenRouterRequestPayload = {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Hello' }],
       };
 
       const response = await (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).sendRequest(payload);
 
       expect(fetch).toHaveBeenCalledWith(
@@ -312,13 +329,13 @@ describe('OpenRouterService', () => {
           })
         );
 
-      const payload = {
+      const payload: OpenRouterRequestPayload = {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Hello' }],
       };
 
       const response = await (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).sendRequest(payload);
 
       expect(fetch).toHaveBeenCalledTimes(2);
@@ -334,13 +351,15 @@ describe('OpenRouterService', () => {
         return Promise.reject(abortError);
       });
 
-      const payload = {
+      const payload: OpenRouterRequestPayload = {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Hello' }],
       };
 
       await expect(
-        (service as OpenRouterServiceWithPrivateMethods).sendRequest(payload)
+        (service as unknown as OpenRouterServicePrivateMethods).sendRequest(
+          payload
+        )
       ).rejects.toThrow();
     });
 
@@ -354,13 +373,13 @@ describe('OpenRouterService', () => {
           })
         );
 
-      const payload = {
+      const payload: OpenRouterRequestPayload = {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Hello' }],
       };
 
       const response = await (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).sendRequest(payload);
 
       expect(fetch).toHaveBeenCalledTimes(2);
@@ -396,7 +415,7 @@ describe('OpenRouterService', () => {
       });
 
       const parsed = await (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).parseResponse(response, {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Hello' }],
@@ -433,7 +452,7 @@ describe('OpenRouterService', () => {
       });
 
       const parsed = await (
-        service as OpenRouterServiceWithPrivateMethods
+        service as unknown as OpenRouterServicePrivateMethods
       ).parseResponse(response, {
         model: 'openai/gpt-4o',
         messages: [{ role: 'user', content: 'Generate recipe' }],
@@ -460,7 +479,7 @@ describe('OpenRouterService', () => {
       });
 
       await expect(
-        (service as OpenRouterServiceWithPrivateMethods).parseResponse(
+        (service as unknown as OpenRouterServicePrivateMethods).parseResponse(
           response,
           {
             model: 'openai/gpt-4o',
@@ -477,7 +496,7 @@ describe('OpenRouterService', () => {
       );
 
       await expect(
-        (service as OpenRouterServiceWithPrivateMethods).parseResponse(
+        (service as unknown as OpenRouterServicePrivateMethods).parseResponse(
           response,
           {
             model: 'openai/gpt-4o',

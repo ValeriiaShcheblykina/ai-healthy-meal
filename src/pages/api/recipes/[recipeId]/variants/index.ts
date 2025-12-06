@@ -9,7 +9,7 @@ import {
 } from '@/lib/errors/api-errors';
 import { getAuthenticatedUserId } from '@/lib/auth/get-authenticated-user';
 import { validateRecipeVariantListQueryParams } from '@/lib/validation/recipe.validation';
-import type { Database } from '@/db/database.types';
+import type { Database, Json, TablesInsert } from '@/db/database.types';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type {
   GeneratedRecipeVariantDTO,
@@ -149,20 +149,22 @@ export const POST: APIRoute = async (context) => {
       .join('\n')}`;
 
     // Save variant to database
+    const insertData: TablesInsert<'recipe_variants'> = {
+      recipe_id: recipeId,
+      parent_variant_id: null,
+      created_by: userId,
+      model: body.model,
+      prompt: body.prompt,
+      preferences_snapshot: (body.preferences_snapshot || {}) as Json,
+      output_text: recipeText,
+      output_json: body.generatedRecipe as Json,
+    };
+
     const { data: variant, error: variantError } = await (
       context.locals.supabase as SupabaseClient<Database>
     )
       .from('recipe_variants')
-      .insert({
-        recipe_id: recipeId,
-        parent_variant_id: null,
-        created_by: userId,
-        model: body.model,
-        prompt: body.prompt,
-        preferences_snapshot: body.preferences_snapshot || {},
-        output_text: recipeText,
-        output_json: body.generatedRecipe,
-      })
+      .insert(insertData)
       .select()
       .single();
 
@@ -180,7 +182,9 @@ export const POST: APIRoute = async (context) => {
       model: variantDTO.model || body.model,
       prompt: variantDTO.prompt || body.prompt,
       preferences_snapshot:
-        variantDTO.preferences_snapshot || body.preferences_snapshot,
+        variantDTO.preferences_snapshot ||
+        (body.preferences_snapshot as Json) ||
+        null,
     };
 
     return new Response(JSON.stringify(responseDTO), {

@@ -1,5 +1,5 @@
 import type { CreateRecipeCommand } from '@/types.ts';
-import { createValidationError } from '../errors/api-errors.ts';
+import { createValidationError } from '@/lib/errors/api-errors.ts';
 
 export function validateCreateRecipePayload(data: unknown) {
   if (!data || typeof data !== 'object') {
@@ -8,11 +8,7 @@ export function validateCreateRecipePayload(data: unknown) {
   const payload = data as Partial<CreateRecipeCommand>;
   const errors: Record<string, string> = {};
 
-  if (
-    !payload.title ||
-    typeof payload.title !== 'string' ||
-    payload.title.trim() === ''
-  ) {
+  if (!payload.title || payload.title.trim() === '') {
     errors.title = 'title is required and must be a non-empty string';
   }
 
