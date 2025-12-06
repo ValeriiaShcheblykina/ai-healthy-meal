@@ -279,8 +279,11 @@ describe('POST /api/recipes/ai-generation', () => {
   });
 
   it('should return 500 when API key is missing', async () => {
-    // Clear API key
-    delete import.meta.env.OPEN_ROUTER_API_KEY;
+    // Store original value to restore later
+    const originalApiKey = import.meta.env.OPEN_ROUTER_API_KEY;
+
+    // Clear API key by setting to empty string (falsy)
+    import.meta.env.OPEN_ROUTER_API_KEY = '';
 
     const mockFrom = vi.fn(() => ({
       select: vi.fn().mockReturnThis(),
@@ -307,11 +310,16 @@ describe('POST /api/recipes/ai-generation', () => {
 
     // Override runtime.env to ensure API key is not available
     context.locals.runtime = {
-      env: {},
-    };
+      env: {
+        OPEN_ROUTER_API_KEY: undefined,
+      },
+    } as never;
 
     const response = await POST(context);
     const json = await getResponseJson(response);
+
+    // Restore original value
+    import.meta.env.OPEN_ROUTER_API_KEY = originalApiKey;
 
     expect(response.status).toBe(500);
     expect(json && typeof json === 'object' && 'error' in json).toBe(true);
